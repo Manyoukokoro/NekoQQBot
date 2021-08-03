@@ -17,7 +17,10 @@ public interface Command {
    *
    * @return
    */
+
   boolean checkAuthorization(GroupMessageEvent event);
+
+  boolean checkCommand(GroupMessageEvent event);
 
   /** 执行指令 */
   MessageChain execute(Member sender, MessageChain messageChain, Group subject);

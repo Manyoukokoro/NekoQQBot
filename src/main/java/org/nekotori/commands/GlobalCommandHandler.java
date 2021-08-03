@@ -30,7 +30,7 @@ public class GlobalCommandHandler {
     for (String c : Constants.commandHeader) {
       if (s.startsWith(c)) {
         for (Command command : innerCommands.values()) {
-          if (command.checkAuthorization(groupMessageEvent)) {
+          if (command.checkAuthorization(groupMessageEvent) && command.checkCommand(groupMessageEvent)) {
             service.execute(
                 () -> groupMessageEvent
                     .getGroup()

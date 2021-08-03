@@ -32,6 +32,11 @@ import java.util.List;
  */
 @Command
 public class AnimePicGroupCommand extends PrivilegeGroupCommand {
+
+  public AnimePicGroupCommand() {
+    super("");
+  }
+
   @Override
   public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
     String s = messageChain.contentToString();
