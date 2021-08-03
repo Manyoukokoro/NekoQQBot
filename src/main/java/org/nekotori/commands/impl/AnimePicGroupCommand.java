@@ -1,6 +1,9 @@
 package org.nekotori.commands.impl;
 
+import cn.hutool.core.net.url.UrlBuilder;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.HttpUtil;
+import com.fasterxml.jackson.core.type.TypeReference;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.message.data.At;
@@ -10,10 +13,17 @@ import net.mamoe.mirai.message.data.PlainText;
 import net.mamoe.mirai.utils.ExternalResource;
 import org.nekotori.annotations.Command;
 import org.nekotori.commands.PrivilegeGroupCommand;
+import org.nekotori.common.MessageConstants;
+import org.nekotori.entity.LoliconApiResponse;
+import org.nekotori.entity.LoliconData;
+import org.nekotori.utils.JsonUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author: JayDeng
@@ -25,9 +35,37 @@ import java.net.SocketTimeoutException;
 public class AnimePicGroupCommand extends PrivilegeGroupCommand {
   @Override
   public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
-    String imgUrl = "acg.yanwz.cn/api.php";
+    String s = messageChain.contentToString();
+    if (!s.contains(MessageConstants.ANIME_PIC)) {
+      return null;
+    }
+    String build =
+        UrlBuilder.of("https://api.lolicon.app/setu/", StandardCharsets.UTF_8)
+            .addQuery("apikey", "451300156108adca112029")
+            .addQuery("r18", "0")
+//            .addQuery("keyword", args.get(0))
+            .addQuery("size1200", "true")
+            .build();
     MessageChain echo = null;
     try {
+      String imgUrl;
+      String body = HttpUtil.createGet(build).setReadTimeout(5 * 1000).executeAsync().body();
+      LoliconApiResponse loliconApiResponse =
+          JsonUtils.json2Object(body, new TypeReference<>() {
+          });
+      List<LoliconData> loliconData = new ArrayList<>();
+      if (ObjectUtil.isNotNull(loliconApiResponse)) {
+        if (loliconApiResponse.getCode().equals(429))
+          return new MessageChainBuilder()
+              .append(new At(sender.getId()).plus(new PlainText("今日Api300次调用已耗尽")))
+              .build();
+        loliconData = loliconApiResponse.getData();
+      }
+      if (ObjectUtil.isNull(loliconData) || loliconData.isEmpty())
+        return new MessageChainBuilder()
+            .append(new At(sender.getId()).plus(new PlainText("找不到对象")))
+            .build();
+      imgUrl = loliconData.get(0).getUrl();
       InputStream inputStream =
           HttpUtil.createGet(imgUrl).setReadTimeout(10 * 1000).execute().bodyStream();
       echo =
