@@ -39,6 +39,7 @@ public class AnimePicGroupCommand extends PrivilegeGroupCommand {
     if (!s.contains(MessageConstants.ANIME_PIC)) {
       return null;
     }
+    String imgUrl = "";
     String build =
         UrlBuilder.of("https://api.lolicon.app/setu/", StandardCharsets.UTF_8)
             .addQuery("apikey", "451300156108adca112029")
@@ -48,7 +49,6 @@ public class AnimePicGroupCommand extends PrivilegeGroupCommand {
             .build();
     MessageChain echo = null;
     try {
-      String imgUrl;
       String body = HttpUtil.createGet(build).setReadTimeout(5 * 1000).executeAsync().body();
       LoliconApiResponse loliconApiResponse =
           JsonUtils.json2Object(body, new TypeReference<>() {
@@ -77,7 +77,7 @@ public class AnimePicGroupCommand extends PrivilegeGroupCommand {
       echo =
           new MessageChainBuilder()
               .append(new At(sender.getId()))
-              .append(new PlainText("  time out!"))
+              .append(new PlainText("  time out! 请尝试自行访问:"+imgUrl))
               .build();
     } catch (IOException e) {
       e.printStackTrace();
