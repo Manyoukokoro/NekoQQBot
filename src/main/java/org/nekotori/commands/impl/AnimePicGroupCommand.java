@@ -17,8 +17,10 @@ import org.nekotori.entity.LoliconApiResponse;
 import org.nekotori.entity.LoliconData;
 import org.nekotori.utils.CommandUtils;
 import org.nekotori.utils.JsonUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -36,6 +38,12 @@ import java.util.List;
 @Command
 public class AnimePicGroupCommand extends PrivilegeGroupCommand {
 
+  @Value("$img.loli-api")
+  private String loliApi;
+
+  @Value("$img.loli-key")
+  private String loliKey;
+
   public AnimePicGroupCommand() {
     super(MessageConstants.ANIME_PIC);
   }
@@ -47,8 +55,8 @@ public class AnimePicGroupCommand extends PrivilegeGroupCommand {
     String keyword = CollectionUtils.isEmpty(commandAttr.getParam())?"":commandAttr.getParam().get(0);
     String imgUrl = "";
     String build =
-        UrlBuilder.of("https://api.lolicon.app/setu/", StandardCharsets.UTF_8)
-            .addQuery("apikey", "451300156108adca112029")
+        UrlBuilder.of(loliApi, StandardCharsets.UTF_8)
+            .addQuery("apikey", loliKey)
             .addQuery("r18","0")
             .addQuery("keyword", keyword)
             .addQuery("size1200", "true")
