@@ -1,15 +1,13 @@
 package org.nekotori.commands.impl;
 
+import cn.hutool.core.img.Img;
 import cn.hutool.core.net.url.UrlBuilder;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.HttpUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
-import net.mamoe.mirai.message.data.At;
-import net.mamoe.mirai.message.data.MessageChain;
-import net.mamoe.mirai.message.data.MessageChainBuilder;
-import net.mamoe.mirai.message.data.PlainText;
+import net.mamoe.mirai.message.data.*;
 import net.mamoe.mirai.utils.ExternalResource;
 import org.nekotori.annotations.Command;
 import org.nekotori.commands.PrivilegeGroupCommand;
@@ -20,6 +18,7 @@ import org.nekotori.utils.JsonUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -71,7 +70,7 @@ public class AnimePicGroupCommand extends PrivilegeGroupCommand {
       echo =
           new MessageChainBuilder()
               .append(new At(sender.getId()))
-              .append(subject.uploadImage(ExternalResource.create(inputStream)))
+              .append(FlashImage.from(subject.uploadImage(ExternalResource.create(inputStream))))
               .build();
     } catch (SocketTimeoutException e) {
       echo =

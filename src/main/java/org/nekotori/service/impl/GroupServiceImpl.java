@@ -1,7 +1,10 @@
 package org.nekotori.service.impl;
 
 import org.nekotori.service.GroupService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @author: JayDeng
@@ -11,9 +14,13 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class GroupServiceImpl implements GroupService {
+
+    @Value("${bot.privilege-groups}")
+    private Long[] ids;
+
     @Override
     public boolean checkPrivilege(Long groupId) {
-        if(groupId == 1026836775L) return true;
+        if(List.of(ids).contains(groupId)) return true;
         return false;
     }
 }
