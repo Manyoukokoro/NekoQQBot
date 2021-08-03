@@ -2,6 +2,7 @@ package org.nekotori.commands;
 
 import net.mamoe.mirai.contact.MemberPermission;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
+import org.nekotori.common.Constants;
 
 /**
  * @author: JayDeng
@@ -12,12 +13,10 @@ import net.mamoe.mirai.event.events.GroupMessageEvent;
 public abstract class ManagerGroupCommand implements Command {
   @Override
   public boolean checkAuthorization(GroupMessageEvent event) {
-    if (event != null)
-      return event
-              .getSender()
-              .getPermission()
-              .equals(MemberPermission.ADMINISTRATOR)
-          || event.getSender().getPermission().equals(MemberPermission.OWNER);
-    return false;
+    if(event ==null) return false;
+    if(event.getSender().getId()== Constants.admin) return true;
+    final MemberPermission permission = event.getSender().getPermission();
+    return permission.equals(MemberPermission.ADMINISTRATOR)
+        || permission.equals(MemberPermission.OWNER);
   }
 }
