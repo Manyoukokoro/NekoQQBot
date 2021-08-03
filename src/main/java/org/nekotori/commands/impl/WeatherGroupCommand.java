@@ -77,24 +77,22 @@ public class WeatherGroupCommand extends NoAuthGroupCommand {
               final Optional<WeatherDailyData> first1 =
                   weatherResponse.getDaily().stream().findFirst();
               first1.ifPresent(
-                  (w) -> {
-                    singleMessages
-                        .append(
-                            String.valueOf(
-                                new PlainText("\n"+
-                                    first.get().getName()
-                                        + "今日天气:\n"
-                                        + "  天气:"
-                                        + w.getTextDay()
-                                        + "\n  最高温度:"
-                                        + w.getTempMax()
-                                        + "\n  最低温度:"
-                                        + w.getTempMin()
-                                        + "\n  降水量:"
-                                        + w.getPrecip()
-                                        +"毫米")))
-                        .append("\n");
-                  });
+                  (w) -> singleMessages
+                      .append(
+                          String.valueOf(
+                              new PlainText("\n"+
+                                  first.get().getName()
+                                      + "今日天气:\n"
+                                      + "  天气:"
+                                      + w.getTextDay()
+                                      + "\n  最高温度:"
+                                      + w.getTempMax()
+                                      + "\n  最低温度:"
+                                      + w.getTempMin()
+                                      + "\n  降水量:"
+                                      + w.getPrecip()
+                                      +"毫米")))
+                      .append("\n"));
             }
           }
         }

@@ -16,11 +16,12 @@ import java.util.List;
 public class GroupServiceImpl implements GroupService {
 
     @Value("${bot.privilege-groups}")
-    private Long[] ids;
+    private List<Long> ids;
 
     @Override
     public boolean checkPrivilege(Long groupId) {
-        if(List.of(ids).contains(groupId)) return true;
+        for(Long id:ids)
+            if(id.equals(groupId))return true;
         return false;
     }
 }

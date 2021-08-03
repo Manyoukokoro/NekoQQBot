@@ -12,9 +12,12 @@ import net.mamoe.mirai.utils.ExternalResource;
 import org.nekotori.annotations.Command;
 import org.nekotori.commands.PrivilegeGroupCommand;
 import org.nekotori.common.MessageConstants;
+import org.nekotori.entity.CommandAttr;
 import org.nekotori.entity.LoliconApiResponse;
 import org.nekotori.entity.LoliconData;
+import org.nekotori.utils.CommandUtils;
 import org.nekotori.utils.JsonUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,21 +37,20 @@ import java.util.List;
 public class AnimePicGroupCommand extends PrivilegeGroupCommand {
 
   public AnimePicGroupCommand() {
-    super("");
+    super(MessageConstants.ANIME_PIC);
   }
 
   @Override
   public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
     String s = messageChain.contentToString();
-    if (!s.contains(MessageConstants.ANIME_PIC)) {
-      return null;
-    }
+    CommandAttr commandAttr = CommandUtils.resolveCommand(s);
+    String keyword = CollectionUtils.isEmpty(commandAttr.getParam())?"":commandAttr.getParam().get(0);
     String imgUrl = "";
     String build =
         UrlBuilder.of("https://api.lolicon.app/setu/", StandardCharsets.UTF_8)
             .addQuery("apikey", "451300156108adca112029")
-            .addQuery("r18", "0")
-//            .addQuery("keyword", args.get(0))
+            .addQuery("r18","0")
+            .addQuery("keyword", keyword)
             .addQuery("size1200", "true")
             .build();
     MessageChain echo = null;
@@ -74,7 +76,6 @@ public class AnimePicGroupCommand extends PrivilegeGroupCommand {
           HttpUtil.createGet(imgUrl).setReadTimeout(10 * 1000).execute().bodyStream();
       echo =
           new MessageChainBuilder()
-              .append(new At(sender.getId()))
               .append(FlashImage.from(subject.uploadImage(ExternalResource.create(inputStream))))
               .build();
     } catch (SocketTimeoutException e) {
