@@ -102,6 +102,7 @@ public class WeatherGroupCommand extends NoAuthGroupCommand {
         e.printStackTrace();
       }
     }
+    if(singleMessages.size()<=1) singleMessages.append(new PlainText("\n请不要查询异次元信息"));
     final MessageChain build = singleMessages.build();
     return build;
   }
