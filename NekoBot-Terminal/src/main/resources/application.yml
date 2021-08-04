@@ -14,3 +14,5 @@ spring:
   aop:
     auto: true
     proxy-target-class: true
+sqlite:
+  url: jdbc:sqlite:base.db

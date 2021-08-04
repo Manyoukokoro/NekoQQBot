@@ -19,6 +19,7 @@ public class GroupMessageEvents extends SimpleListenerHost {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public ListeningStatus onMessage(@NotNull GroupMessageEvents groupMessageEvents){
+
         return null;
     }
 }
