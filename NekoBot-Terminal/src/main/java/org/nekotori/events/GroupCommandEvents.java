@@ -8,7 +8,6 @@ import net.mamoe.mirai.event.events.GroupMessageEvent;
 import org.jetbrains.annotations.NotNull;
 import org.nekotori.annotations.Event;
 import org.nekotori.commands.GlobalCommandHandler;
-import org.springframework.stereotype.Component;
 
 /**
  * @author: JayDeng

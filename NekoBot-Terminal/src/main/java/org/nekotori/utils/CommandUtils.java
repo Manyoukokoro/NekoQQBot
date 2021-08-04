@@ -27,7 +27,7 @@ public class CommandUtils {
     }
 
     public static boolean checkCommand(Command command, GroupMessageEvent event) {
-        if(List.of(command.getClass().getAnnotation(org.nekotori.annotations.Command.class).value())
+        if(List.of(command.getClass().getAnnotation(org.nekotori.annotations.Command.class).name())
                 .contains( CommandUtils.resolveCommand(event.getMessage().contentToString()).getCommand())){
             return true;
         }

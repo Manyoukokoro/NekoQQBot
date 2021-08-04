@@ -1,6 +1,5 @@
 package org.nekotori.commands.impl;
 
-import cn.hutool.core.img.Img;
 import cn.hutool.core.net.url.UrlBuilder;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.HttpUtil;
@@ -11,8 +10,7 @@ import net.mamoe.mirai.message.data.*;
 import net.mamoe.mirai.utils.ExternalResource;
 import org.nekotori.annotations.Command;
 import org.nekotori.commands.PrivilegeGroupCommand;
-import org.nekotori.common.Constants;
-import org.nekotori.common.MessageConstants;
+import org.nekotori.common.CommandConstants;
 import org.nekotori.entity.CommandAttr;
 import org.nekotori.entity.LoliconApiResponse;
 import org.nekotori.entity.LoliconData;
@@ -21,10 +19,8 @@ import org.nekotori.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -36,7 +32,7 @@ import java.util.List;
  * @description:
  * @version: {@link }
  */
-@Command({MessageConstants.ANIME_PIC})
+@Command(name = {CommandConstants.ANIME_PIC,"setu"})
 public class AnimePicGroupCommand extends PrivilegeGroupCommand {
 
   @Value("$img.loli-api")

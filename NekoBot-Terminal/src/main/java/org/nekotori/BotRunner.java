@@ -5,8 +5,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
-
 /**
  * @author: JayDeng
  * @date: 02/08/2021 15:39
@@ -28,7 +26,7 @@ public class BotRunner implements ApplicationRunner {
     private String deviceInfoLocation;
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         BotSimulator.run(id,password,deviceInfoLocation);
 
     }

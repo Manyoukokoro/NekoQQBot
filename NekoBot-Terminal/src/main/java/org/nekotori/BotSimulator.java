@@ -4,12 +4,9 @@ import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.BotFactory;
 import net.mamoe.mirai.event.SimpleListenerHost;
 import net.mamoe.mirai.utils.BotConfiguration;
-import org.nekotori.events.GroupCommandEvents;
 import org.nekotori.utils.SpringContextUtils;
-import org.springframework.stereotype.Component;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.concurrent.Executors;
 
 
@@ -29,8 +26,8 @@ public class BotSimulator {
         BotConfiguration botConfiguration = new BotConfiguration();
         botConfiguration.fileBasedDeviceInfo(deviceFile);
         botConfiguration.setProtocol(BotConfiguration.MiraiProtocol.ANDROID_PAD);
-//        nekoBot = BotFactory.INSTANCE.newBot(qq, password,botConfiguration);
-//        nekoBot.login();
+        nekoBot = BotFactory.INSTANCE.newBot(qq, password,botConfiguration);
+        nekoBot.login();
         final Collection<SimpleListenerHost> values = SpringContextUtils.getContext().getBeansOfType(SimpleListenerHost.class).values();
         for(SimpleListenerHost host:values){
             nekoBot.getEventChannel().registerListenerHost(host);

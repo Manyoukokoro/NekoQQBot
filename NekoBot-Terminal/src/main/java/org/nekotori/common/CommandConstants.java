@@ -6,7 +6,7 @@ package org.nekotori.common;
  * @description:
  * @version: {@link }
  */
-public class MessageConstants {
+public class CommandConstants {
 
     public static final String ANIME_PIC = "色图";
 }

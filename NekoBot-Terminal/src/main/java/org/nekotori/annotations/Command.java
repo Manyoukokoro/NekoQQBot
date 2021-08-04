@@ -16,5 +16,6 @@ import java.lang.annotation.*;
 @Component
 public @interface Command {
   @AliasFor(annotation = Component.class)
-  String[] value() default "";
+  String value() default "";
+  String[] name() default {""};
 }

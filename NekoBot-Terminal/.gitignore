@@ -1,2 +1,5 @@
 /deviceInfo.json
 /src/main/resources/application-local.yml
+/target/
+/NekoQQBot.iml
+/.idea/

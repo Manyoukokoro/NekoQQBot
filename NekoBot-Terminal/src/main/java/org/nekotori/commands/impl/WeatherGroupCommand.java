@@ -26,10 +26,9 @@ import java.util.Optional;
  * @description:
  * @version: {@link }
  */
-@Command({"查询天气"})
+@Command(name = {"查询天气","天气"})
 public class WeatherGroupCommand extends NoAuthGroupCommand {
 
-  private static final String command = "查询天气";
 
   @Value("${weather.location-api}")
   private String location;
@@ -96,8 +95,11 @@ public class WeatherGroupCommand extends NoAuthGroupCommand {
         e.printStackTrace();
       }
     }
-    if(singleMessages.size()<=1) singleMessages.append(new PlainText("\n请不要查询异次元信息"));
-    final MessageChain build = singleMessages.build();
+    MessageChain build = singleMessages.build();
+    if(build.size()<=1){
+      singleMessages.append(new PlainText("\n请不要查询异次元信息"));
+      build = singleMessages.build();
+    }
     return build;
   }
 }

@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-@Command({"AniS"})
+@Command(name = {"AniS","anis"})
 public class YandereGroupCommand extends PrivilegeGroupCommand {
 
     @Value("${img.yandere-post}")
