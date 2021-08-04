@@ -1,8 +1,0 @@
-{
-  "properties": [
-    {
-      "name": "bot.privilege-groups",
-      "type": "java.util.List",
-      "description": "Description for bot.privilege-groups."
-  }
-] }
