@@ -72,8 +72,7 @@ public class DanbooruCommand extends PrivilegeGroupCommand {
         /**
          * 发送消息至群
          */
-        subject.sendMessage(build);
-        return null;
+        return build;
     }
 }
     
