@@ -1,0 +1,16 @@
+server:
+  port: 18001
+  compression:
+    enabled: true
+spring:
+  application:
+    name: nekobot
+  profiles:
+    active: local
+  servlet:
+    multipart:
+      maxFileSize: 100MB
+      maxRequestSize: 100MB
+  aop:
+    auto: true
+    proxy-target-class: true
