@@ -71,7 +71,7 @@ public class YandereGroupCommand extends PrivilegeGroupCommand {
                 });
                 if(!CollectionUtils.isEmpty(yandereTags)){
                     for(YandereTag t:yandereTags){
-                        singleMessages.append(new PlainText(t.getName()));
+                        singleMessages.append(new PlainText(t.getName()+"\n"));
                     }
                 }
             }
