@@ -26,7 +26,7 @@ import java.util.Optional;
  * @description:
  * @version: {@link }
  */
-@Command
+@Command({"查询天气"})
 public class WeatherGroupCommand extends NoAuthGroupCommand {
 
   private static final String command = "查询天气";
@@ -39,10 +39,6 @@ public class WeatherGroupCommand extends NoAuthGroupCommand {
 
   @Value("${weather.key}")
   private String key;
-
-  public WeatherGroupCommand() {
-    super(command);
-  }
 
   @Override
   public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {

@@ -31,11 +31,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-@Command
+@Command({"AniS"})
 public class YandereGroupCommand extends PrivilegeGroupCommand {
-    public YandereGroupCommand() {
-        super("AniS");
-    }
 
     @Value("${img.yandere-post}")
     private String yanderePost;

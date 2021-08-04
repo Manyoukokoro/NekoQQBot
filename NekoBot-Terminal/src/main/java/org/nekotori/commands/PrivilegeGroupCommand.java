@@ -13,20 +13,6 @@ import javax.annotation.Resource;
  * @version: {@link }
  */
 public abstract class PrivilegeGroupCommand implements Command {
-
-    protected final String command;
-
-    public PrivilegeGroupCommand(String command){
-        this.command = command;
-    }
-
-    @Override
-    public boolean checkCommand(GroupMessageEvent event) {
-        if(CommandUtils.resolveCommand(event.getMessage().contentToString()).getCommand().equals(command))
-            return true;
-        return false;
-    }
-
     @Resource
     private GroupService groupService;
 

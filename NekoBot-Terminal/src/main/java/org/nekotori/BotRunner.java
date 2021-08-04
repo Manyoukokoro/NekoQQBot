@@ -16,8 +16,6 @@ import javax.annotation.Resource;
 @Component
 public class BotRunner implements ApplicationRunner {
 
-    @Resource
-    private BotSimulator botSimulator;
 
 
     @Value("${bot.account}")
@@ -31,7 +29,7 @@ public class BotRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        botSimulator.run(id,password,deviceInfoLocation);
+        BotSimulator.run(id,password,deviceInfoLocation);
 
     }
 }

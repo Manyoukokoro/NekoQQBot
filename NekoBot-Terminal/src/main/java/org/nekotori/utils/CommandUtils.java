@@ -1,5 +1,7 @@
 package org.nekotori.utils;
 
+import net.mamoe.mirai.event.events.GroupMessageEvent;
+import org.nekotori.commands.Command;
 import org.nekotori.common.Constants;
 import org.nekotori.entity.CommandAttr;
 
@@ -22,6 +24,14 @@ public class CommandUtils {
         if(s.length>0) commandAttr.setCommand(s[0]);
         if(s.length>1) commandAttr.setParam(List.of(Arrays.copyOfRange(s,1,s.length)));
         return commandAttr;
+    }
+
+    public static boolean checkCommand(Command command, GroupMessageEvent event) {
+        if(List.of(command.getClass().getAnnotation(org.nekotori.annotations.Command.class).value())
+                .contains( CommandUtils.resolveCommand(event.getMessage().contentToString()).getCommand())){
+            return true;
+        }
+        return false;
     }
 }
     

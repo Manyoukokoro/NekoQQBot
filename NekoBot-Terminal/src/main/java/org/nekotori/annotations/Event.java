@@ -14,7 +14,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Component
-public @interface Command {
-  @AliasFor(annotation = Component.class)
-  String[] value() default "";
+public @interface Event {
+    @AliasFor(annotation = Component.class)
+    String value() default "";
 }

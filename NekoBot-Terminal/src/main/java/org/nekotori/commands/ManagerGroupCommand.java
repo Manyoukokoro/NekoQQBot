@@ -13,18 +13,6 @@ import org.nekotori.utils.CommandUtils;
  */
 public abstract class ManagerGroupCommand implements Command {
 
-  protected final String command;
-
-  public ManagerGroupCommand(String command){
-    this.command = command;
-  }
-
-  @Override
-  public boolean checkCommand(GroupMessageEvent event) {
-    if(CommandUtils.resolveCommand(event.getMessage().contentToString()).getCommand().equals(command))
-      return true;
-    return false;
-  }
 
   @Override
   public boolean checkAuthorization(GroupMessageEvent event) {

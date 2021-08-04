@@ -22,16 +22,11 @@ import java.util.List;
 
 /**
  * @Command注解，打上此注解后，spring容器会自动管理此指令的实现
+ * value为指令名数组
  */
-@Command
-public class DanbooruCommand extends PrivilegeGroupCommand {
+@Command({"测试命令"})
+public class SampleCommand extends PrivilegeGroupCommand {
 
-    /**
-     * 构造函数，决定触发词
-     */
-    public DanbooruCommand() {
-        super("测试指令");
-    }
 
     /**
      * 重写的execute方法，决定指令的输入输出

@@ -2,10 +2,14 @@ package org.nekotori;
 
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.BotFactory;
+import net.mamoe.mirai.event.SimpleListenerHost;
 import net.mamoe.mirai.utils.BotConfiguration;
 import org.nekotori.events.GroupCommandEvents;
+import org.nekotori.utils.SpringContextUtils;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.Executors;
 
 
@@ -16,24 +20,26 @@ import java.util.concurrent.Executors;
  * @version: {@link }
  */
 
-@Component
 public class BotSimulator {
 
-    private Bot nekoBot;
+    private static Bot nekoBot;
 
 
-    public int run(Long qq, String password, String deviceFile) {
+    public static int run(Long qq, String password, String deviceFile) {
         BotConfiguration botConfiguration = new BotConfiguration();
         botConfiguration.fileBasedDeviceInfo(deviceFile);
         botConfiguration.setProtocol(BotConfiguration.MiraiProtocol.ANDROID_PAD);
-        nekoBot = BotFactory.INSTANCE.newBot(qq, password,botConfiguration);
-        nekoBot.login();
-        nekoBot.getEventChannel().registerListenerHost(new GroupCommandEvents());
+//        nekoBot = BotFactory.INSTANCE.newBot(qq, password,botConfiguration);
+//        nekoBot.login();
+        final Collection<SimpleListenerHost> values = SpringContextUtils.getContext().getBeansOfType(SimpleListenerHost.class).values();
+        for(SimpleListenerHost host:values){
+            nekoBot.getEventChannel().registerListenerHost(host);
+        }
         Executors.newSingleThreadExecutor().execute(nekoBot::join);
         return 0;
     }
 
-    public Bot getBot(){
+    public static Bot getBot(){
         return nekoBot;
     }
 

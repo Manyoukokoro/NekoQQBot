@@ -11,6 +11,7 @@ import net.mamoe.mirai.message.data.*;
 import net.mamoe.mirai.utils.ExternalResource;
 import org.nekotori.annotations.Command;
 import org.nekotori.commands.PrivilegeGroupCommand;
+import org.nekotori.common.Constants;
 import org.nekotori.common.MessageConstants;
 import org.nekotori.entity.CommandAttr;
 import org.nekotori.entity.LoliconApiResponse;
@@ -35,7 +36,7 @@ import java.util.List;
  * @description:
  * @version: {@link }
  */
-@Command
+@Command({MessageConstants.ANIME_PIC})
 public class AnimePicGroupCommand extends PrivilegeGroupCommand {
 
   @Value("$img.loli-api")
@@ -43,10 +44,6 @@ public class AnimePicGroupCommand extends PrivilegeGroupCommand {
 
   @Value("$img.loli-key")
   private String loliKey;
-
-  public AnimePicGroupCommand() {
-    super(MessageConstants.ANIME_PIC);
-  }
 
   @Override
   public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {

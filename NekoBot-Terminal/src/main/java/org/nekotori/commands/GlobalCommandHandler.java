@@ -2,6 +2,7 @@ package org.nekotori.commands;
 
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import org.nekotori.common.Constants;
+import org.nekotori.utils.CommandUtils;
 import org.nekotori.utils.SpringContextUtils;
 
 import java.util.HashMap;
@@ -30,7 +31,7 @@ public class GlobalCommandHandler {
     for (String c : Constants.commandHeader) {
       if (s.startsWith(c)) {
         for (Command command : innerCommands.values()) {
-          if (command.checkAuthorization(groupMessageEvent) && command.checkCommand(groupMessageEvent)) {
+          if (command.checkAuthorization(groupMessageEvent) && CommandUtils.checkCommand(command,groupMessageEvent)) {
             service.execute(
                 () -> groupMessageEvent
                     .getGroup()
