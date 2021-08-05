@@ -11,6 +11,9 @@ spring:
     multipart:
       maxFileSize: 100MB
       maxRequestSize: 100MB
+  datasource:
+    url: jdbc:sqlite:C:/Users/CMII-DENGJIE/IdeaProjects/NekoQQBot/NekoBot-Terminal/bot.sqlite
+    driver-class-name: org.sqlite.JDBC
   aop:
     auto: true
     proxy-target-class: true
@@ -18,3 +21,9 @@ mybatis:
   mapper-locations: classpath:org.nekotori.dao/*.xml
   type-aliases-package: org.nekotori.entity
 
+img:
+  yandere-post: https://yande.re/post.json
+  yandere-tag: https://yande.re/tag.json
+weather:
+  location-api: https://geoapi.qweather.com/v2/city/lookup
+  weather-api: https://devapi.qweather.com/v7/weather/3d

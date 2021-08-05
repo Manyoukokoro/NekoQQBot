@@ -1,17 +1,13 @@
-#
+#bot基本配置
 bot:
+  #qq账号
   account:
+  #密码
   password:
+  #设备描述文件存储
   device-file: deviceInfo.json
+  #特权群号,用逗号分割
   privilege-groups:
+#和风天气key,请自行申请
 weather:
   key:
-  location-api: https://geoapi.qweather.com/v2/city/lookup
-  weather-api: https://devapi.qweather.com/v7/weather/3d
-img:
-  yandere-post:
-  yandere-tag:
-spring:
-  datasource:
-    url:
-    driver-class-name: org.sqlite.JDBC
