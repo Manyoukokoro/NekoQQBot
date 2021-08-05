@@ -3,3 +3,4 @@
 /target/
 /NekoQQBot.iml
 /.idea/
+/src/main/resources/application-azure.yml

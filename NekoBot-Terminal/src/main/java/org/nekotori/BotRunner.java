@@ -1,12 +1,9 @@
 package org.nekotori;
 
-import org.nekotori.dao.UserMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 
 /**
  * @author: JayDeng
