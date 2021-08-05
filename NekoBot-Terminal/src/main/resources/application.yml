@@ -20,10 +20,12 @@ spring:
 mybatis:
   mapper-locations: classpath:org.nekotori.dao/*.xml
   type-aliases-package: org.nekotori.entity
-
 img:
   yandere-post: https://yande.re/post.json
   yandere-tag: https://yande.re/tag.json
 weather:
   location-api: https://geoapi.qweather.com/v2/city/lookup
   weather-api: https://devapi.qweather.com/v7/weather/3d
+  #设备描述文件存储位置
+bot:
+  device-file: deviceInfo.json

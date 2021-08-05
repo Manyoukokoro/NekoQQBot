@@ -4,8 +4,6 @@ bot:
   account:
   #密码
   password:
-  #设备描述文件存储
-  device-file: deviceInfo.json
   #特权群号,用逗号分割
   privilege-groups:
 #和风天气key,请自行申请
