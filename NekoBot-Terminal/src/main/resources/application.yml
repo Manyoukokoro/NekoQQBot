@@ -6,7 +6,7 @@ spring:
   application:
     name: nekobot
   profiles:
-    active: azure
+    active: outer
   servlet:
     multipart:
       maxFileSize: 100MB

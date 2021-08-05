@@ -75,7 +75,7 @@
     </dependencies>
 
     <build>
-        <finalName>NekoBotRR-1.2.0a01</finalName>
+        <finalName>NekoBot-1.0.1a01</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
