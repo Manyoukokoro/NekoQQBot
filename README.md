@@ -5,8 +5,8 @@
 
 #### 软件架构
 1. SpringBoot
-2. Mirai-Core
-3. Mirai-Api-Jvm
+2. Mirai-Core-Jvm
+3. Mybatis+Sqlite
 
 
 #### 引导
@@ -26,9 +26,9 @@
 
 /**
  * @Command注解，打上此注解后，spring容器会自动管理此指令的实现
- * value为指令名数组
+ * name为指令名数组
  */
-@Command({"测试命令"})
+@Command(name={"测试命令","ping"})
 public class SampleCommand extends PrivilegeGroupCommand {
     
 
