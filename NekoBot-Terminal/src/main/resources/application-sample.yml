@@ -1,0 +1,17 @@
+#
+bot:
+  account:
+  password:
+  device-file: deviceInfo.json
+  privilege-groups:
+weather:
+  key:
+  location-api: https://geoapi.qweather.com/v2/city/lookup
+  weather-api: https://devapi.qweather.com/v7/weather/3d
+img:
+  yandere-post:
+  yandere-tag:
+spring:
+  datasource:
+    url:
+    driver-class-name: org.sqlite.JDBC

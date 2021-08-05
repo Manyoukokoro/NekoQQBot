@@ -14,5 +14,7 @@ spring:
   aop:
     auto: true
     proxy-target-class: true
-  datasource:
-    url: jdbc:sqlite:base.db
+mybatis:
+  mapper-locations: classpath:org.nekotori.dao/*.xml
+  type-aliases-package: org.nekotori.entity
+
