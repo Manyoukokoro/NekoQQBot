@@ -81,12 +81,12 @@ public class SampleCommand extends PrivilegeGroupCommand {
 2. add sample command implement
 
 
-#### 贡献
+#### 部署
 
-1.  Fork the repository
-2.  Create Feat_xxx branch
-3.  Commit your code
-4.  Create Pull Request
+1.  环境: jvm运行环境 推荐版本jdk11,低版本会造成代码不兼容
+2.  准备配置文件application-sample.yml,填写基本信息
+3.  使用maven将项目代码打包为jar,即可在服务器上运行
+4.  登录中所遇问题请参考mirai官方解决方案
 
 
 #### Gitee Feature
