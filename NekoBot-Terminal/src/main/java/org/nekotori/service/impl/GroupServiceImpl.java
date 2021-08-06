@@ -1,5 +1,6 @@
 package org.nekotori.service.impl;
 
+import org.nekotori.entity.ChatHistoryDo;
 import org.nekotori.service.GroupService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,11 @@ public class GroupServiceImpl implements GroupService {
         for(Long id:ids)
             if(id.equals(groupId))return true;
         return false;
+    }
+
+    @Override
+    public void saveHistory(ChatHistoryDo chatHistoryDo) {
+
     }
 }
     

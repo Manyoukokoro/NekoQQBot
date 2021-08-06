@@ -1,6 +1,7 @@
 package org.nekotori;
 
 import lombok.extern.slf4j.Slf4j;
+import org.nekotori.commands.GlobalCommandHandler;
 import org.nekotori.utils.LoginUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
@@ -33,11 +34,11 @@ public class BotRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        if(ObjectUtils.isEmpty(id)||ObjectUtils.isEmpty(password))
-        {
+        if(ObjectUtils.isEmpty(id)||ObjectUtils.isEmpty(password)) {
             id = LoginUtils.getUserId();
             password = LoginUtils.getPassword();
         }
+        GlobalCommandHandler.init();
         BotSimulator.run(id,password,deviceInfoLocation);
     }
 }

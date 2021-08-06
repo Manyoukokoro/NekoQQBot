@@ -2,7 +2,7 @@ package org.nekotori.utils;
 
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import org.nekotori.commands.Command;
-import org.nekotori.common.Constants;
+import org.nekotori.common.InnerConstants;
 import org.nekotori.entity.CommandAttr;
 
 import java.util.Arrays;
@@ -18,7 +18,7 @@ public class CommandUtils {
 
     public static CommandAttr resolveCommand(String message){
         CommandAttr commandAttr = new CommandAttr();
-        commandAttr.setHeader(Arrays.stream(Constants.commandHeader).filter(message::startsWith).findFirst().orElse(""));
+        commandAttr.setHeader(Arrays.stream(InnerConstants.commandHeader).filter(message::startsWith).findFirst().orElse(""));
         message = message.replaceFirst(commandAttr.getHeader(),"");
         final String[] s = message.split(" ");
         if(s.length>0) commandAttr.setCommand(s[0]);

@@ -1,9 +1,10 @@
 package org.nekotori.commands;
 
 import net.mamoe.mirai.event.events.GroupMessageEvent;
-import org.nekotori.common.Constants;
+import org.nekotori.common.InnerConstants;
 import org.nekotori.utils.CommandUtils;
 import org.nekotori.utils.SpringContextUtils;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,19 +17,21 @@ import java.util.concurrent.Executors;
  * @description:
  * @version: {@link }
  */
+
+@Component
 public class GlobalCommandHandler {
 
   private static final ExecutorService service = Executors.newFixedThreadPool(20);
 
-  private Map<String, Command> innerCommands = new HashMap<>();
+  private static Map<String, Command> innerCommands = new HashMap<>();
 
-  public void init() {
-    this.innerCommands = SpringContextUtils.getContext().getBeansOfType(Command.class);
+  public static void init() {
+    innerCommands = SpringContextUtils.getContext().getBeansOfType(Command.class);
   }
 
   public void handle(GroupMessageEvent groupMessageEvent) {
     final String s = groupMessageEvent.getMessage().contentToString();
-    for (String c : Constants.commandHeader) {
+    for (String c : InnerConstants.commandHeader) {
       if (s.startsWith(c)) {
         for (Command command : innerCommands.values()) {
           if (command.checkAuthorization(groupMessageEvent) && CommandUtils.checkCommand(command,groupMessageEvent)) {
@@ -43,5 +46,9 @@ public class GlobalCommandHandler {
         }
       }
     }
+  }
+
+  public void execute(Runnable fun){
+    service.execute(fun);
   }
 }

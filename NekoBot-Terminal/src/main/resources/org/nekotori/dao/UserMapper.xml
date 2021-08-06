@@ -15,7 +15,7 @@
 
     <select id="selectByAccount" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
-        <include refid="baseResult"></include>
+        <include refid="baseResult"/>
         from user
         <if test="account !=null">
         where user.account = #{account}

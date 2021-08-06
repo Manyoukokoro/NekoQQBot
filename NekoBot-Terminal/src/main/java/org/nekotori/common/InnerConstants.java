@@ -6,7 +6,7 @@ package org.nekotori.common;
  * @description:
  * @version: {@link }
  */
-public class Constants {
+public class InnerConstants {
 
     public static final String[] commandHeader = {"!","-","#"};
     public static final Long admin = 1318985307L;

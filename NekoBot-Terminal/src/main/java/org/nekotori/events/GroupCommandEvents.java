@@ -8,6 +8,10 @@ import net.mamoe.mirai.event.events.GroupMessageEvent;
 import org.jetbrains.annotations.NotNull;
 import org.nekotori.annotations.Event;
 import org.nekotori.commands.GlobalCommandHandler;
+import org.nekotori.service.GroupService;
+import org.springframework.scheduling.annotation.Async;
+
+import javax.annotation.Resource;
 
 /**
  * @author: JayDeng
@@ -19,12 +23,26 @@ import org.nekotori.commands.GlobalCommandHandler;
 @Event
 public class GroupCommandEvents extends SimpleListenerHost {
 
-  private GlobalCommandHandler globalCommandHandler = new GlobalCommandHandler();
+  @Resource
+  private GlobalCommandHandler globalCommandHandler;
+
+  @Resource
+  private GroupService groupService;
 
   @EventHandler(priority = EventPriority.NORMAL)
   public ListeningStatus onMessage(@NotNull GroupMessageEvent groupMessageEvent) {
-    globalCommandHandler.init();
-    globalCommandHandler.handle(groupMessageEvent);
+    handleCommand(groupMessageEvent);
+    doRecord(groupMessageEvent);
     return ListeningStatus.LISTENING;
+  }
+
+  @Async
+  protected void handleCommand(GroupMessageEvent groupMessageEvent){
+    globalCommandHandler.handle(groupMessageEvent);
+  }
+
+  @Async
+  protected void doRecord(GroupMessageEvent groupMessageEvent){
+
   }
 }
