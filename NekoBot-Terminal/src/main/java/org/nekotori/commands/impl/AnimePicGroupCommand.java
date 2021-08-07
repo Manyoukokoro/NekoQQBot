@@ -35,10 +35,10 @@ import java.util.List;
 @Slf4j
 public class AnimePicGroupCommand extends PrivilegeGroupCommand {
 
-  @Value("$img.loli-api")
+  @Value("${img.loli-api}")
   private String loliApi;
 
-  @Value("$img.loli-key")
+  @Value("${img.loli-key}")
   private String loliKey;
 
   @Override

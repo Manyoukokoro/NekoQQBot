@@ -25,8 +25,8 @@ public class RegisterComCommand extends ManagerGroupCommand {
         String s = messageChain.contentToString();
         CommandAttr commandAttr = CommandUtils.resolveCommand(s);
         List<String> param = commandAttr.getParam();
-        String groupCommands = groupService.getGroupCommands(subject.getId());
         for(String p:param){
+            String groupCommands = groupService.getGroupCommands(subject.getId());
             String newCommand = CommandUtils.addCommand(groupCommands, p);
             groupService.updateGroupCommand(subject.getId(),newCommand);
         }
