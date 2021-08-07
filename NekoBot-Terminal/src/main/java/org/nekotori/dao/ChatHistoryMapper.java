@@ -5,5 +5,5 @@ import org.nekotori.entity.ChatHistoryDo;
 
 @Mapper
 public interface ChatHistoryMapper {
-    void insertChatHistory(ChatHistoryDo chatHistoryDo);
+    int insertChatHistory(ChatHistoryDo chatHistoryDo);
 }

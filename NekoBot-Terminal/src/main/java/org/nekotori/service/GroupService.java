@@ -1,6 +1,7 @@
 package org.nekotori.service;
 
-import org.nekotori.entity.ChatHistoryDo;
+import net.mamoe.mirai.contact.Group;
+import net.mamoe.mirai.event.events.GroupMessageEvent;
 
 /**
  * @author: JayDeng
@@ -9,7 +10,15 @@ import org.nekotori.entity.ChatHistoryDo;
  */
 public interface GroupService {
 
-    boolean checkPrivilege(Long groupId);
+    boolean checkPrivilege(Long groupId,String command);
 
-    void saveHistory(ChatHistoryDo chatHistoryDo);
+    void saveHistory(GroupMessageEvent groupMessageEvent);
+
+    boolean IsGroupRegistered(Group group);
+
+    int registerGroup(Group group);
+
+    void updateGroupCommand(Long groupId, String command);
+
+    String getGroupCommands(Long groupId);
 }

@@ -1,6 +1,7 @@
 package org.nekotori.commands;
 
 import net.mamoe.mirai.event.events.GroupMessageEvent;
+import org.nekotori.entity.CommandAttr;
 import org.nekotori.service.GroupService;
 import org.nekotori.utils.CommandUtils;
 
@@ -19,7 +20,9 @@ public abstract class PrivilegeGroupCommand implements Command {
     @Override
     public boolean checkAuthorization(GroupMessageEvent event) {
         final long id = event.getGroup().getId();
-        return groupService.checkPrivilege(id);
+        String s = event.getMessage().contentToString();
+        CommandAttr commandAttr = CommandUtils.resolveCommand(s);
+        return groupService.checkPrivilege(id,commandAttr.getCommand());
     }
 }
     

@@ -5,23 +5,21 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ChatHistoryDo {
+public class ChatGroupDo {
 
     private Integer id;
 
     private Long groupId;
 
-    private Long senderId;
+    private String groupName;
 
-    private String content;
+    private String commands;
 
-    private Date time;
+    private Integer groupLevel;
 
-    private Boolean isCommand;
+    private Boolean isBlock;
 }

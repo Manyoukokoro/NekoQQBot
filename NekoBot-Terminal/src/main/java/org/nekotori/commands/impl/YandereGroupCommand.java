@@ -1,9 +1,13 @@
 package org.nekotori.commands.impl;
 
+import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.core.net.url.UrlBuilder;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
+import cn.hutool.socket.SocketRuntimeException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import lombok.extern.slf4j.Slf4j;
+import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.message.data.At;
@@ -32,6 +36,7 @@ import java.util.Random;
 import java.util.Set;
 
 @Command(name = {"AniS","anis"})
+@Slf4j
 public class YandereGroupCommand extends PrivilegeGroupCommand {
 
     @Value("${img.yandere-post}")
@@ -51,50 +56,48 @@ public class YandereGroupCommand extends PrivilegeGroupCommand {
                         .build();
         MessageChainBuilder singleMessages = new MessageChainBuilder();
         singleMessages.append(new At(sender.getId()));
-        try {
-            String body = HttpUtil.createGet(build).setReadTimeout(5 * 1000).executeAsync().body();
-            List<YandereData> yandereData =
-                    JsonUtils.json2Object(body, new TypeReference<>() {
-                    });
-            if (CollectionUtils.isEmpty(yandereData)){
-                singleMessages.append("找不到对象,试试以下tag:\n");
-                String tag =
-                        UrlBuilder.of(yandereTag, StandardCharsets.UTF_8)
-                                .addQuery("limit", "5")
-                                .addQuery("name", CollectionUtils.isEmpty(param)?"":String.join(" ",param))
-                                .build();
-                String body1 = HttpRequest.get(tag).executeAsync().body();
-                List<YandereTag> yandereTags = JsonUtils.json2Object(body1, new TypeReference<>() {
+        try{
+        String body = HttpUtil.createGet(build).setReadTimeout(5 * 1000).setConnectionTimeout(5*1000).executeAsync().body();
+        List<YandereData> yandereData =
+                JsonUtils.json2Object(body, new TypeReference<>() {
                 });
-                if(!CollectionUtils.isEmpty(yandereTags)){
-                    for(YandereTag t:yandereTags){
-                        singleMessages.append(new PlainText(t.getName()+"\n"));
-                    }
+        if (CollectionUtils.isEmpty(yandereData)){
+            singleMessages.append("找不到对象,试试以下tag:\n");
+            String tag =
+                    UrlBuilder.of(yandereTag, StandardCharsets.UTF_8)
+                            .addQuery("limit", "5")
+                            .addQuery("name", CollectionUtils.isEmpty(param)?"":String.join(" ",param))
+                            .build();
+            String body1 = HttpRequest.get(tag).executeAsync().body();
+            List<YandereTag> yandereTags = JsonUtils.json2Object(body1, new TypeReference<>() {
+            });
+            if(!CollectionUtils.isEmpty(yandereTags)){
+                for(YandereTag t:yandereTags){
+                    singleMessages.append(new PlainText(t.getName()+"\n"));
                 }
             }
-            else {
-                Set<YandereData> imgs = new HashSet<>();
-                if(yandereData.size()>5){
-                    while(imgs.size()<5){
-                        Random rand = new Random();
-                        imgs.add(yandereData.get(rand.nextInt(yandereData.size())));
-                    }
+        }
+        else {
+            Set<YandereData> imgs = new HashSet<>();
+            if (yandereData.size() > 5) {
+                while (imgs.size() < 5) {
+                    Random rand = new Random();
+                    imgs.add(yandereData.get(rand.nextInt(yandereData.size())));
                 }
-                else {
-                    imgs.addAll(yandereData);
-                }
+            } else {
+                imgs.addAll(yandereData);
+            }
 
-                for(YandereData y:imgs){
-                    InputStream inputStream =
-                            HttpUtil.createGet(y.getSample_url()).setReadTimeout(10 * 1000).execute().bodyStream();
-                    singleMessages.append(subject.uploadImage(ExternalResource.create(inputStream)));
-                    singleMessages.append(new PlainText("源地址:"+y.getSource()+"\n"));
-                }
+            for (YandereData y : imgs) {
+                InputStream inputStream =
+                        HttpUtil.createGet(y.getSample_url()).setReadTimeout(20 * 1000).setConnectionTimeout(10 * 1000).execute().bodyStream();
+                singleMessages.append(Contact.uploadImage(subject, inputStream));
+                singleMessages.append(new PlainText("源地址:" + y.getSource() + "\n"));
             }
-        } catch (SocketTimeoutException e) {
-            singleMessages.append("访问超时");
-        } catch (IOException e) {
-            e.printStackTrace();
+        }
+        }catch (IORuntimeException e){
+            log.error(e.getMessage(),e);
+            singleMessages.append( new PlainText("\n访问超时"));
         }
         return singleMessages.build();
     }

@@ -6,21 +6,24 @@ spring:
   application:
     name: nekobot
   profiles:
-    active: outer
+    active: local
   servlet:
     multipart:
       maxFileSize: 100MB
       maxRequestSize: 100MB
   datasource:
-    url: jdbc:sqlite:C:/Users/CMII-DENGJIE/IdeaProjects/NekoQQBot/NekoBot-Terminal/bot.sqlite
     driver-class-name: org.sqlite.JDBC
   aop:
     auto: true
     proxy-target-class: true
+logging:
+  level:
+    root: info
 mybatis:
   mapper-locations: classpath:org.nekotori.dao/*.xml
   type-aliases-package: org.nekotori.entity
 img:
+  loli-api: https://api.lolicon.app/setu/
   yandere-post: https://yande.re/post.json
   yandere-tag: https://yande.re/tag.json
 weather:

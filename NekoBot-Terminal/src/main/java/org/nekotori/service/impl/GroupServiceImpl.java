@@ -1,11 +1,20 @@
 package org.nekotori.service.impl;
 
+import net.mamoe.mirai.contact.Group;
+import net.mamoe.mirai.event.events.GroupMessageEvent;
+import org.nekotori.dao.ChatGroupMapper;
+import org.nekotori.dao.ChatHistoryMapper;
+import org.nekotori.entity.ChatGroupDo;
 import org.nekotori.entity.ChatHistoryDo;
 import org.nekotori.service.GroupService;
-import org.springframework.beans.factory.annotation.Value;
+import org.nekotori.utils.CommandUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
+import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author: JayDeng
@@ -16,19 +25,64 @@ import java.util.List;
 @Service
 public class GroupServiceImpl implements GroupService {
 
-    @Value("${bot.privilege-groups}")
-    private List<Long> ids;
+    @Resource
+    private ChatHistoryMapper chatHistoryMapper;
+
+    @Resource
+    private ChatGroupMapper chatGroupMapper;
 
     @Override
-    public boolean checkPrivilege(Long groupId) {
-        for(Long id:ids)
-            if(id.equals(groupId))return true;
+    public boolean checkPrivilege(Long groupId,String command) {
+        ChatGroupDo chatGroupDo = chatGroupMapper.selectGroupById(groupId);
+        if(ObjectUtils.isEmpty(chatGroupDo)) return false;
+        String commands = chatGroupDo.getCommands();
+        return CommandUtils.IsCommandRegistered(commands,command);
+    }
+
+    @Override
+    public void saveHistory(GroupMessageEvent groupMessageEvent) {
+        ChatHistoryDo build = ChatHistoryDo.builder()
+                .groupId(groupMessageEvent.getGroup().getId())
+                .senderId(groupMessageEvent.getSender().getId())
+                .time(new Date())
+                .content(groupMessageEvent.getMessage().serializeToMiraiCode())
+                .isCommand(CommandUtils.isCommand(groupMessageEvent))
+                .build();
+        chatHistoryMapper.insertChatHistory(build);
+    }
+
+    public boolean IsGroupRegistered(Group group){
+        long id = group.getId();
+        List<Long> longs = chatGroupMapper.selectRegisteredGroup();
+        if(longs.contains(id)){
+            return true;
+        }
         return false;
     }
 
     @Override
-    public void saveHistory(ChatHistoryDo chatHistoryDo) {
+    public int registerGroup(Group group) {
+        ChatGroupDo build = ChatGroupDo.builder()
+                .groupId(group.getId())
+                .groupName(group.getName())
+                .groupLevel(0)
+                .isBlock(false)
+                .commands("")
+                .build();
+        return chatGroupMapper.insertChatGroup(build);
+    }
 
+    @Override
+    public void updateGroupCommand(Long groupId, String command) {
+        ChatGroupDo chatGroupDo = chatGroupMapper.selectGroupById(groupId);
+        chatGroupDo.setCommands(command);
+        chatGroupMapper.updateChatGroup(chatGroupDo);
+    }
+
+    @Override
+    public String getGroupCommands(Long groupId) {
+        ChatGroupDo chatGroupDo = chatGroupMapper.selectGroupById(groupId);
+        return Optional.ofNullable(chatGroupDo).orElse(new ChatGroupDo()).getCommands();
     }
 }
     

@@ -30,10 +30,10 @@ public class GlobalCommandHandler {
   }
 
   public void handle(GroupMessageEvent groupMessageEvent) {
-    final String s = groupMessageEvent.getMessage().contentToString();
-    for (String c : InnerConstants.commandHeader) {
-      if (s.startsWith(c)) {
-        for (Command command : innerCommands.values()) {
+      if(!CommandUtils.isCommand(groupMessageEvent)) {
+        return;
+      }
+      for (Command command : innerCommands.values()) {
           if (command.checkAuthorization(groupMessageEvent) && CommandUtils.checkCommand(command,groupMessageEvent)) {
             service.execute(
                 () -> groupMessageEvent
@@ -43,12 +43,7 @@ public class GlobalCommandHandler {
                             groupMessageEvent.getMessage(),
                             groupMessageEvent.getGroup())));
           }
-        }
       }
-    }
   }
 
-  public void execute(Runnable fun){
-    service.execute(fun);
-  }
 }

@@ -1,16 +1,17 @@
 package org.nekotori.commands.impl;
 
+import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.core.net.url.UrlBuilder;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.HttpUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
+import lombok.extern.slf4j.Slf4j;
+import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.message.data.*;
-import net.mamoe.mirai.utils.ExternalResource;
 import org.nekotori.annotations.Command;
 import org.nekotori.commands.PrivilegeGroupCommand;
-import org.nekotori.common.CommandConstants;
 import org.nekotori.entity.CommandAttr;
 import org.nekotori.entity.LoliconApiResponse;
 import org.nekotori.entity.LoliconData;
@@ -19,9 +20,7 @@ import org.nekotori.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +31,8 @@ import java.util.List;
  * @description:
  * @version: {@link }
  */
-@Command(name = {CommandConstants.ANIME_PIC,"setu"})
+@Command(name = {"色图","setu"})
+@Slf4j
 public class AnimePicGroupCommand extends PrivilegeGroupCommand {
 
   @Value("$img.loli-api")
@@ -54,39 +54,37 @@ public class AnimePicGroupCommand extends PrivilegeGroupCommand {
             .addQuery("keyword", keyword)
             .addQuery("size1200", "true")
             .build();
-    MessageChain echo = null;
+    MessageChain echo;
     try {
-      String body = HttpUtil.createGet(build).setReadTimeout(5 * 1000).executeAsync().body();
+      String body = HttpUtil.createGet(build).setReadTimeout(5 * 1000).setConnectionTimeout(5 * 1000).executeAsync().body();
       LoliconApiResponse loliconApiResponse =
-          JsonUtils.json2Object(body, new TypeReference<>() {
-          });
+              JsonUtils.json2Object(body, new TypeReference<>() {
+              });
       List<LoliconData> loliconData = new ArrayList<>();
       if (ObjectUtil.isNotNull(loliconApiResponse)) {
         if (loliconApiResponse.getCode().equals(429))
           return new MessageChainBuilder()
-              .append(new At(sender.getId()).plus(new PlainText("今日Api300次调用已耗尽")))
-              .build();
+                  .append(new At(sender.getId()).plus(new PlainText("我的身体已经菠萝菠萝哒")))
+                  .build();
         loliconData = loliconApiResponse.getData();
       }
       if (ObjectUtil.isNull(loliconData) || loliconData.isEmpty())
         return new MessageChainBuilder()
-            .append(new At(sender.getId()).plus(new PlainText("找不到对象")))
-            .build();
+                .append(new At(sender.getId()).plus(new PlainText("您找不到对象")))
+                .build();
       imgUrl = loliconData.get(0).getUrl();
       InputStream inputStream =
-          HttpUtil.createGet(imgUrl).setReadTimeout(10 * 1000).execute().bodyStream();
+              HttpUtil.createGet(imgUrl).setReadTimeout(20 * 1000).setConnectionTimeout(10 * 1000).execute().bodyStream();
       echo =
-          new MessageChainBuilder()
-              .append(FlashImage.from(subject.uploadImage(ExternalResource.create(inputStream))))
-              .build();
-    } catch (SocketTimeoutException e) {
-      echo =
-          new MessageChainBuilder()
+              new MessageChainBuilder()
+                      .append(FlashImage.from(Contact.uploadImage(subject, inputStream)))
+                      .build();
+    }catch (IORuntimeException e){
+      log.error(e.getMessage(),e);
+      echo = new MessageChainBuilder()
               .append(new At(sender.getId()))
-              .append(new PlainText("  time out! 请尝试自行访问:"+imgUrl))
+              .append(new PlainText("\n来到了电波到达不到的地方，请问是异次元吗"))
               .build();
-    } catch (IOException e) {
-      e.printStackTrace();
     }
     return echo;
   }
