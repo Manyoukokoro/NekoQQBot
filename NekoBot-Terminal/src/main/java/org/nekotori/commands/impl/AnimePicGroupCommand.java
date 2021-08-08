@@ -31,7 +31,7 @@ import java.util.List;
  * @description:
  * @version: {@link }
  */
-@Command(name = {"色图","setu"})
+@Command(name = {"色图","setu"},description = "使用loliApi检索插画图片，格式:(!/-/#)setu ...[参数]")
 @Slf4j
 public class AnimePicGroupCommand extends PrivilegeGroupCommand {
 

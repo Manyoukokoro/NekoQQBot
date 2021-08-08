@@ -1,14 +1,21 @@
 package org.nekotori.events;
 
+import net.mamoe.mirai.contact.Group;
+import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.event.EventHandler;
+import net.mamoe.mirai.event.EventPriority;
 import net.mamoe.mirai.event.ListeningStatus;
 import net.mamoe.mirai.event.SimpleListenerHost;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import org.jetbrains.annotations.NotNull;
+import org.nekotori.annotations.Event;
 import org.nekotori.commands.GlobalCommandHandler;
-import org.nekotori.entity.ChatHistoryDo;
+import org.nekotori.job.AsyncJob;
 import org.nekotori.service.GroupService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
+
+import javax.annotation.Resource;
 
 /**
  * @author: JayDeng
@@ -17,36 +24,22 @@ import org.springframework.scheduling.annotation.Async;
  * @version: {@link }
  */
 
+@Event
 public class GroupCommandEvents extends SimpleListenerHost {
 
-  private GlobalCommandHandler globalCommandHandler;
-
-  private GroupService groupService;
-
-  public GroupCommandEvents(GlobalCommandHandler globalCommandHandler,GroupService groupService){
-    this.globalCommandHandler = globalCommandHandler;
-    this.groupService = groupService;
-  }
-
-
-
+  @Resource
+  @Lazy
+  private AsyncJob asyncJob;
 
 
   @NotNull
-  @EventHandler
+  @EventHandler(priority = EventPriority.HIGH)
   public ListeningStatus onMessage(@NotNull GroupMessageEvent groupMessageEvent) {
-    handleCommand(groupMessageEvent);
-    doRecord(groupMessageEvent);
+    asyncJob.handleCommand(groupMessageEvent);
+    asyncJob.doRecord(groupMessageEvent);
+//    asyncJob.everyDayWelcome(groupMessageEvent);
     return ListeningStatus.LISTENING;
   }
 
-  @Async
-  protected void handleCommand(GroupMessageEvent groupMessageEvent){
-    globalCommandHandler.handle(groupMessageEvent);
-  }
 
-  @Async
-  protected void doRecord(GroupMessageEvent groupMessageEvent){
-    groupService.saveHistory(groupMessageEvent);
-  }
 }

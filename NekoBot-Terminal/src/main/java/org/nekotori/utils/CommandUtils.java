@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author: JayDeng
@@ -22,11 +23,14 @@ public class CommandUtils {
         CommandAttr commandAttr = new CommandAttr();
         commandAttr.setHeader(Arrays.stream(InnerConstants.commandHeader).filter(message::startsWith).findFirst().orElse(""));
         message = message.replaceFirst(commandAttr.getHeader(),"");
-        message = message.replace("["," ");
-        message = message.replace("]","");
-        final String[] s = message.split(" ");
-        if(s.length>0) commandAttr.setCommand(s[0]);
-        if(s.length>1) commandAttr.setParam(List.of(Arrays.copyOfRange(s,1,s.length)));
+        final String[] s = message.split(" |\\[|]|\\n");
+        List<String> collect = Arrays.stream(s).filter(single -> !single.equals("")).collect(Collectors.toList());
+        if(collect.size()>0) commandAttr.setCommand(collect.get(0));
+        if(collect.size()>1){
+            List<String> strings = collect.subList(1,collect.size());
+            commandAttr.setParam(strings);
+        }
+
         return commandAttr;
     }
 

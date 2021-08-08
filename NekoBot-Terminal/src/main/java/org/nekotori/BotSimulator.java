@@ -31,7 +31,7 @@ public class BotSimulator {
     private static Bot nekoBot;
 
 
-    public static int run(Long qq, String password, String deviceFile, GlobalCommandHandler globalCommandHandler, GroupService groupService) {
+    public static int run(Long qq, String password, String deviceFile/*, GlobalCommandHandler globalCommandHandler, GroupService groupService*/) {
         BotConfiguration botConfiguration = new BotConfiguration();
         botConfiguration.fileBasedDeviceInfo(deviceFile);
         botConfiguration.setProtocol(BotConfiguration.MiraiProtocol.ANDROID_PAD);
@@ -39,7 +39,12 @@ public class BotSimulator {
         botConfiguration.setNetworkLoggerSupplier(b-> new SpringStyleBotLogger());
         nekoBot = BotFactory.INSTANCE.newBot(qq, password,botConfiguration);
         nekoBot.login();
-        nekoBot.getEventChannel().registerListenerHost(new GroupCommandEvents(globalCommandHandler,groupService));
+        Map<String, Object> beansWithAnnotation = SpringContextUtils.getContext().getBeansWithAnnotation(Event.class);
+        beansWithAnnotation.values().forEach((event)->{
+            if(event instanceof ListenerHost){
+                nekoBot.getEventChannel().registerListenerHost((ListenerHost)event);
+            }
+        });
         Executors.newSingleThreadExecutor().execute(nekoBot::join);
         return 0;
     }

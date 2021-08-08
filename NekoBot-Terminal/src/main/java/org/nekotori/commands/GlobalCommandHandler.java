@@ -1,10 +1,11 @@
 package org.nekotori.commands;
 
 import net.mamoe.mirai.event.events.GroupMessageEvent;
-import org.nekotori.common.InnerConstants;
+import net.mamoe.mirai.message.data.MessageChain;
 import org.nekotori.utils.CommandUtils;
 import org.nekotori.utils.SpringContextUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,12 +37,17 @@ public class GlobalCommandHandler {
       for (Command command : innerCommands.values()) {
           if (command.checkAuthorization(groupMessageEvent) && CommandUtils.checkCommand(command,groupMessageEvent)) {
             service.execute(
-                () -> groupMessageEvent
-                    .getGroup()
-                    .sendMessage(command.execute(
+                () -> {
+                    MessageChain execute = command.execute(
                             groupMessageEvent.getSender(),
                             groupMessageEvent.getMessage(),
-                            groupMessageEvent.getGroup())));
+                            groupMessageEvent.getGroup());
+                    if(!ObjectUtils.isEmpty(execute)){
+                        groupMessageEvent
+                                .getGroup()
+                                .sendMessage(execute);
+                    }
+                });
           }
       }
   }

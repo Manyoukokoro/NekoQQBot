@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 
-@Command(name = {"取消指令","取消","ucom"})
+@Command(name = {"取消指令","取消","ucom"},description = "取消指令注册，格式:(!/-/#)ucom ...[指令名]")
 public class UnRegisterComCommand extends ManagerGroupCommand {
     @Resource
     GroupService groupService;
@@ -25,8 +25,8 @@ public class UnRegisterComCommand extends ManagerGroupCommand {
         String s = messageChain.contentToString();
         CommandAttr commandAttr = CommandUtils.resolveCommand(s);
         List<String> param = commandAttr.getParam();
-        String groupCommands = groupService.getGroupCommands(subject.getId());
         for(String p:param){
+            String groupCommands = groupService.getGroupCommands(subject.getId());
             String newCommand = CommandUtils.removeCommand(groupCommands, p);
             groupService.updateGroupCommand(subject.getId(),newCommand);
         }

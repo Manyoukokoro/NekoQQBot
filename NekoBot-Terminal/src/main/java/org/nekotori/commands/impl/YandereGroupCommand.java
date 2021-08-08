@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-@Command(name = {"AniS","anis"})
+@Command(name = {"AniS","anis"},description = "使用yandere进行图片检索,此指令参数格式比较复杂，有兴趣可以参阅yandere的api文档，格式:(!/-/#)anis ...[参数]")
 @Slf4j
 public class YandereGroupCommand extends PrivilegeGroupCommand {
 
@@ -65,7 +65,7 @@ public class YandereGroupCommand extends PrivilegeGroupCommand {
             singleMessages.append("找不到对象,试试以下tag:\n");
             String tag =
                     UrlBuilder.of(yandereTag, StandardCharsets.UTF_8)
-                            .addQuery("limit", "5")
+                            .addQuery("limit", "50")
                             .addQuery("name", CollectionUtils.isEmpty(param)?"":String.join(" ",param))
                             .build();
             String body1 = HttpRequest.get(tag).executeAsync().body();
@@ -80,7 +80,7 @@ public class YandereGroupCommand extends PrivilegeGroupCommand {
         else {
             Set<YandereData> imgs = new HashSet<>();
             if (yandereData.size() > 5) {
-                while (imgs.size() < 5) {
+                while (imgs.size() < 3) {
                     Random rand = new Random();
                     imgs.add(yandereData.get(rand.nextInt(yandereData.size())));
                 }

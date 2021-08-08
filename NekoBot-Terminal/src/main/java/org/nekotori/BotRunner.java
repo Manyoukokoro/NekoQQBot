@@ -36,10 +36,6 @@ public class BotRunner implements ApplicationRunner {
 
     @Value("${bot.device-file}")
     private String deviceInfoLocation;
-    @Resource
-    private GlobalCommandHandler globalCommandHandler;
-    @Resource
-    private GroupService groupService;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -48,7 +44,7 @@ public class BotRunner implements ApplicationRunner {
             password = LoginUtils.getPassword();
         }
         GlobalCommandHandler.init();
-        BotSimulator.run(id,password,deviceInfoLocation,globalCommandHandler,groupService);
+        BotSimulator.run(id,password,deviceInfoLocation);
     }
 }
     

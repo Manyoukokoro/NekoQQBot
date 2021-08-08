@@ -18,4 +18,5 @@ public @interface Command {
   @AliasFor(annotation = Component.class)
   String value() default "";
   String[] name() default {""};
+  String description() default "";
 }

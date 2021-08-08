@@ -2,6 +2,7 @@ package org.nekotori.service.impl;
 
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
+import net.mamoe.mirai.message.code.MiraiCode;
 import org.nekotori.dao.ChatGroupMapper;
 import org.nekotori.dao.ChatHistoryMapper;
 import org.nekotori.entity.ChatGroupDo;

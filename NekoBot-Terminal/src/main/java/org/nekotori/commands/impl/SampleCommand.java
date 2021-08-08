@@ -24,7 +24,7 @@ import java.util.List;
  * @Command注解，打上此注解后，spring容器会自动管理此指令的实现
  * value为指令名数组
  */
-@Command(name = {"测试命令","ping"})
+@Command(name = {"测试命令","ping"},description = "测试命令，格式:(!/-/#)ping")
 public class SampleCommand extends PrivilegeGroupCommand {
 
 

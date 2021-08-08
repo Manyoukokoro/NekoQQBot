@@ -26,7 +26,7 @@ import java.util.Optional;
  * @description:
  * @version: {@link }
  */
-@Command(name = {"查询天气","天气"})
+@Command(name = {"查询天气","天气"},description = "查询天气，格式:(!/-/#)天气 [位置]")
 public class WeatherGroupCommand extends NoAuthGroupCommand {
 
 

@@ -17,7 +17,7 @@ import javax.annotation.Resource;
 import java.io.InputStream;
 import java.util.List;
 
-@Command(name = {"sauce"})
+@Command(name = {"sauce","检索图片"},description = "使用sauceNao进行图片检索，格式:(!/-/#)sauce [上传图片]")
 public class SauceNaoCommand extends PrivilegeGroupCommand {
 
     @Resource
@@ -43,7 +43,9 @@ public class SauceNaoCommand extends PrivilegeGroupCommand {
             String thumbnailUrl = s.getThumbnailUrl();
             try {
                 InputStream inputStream = HttpRequest.get(thumbnailUrl).setConnectionTimeout(5 * 1000).setReadTimeout(5 * 1000).execute().bodyStream();
-                append.append(Contact.uploadImage(subject, inputStream));
+                if(Float.parseFloat(s.getSimilarity())>60){
+                    append.append(Contact.uploadImage(subject, inputStream));
+                }
                 append.append(new PlainText("\n相似度:" +
                         s.getSimilarity() +
                         "\n源地址:" +
