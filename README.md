@@ -28,7 +28,7 @@
  * @Command注解，打上此注解后，spring容器会自动管理此指令的实现
  * name为指令名数组
  */
-@Command(name={"测试命令","ping"})
+@Command(name={"测试命令","ping"},discription = "指令描述")
 public class SampleCommand extends PrivilegeGroupCommand {
     
 
