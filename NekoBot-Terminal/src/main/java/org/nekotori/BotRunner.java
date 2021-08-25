@@ -1,21 +1,14 @@
 package org.nekotori;
 
 import lombok.extern.slf4j.Slf4j;
-import org.nekotori.annotations.Event;
-import org.nekotori.commands.GlobalCommandHandler;
-import org.nekotori.dao.ChatHistoryMapper;
-import org.nekotori.entity.ChatHistoryDo;
-import org.nekotori.service.GroupService;
+import org.nekotori.handler.GlobalAtMeHandler;
+import org.nekotori.handler.GlobalCommandHandler;
 import org.nekotori.utils.LoginUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
-
-import javax.annotation.Resource;
-import java.util.Scanner;
 
 /**
  * @author: JayDeng
@@ -38,12 +31,13 @@ public class BotRunner implements ApplicationRunner {
     private String deviceInfoLocation;
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         if(ObjectUtils.isEmpty(id)||ObjectUtils.isEmpty(password)) {
             id = LoginUtils.getUserId();
             password = LoginUtils.getPassword();
         }
         GlobalCommandHandler.init();
+        GlobalAtMeHandler.init();
         BotSimulator.run(id,password,deviceInfoLocation);
     }
 }

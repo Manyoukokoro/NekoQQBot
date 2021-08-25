@@ -3,20 +3,13 @@ package org.nekotori;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.BotFactory;
 import net.mamoe.mirai.event.ListenerHost;
-import net.mamoe.mirai.event.SimpleListenerHost;
 import net.mamoe.mirai.utils.BotConfiguration;
 import org.nekotori.annotations.Event;
-import org.nekotori.commands.GlobalCommandHandler;
 import org.nekotori.common.SpringStyleBotLogger;
-import org.nekotori.events.GroupCommandEvents;
-import org.nekotori.service.GroupService;
 import org.nekotori.utils.SpringContextUtils;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 
 /**

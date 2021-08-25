@@ -10,26 +10,22 @@ import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.SingleMessage;
 import org.jetbrains.annotations.NotNull;
 import org.nekotori.annotations.Event;
+import org.nekotori.job.AsyncJob;
+
+import javax.annotation.Resource;
 
 
 @Event
 public class AtBotEvents extends SimpleListenerHost {
 
+    @Resource
+    private AsyncJob asyncJob;
+
     @NotNull
     @EventHandler(priority = EventPriority.NORMAL)
     public ListeningStatus onMessage(@NotNull GroupMessageEvent groupMessageEvent) {
-        MessageChain message = groupMessageEvent.getMessage();
-        boolean isAtMe = false;
-        for(SingleMessage s:message){
-            if(s instanceof At && ((At)s).getTarget()==groupMessageEvent.getBot().getId()){
-                isAtMe = true;
-            }
-        }
-        if(isAtMe) atMeResponse(groupMessageEvent);
+        asyncJob.handleAtMe(groupMessageEvent);
         return ListeningStatus.LISTENING;
     }
 
-    private void atMeResponse(GroupMessageEvent groupMessageEvent){
-
-    }
 }

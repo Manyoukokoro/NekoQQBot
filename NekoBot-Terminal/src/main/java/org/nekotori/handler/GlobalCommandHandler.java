@@ -1,7 +1,8 @@
-package org.nekotori.commands;
+package org.nekotori.handler;
 
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.message.data.MessageChain;
+import org.nekotori.commands.Command;
 import org.nekotori.utils.CommandUtils;
 import org.nekotori.utils.SpringContextUtils;
 import org.springframework.stereotype.Component;
@@ -22,8 +23,6 @@ import java.util.concurrent.Executors;
 @Component
 public class GlobalCommandHandler {
 
-  private static final ExecutorService service = Executors.newFixedThreadPool(20);
-
   private static Map<String, Command> innerCommands = new HashMap<>();
 
   public static void init() {
@@ -36,7 +35,7 @@ public class GlobalCommandHandler {
       }
       for (Command command : innerCommands.values()) {
           if (command.checkAuthorization(groupMessageEvent) && CommandUtils.checkCommand(command,groupMessageEvent)) {
-            service.execute(
+            ThreadSingleton.run(
                 () -> {
                     MessageChain execute = command.execute(
                             groupMessageEvent.getSender(),
