@@ -32,7 +32,7 @@ public class GroupCommandEvents extends SimpleListenerHost {
   public ListeningStatus onMessage(@NotNull GroupMessageEvent groupMessageEvent) {
     asyncJob.handleCommand(groupMessageEvent);
     asyncJob.doRecord(groupMessageEvent);
-//    asyncJob.everyDayWelcome(groupMessageEvent);
+    asyncJob.everyDayWelcome(groupMessageEvent);
     return ListeningStatus.LISTENING;
   }
 

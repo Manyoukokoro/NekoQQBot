@@ -6,7 +6,7 @@ import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
 import org.nekotori.annotations.AtMe;
-import org.nekotori.atme.AtMeResponse;
+import org.nekotori.atme.KeyWordsAtMeResponse;
 
 /**
  * @author: JayDeng
@@ -14,12 +14,8 @@ import org.nekotori.atme.AtMeResponse;
  * @description:
  * @version: {@link }
  */
-@AtMe(description = "hello")
-public class DemoAtMeResponse implements AtMeResponse {
-    @Override
-    public boolean checkAuthorization(GroupMessageEvent groupMessageEvent) {
-        return true;
-    }
+@AtMe(description = {"hello","喂","你好","在？"})
+public class DemoAtMeResponse extends KeyWordsAtMeResponse {
 
     @Override
     public MessageChain response(GroupMessageEvent groupMessageEvent) {

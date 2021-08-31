@@ -24,10 +24,11 @@ public class BotSimulator {
     private static Bot nekoBot;
 
 
-    public static int run(Long qq, String password, String deviceFile/*, GlobalCommandHandler globalCommandHandler, GroupService groupService*/) {
+    public static void run(Long qq, String password, String deviceFile/*, GlobalCommandHandler globalCommandHandler, GroupService groupService*/) {
         BotConfiguration botConfiguration = new BotConfiguration();
         botConfiguration.fileBasedDeviceInfo(deviceFile);
-        botConfiguration.setProtocol(BotConfiguration.MiraiProtocol.ANDROID_PAD);
+        //https://github.com/mamoe/mirai/issues/1209 : 当协议选择ANDROID_PAD/WATCH时，概率出现被腾讯风控而发不出消息的异常
+        botConfiguration.setProtocol(BotConfiguration.MiraiProtocol.ANDROID_PHONE);
         botConfiguration.setBotLoggerSupplier(b->new SpringStyleBotLogger());
         botConfiguration.setNetworkLoggerSupplier(b-> new SpringStyleBotLogger());
         nekoBot = BotFactory.INSTANCE.newBot(qq, password,botConfiguration);
@@ -39,7 +40,6 @@ public class BotSimulator {
             }
         });
         Executors.newSingleThreadExecutor().execute(nekoBot::join);
-        return 0;
     }
 
     public static Bot getBot(){

@@ -1,6 +1,7 @@
 package org.nekotori;
 
 import lombok.extern.slf4j.Slf4j;
+import org.nekotori.chain.ChainMessageSelector;
 import org.nekotori.handler.GlobalAtMeHandler;
 import org.nekotori.handler.GlobalCommandHandler;
 import org.nekotori.utils.LoginUtils;
@@ -30,6 +31,9 @@ public class BotRunner implements ApplicationRunner {
     @Value("${bot.device-file}")
     private String deviceInfoLocation;
 
+//    @Resource
+//    private ChainMessageSelector chainMessageSelector;
+
     @Override
     public void run(ApplicationArguments args) {
         if(ObjectUtils.isEmpty(id)||ObjectUtils.isEmpty(password)) {
@@ -38,7 +42,15 @@ public class BotRunner implements ApplicationRunner {
         }
         GlobalCommandHandler.init();
         GlobalAtMeHandler.init();
+        ChainMessageSelector.init();
         BotSimulator.run(id,password,deviceInfoLocation);
+//        final ContactList<Group> groups = BotSimulator.getBot().getGroups();
+//        groups.forEach(group->{
+//            chainMessageSelector.registerChannel(group.getId(),new SimpleHandler());
+//            group.getMembers().stream().map(NormalMember::getId).forEach(id->{
+//                chainMessageSelector.joinChannel(group.getId(),SimpleHandler.class.getAnnotation(TaskHash.class).value(),id);
+//            });
+//        });
     }
 }
     
