@@ -15,7 +15,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Component
-public @interface TaskHash {
+public @interface HandlerId {
     @AliasFor(annotation = Component.class)
     String value() default "";
 }

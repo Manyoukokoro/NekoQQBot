@@ -7,7 +7,7 @@ import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.message.data.*;
 import org.nekotori.annotations.Command;
-import org.nekotori.annotations.TaskHash;
+import org.nekotori.annotations.HandlerId;
 import org.nekotori.chain.ChainMessageSelector;
 import org.nekotori.chain.channel.handler.SauceNaoChannelHandler;
 import org.nekotori.commands.PrivilegeGroupCommand;
@@ -48,7 +48,7 @@ public class SauceNaoCommand extends PrivilegeGroupCommand {
             }catch (RuntimeException e){
                 subject.sendMessage(new PlainText("已经在查询队列中哦，请直接发送图片给NekoBot"));
             }
-            chainMessageSelector.joinChannel(subject.getId(),SauceNaoChannelHandler.class.getAnnotation(TaskHash.class).value(),sender.getId());
+            chainMessageSelector.joinChannel(subject.getId(),SauceNaoChannelHandler.class.getAnnotation(HandlerId.class).value(),sender.getId());
             return null;
         }
         byte[] bytes = HttpRequest.get(imageUrl).execute().bodyBytes();

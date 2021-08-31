@@ -24,7 +24,7 @@ public class BotSimulator {
     private static Bot nekoBot;
 
 
-    public static void run(Long qq, String password, String deviceFile/*, GlobalCommandHandler globalCommandHandler, GroupService groupService*/) {
+    public static void run(Long qq, String password, String deviceFile) {
         BotConfiguration botConfiguration = new BotConfiguration();
         botConfiguration.fileBasedDeviceInfo(deviceFile);
         //https://github.com/mamoe/mirai/issues/1209 : 当协议选择ANDROID_PAD/WATCH时，概率出现被腾讯风控而发不出消息的异常

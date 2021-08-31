@@ -1,7 +1,7 @@
 package org.nekotori.chain.channel.handler;
 
 import net.mamoe.mirai.event.events.GroupMessageEvent;
-import org.nekotori.annotations.TaskHash;
+import org.nekotori.annotations.HandlerId;
 
 import java.util.Deque;
 
@@ -11,7 +11,7 @@ import java.util.Deque;
  * @description:
  * @version: {@link }
  */
-@TaskHash("73767478")
+@HandlerId("73767478")
 public class SimpleHandler implements ChannelHandler {
     @Override
     public void handleMessage(Deque<GroupMessageEvent> his, GroupMessageEvent groupMessageEvent) {

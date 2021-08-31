@@ -31,8 +31,6 @@ public class BotRunner implements ApplicationRunner {
     @Value("${bot.device-file}")
     private String deviceInfoLocation;
 
-//    @Resource
-//    private ChainMessageSelector chainMessageSelector;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -44,13 +42,6 @@ public class BotRunner implements ApplicationRunner {
         GlobalAtMeHandler.init();
         ChainMessageSelector.init();
         BotSimulator.run(id,password,deviceInfoLocation);
-//        final ContactList<Group> groups = BotSimulator.getBot().getGroups();
-//        groups.forEach(group->{
-//            chainMessageSelector.registerChannel(group.getId(),new SimpleHandler());
-//            group.getMembers().stream().map(NormalMember::getId).forEach(id->{
-//                chainMessageSelector.joinChannel(group.getId(),SimpleHandler.class.getAnnotation(TaskHash.class).value(),id);
-//            });
-//        });
     }
 }
     

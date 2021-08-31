@@ -1,7 +1,7 @@
 package org.nekotori.chain;
 
 import net.mamoe.mirai.event.events.GroupMessageEvent;
-import org.nekotori.annotations.TaskHash;
+import org.nekotori.annotations.HandlerId;
 import org.nekotori.chain.channel.handler.ChannelHandler;
 import org.nekotori.chain.channel.GroupCommandChannel;
 import org.springframework.stereotype.Component;
@@ -40,7 +40,7 @@ public class ChainMessageSelector {
 
     //注册信道
     public void registerChannel(Long groupId,ChannelHandler channelHandler){
-        final String value = channelHandler.getClass().getAnnotation(TaskHash.class).value();
+        final String value = channelHandler.getClass().getAnnotation(HandlerId.class).value();
         final String key = groupId + "@" + value;
         if(channels.get(key)!=null){
             final GroupCommandChannel groupCommandChannel = channels.get(key);

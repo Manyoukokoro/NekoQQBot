@@ -7,7 +7,7 @@ import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.message.data.*;
-import org.nekotori.annotations.TaskHash;
+import org.nekotori.annotations.HandlerId;
 import org.nekotori.chain.ChainMessageSelector;
 import org.nekotori.entity.SauceNaoData;
 import org.nekotori.utils.HibiApiUtils;
@@ -25,7 +25,7 @@ import java.util.List;
  * @description:
  * @version: {@link }
  */
-@TaskHash("114514")
+@HandlerId("114514")
 public class SauceNaoChannelHandler implements ChannelHandler {
 
     @Resource
@@ -75,7 +75,7 @@ public class SauceNaoChannelHandler implements ChannelHandler {
             }
         }
        group.sendMessage(append.build());
-        chainMessageSelector.unregisterChannel(group.getId(),this.getClass().getAnnotation(TaskHash.class).value());
+        chainMessageSelector.unregisterChannel(group.getId(),this.getClass().getAnnotation(HandlerId.class).value());
     }
 }
     
