@@ -49,6 +49,7 @@ public class SauceNaoCommand extends PrivilegeGroupCommand {
                 subject.sendMessage(new PlainText("已经在查询队列中哦，请直接发送图片给NekoBot"));
             }
             chainMessageSelector.joinChannel(subject.getId(),SauceNaoChannelHandler.class.getAnnotation(TaskHash.class).value(),sender.getId());
+            return null;
         }
         byte[] bytes = HttpRequest.get(imageUrl).execute().bodyBytes();
         List<SauceNaoData> sauceNaoDataList = hibiApiUtils.queryImage(bytes);

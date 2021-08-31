@@ -46,6 +46,7 @@ public class SauceNaoChannelHandler implements ChannelHandler {
             }
         }
         if(StringUtils.isEmpty(imageUrl)){
+            group.sendMessage(new MessageChainBuilder().append(new At(sender.getId())).append(new PlainText(" 这看起来不是一张图片...")).build());
             return;
         }
         byte[] bytes = HttpRequest.get(imageUrl).execute().bodyBytes();
