@@ -8,7 +8,8 @@ package org.nekotori.common;
  */
 public class InnerConstants {
 
-    public static final String[] commandHeader = {"!","-","#"};
+    public static final String[] commandHeader = {"!","-","#",""};
+
     public static final Long admin = 1318985307L;
 }
     

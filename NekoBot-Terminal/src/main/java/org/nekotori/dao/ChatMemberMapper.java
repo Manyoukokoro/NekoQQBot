@@ -19,5 +19,7 @@ public interface ChatMemberMapper {
 
     void updateChatMember(ChatMemberDo chatMemberDo);
 
+    void updateAllEveryDayWelcome();
+
 }
     

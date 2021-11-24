@@ -2,6 +2,7 @@ package org.nekotori.chain.channel.handler;
 
 import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.http.HttpRequest;
+import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
@@ -26,6 +27,7 @@ import java.util.List;
  * @version: {@link }
  */
 @HandlerId("114514")
+@Slf4j
 public class SauceNaoChannelHandler implements ChannelHandler {
 
     @Resource
@@ -57,11 +59,15 @@ public class SauceNaoChannelHandler implements ChannelHandler {
             return;
         }
         append.append(new PlainText("\nNekoBot找到以下信息:\n"));
-        for (SauceNaoData s:sauceNaoDataList){
-            String thumbnailUrl = s.getThumbnailUrl();
-            try {
-                InputStream inputStream = HttpRequest.get(thumbnailUrl).setConnectionTimeout(5 * 1000).setReadTimeout(5 * 1000).execute().bodyStream();
-                if(Float.parseFloat(s.getSimilarity())>60){
+        try {
+            for (SauceNaoData s : sauceNaoDataList) {
+                String thumbnailUrl = s.getThumbnailUrl();
+                InputStream inputStream = HttpRequest
+                        .get(thumbnailUrl)
+                        .setConnectionTimeout(5 * 1000)
+                        .setReadTimeout(5 * 1000)
+                        .execute().bodyStream();
+                if (Float.parseFloat(s.getSimilarity()) > 60) {
                     append.append(Contact.uploadImage(group, inputStream));
                 }
                 append.append(new PlainText("\n相似度:" +
@@ -70,12 +76,13 @@ public class SauceNaoChannelHandler implements ChannelHandler {
                         s.getExtUrls() +
                         "\n标签:" +
                         s.getTittle()));
-            }catch (IORuntimeException e){
-                e.printStackTrace();
             }
+        }catch (IORuntimeException e){
+            log.error("saucenao query error:",e);
+        }finally {
+            group.sendMessage(append.build());
+            chainMessageSelector.unregisterChannel(group.getId(),this.getClass().getAnnotation(HandlerId.class).value());
         }
-       group.sendMessage(append.build());
-        chainMessageSelector.unregisterChannel(group.getId(),this.getClass().getAnnotation(HandlerId.class).value());
     }
 }
     

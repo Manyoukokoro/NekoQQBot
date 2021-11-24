@@ -63,4 +63,9 @@
         where
         id =         #{id,jdbcType=INTEGER}
     </update>
+
+    <update id="updateAllEveryDayWelcome" >
+        update chat_member set
+        today_welcome = false;
+    </update>
 </mapper>

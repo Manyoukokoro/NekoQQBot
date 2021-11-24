@@ -60,7 +60,7 @@ public class AsyncJob {
         Group group = groupMessageEvent.getGroup();
         Member sender = groupMessageEvent.getSender();
         ChatMemberDo chatMemberDo = chatMemberMapper.selectByMemberIdAndGroupId(group.getId(), sender.getId());
-        if(chatMemberDo==null ||!chatMemberDo.getTodayWelcome())
+        if(chatMemberDo!=null &&!chatMemberDo.getTodayWelcome())
         {
             sender.nudge().sendTo(group);
             group.sendMessage(new MessageChainBuilder().append(new At(sender.getId())).append(new PlainText(" Hi,新的一天看到你真开心")).build());
@@ -73,10 +73,12 @@ public class AsyncJob {
                     .level(0)
                     .nickName(sender.getNameCard())
                     .todaySign(false)
-                    .todayWelcome(true)
+                    .todayWelcome(false)
                     .totalSign(0)
                     .exp(0L)
                     .build();
+            chatMemberMapper.insertChatMember(chatMemberDo);
+            return;
         }
         chatMemberDo.setTodayWelcome(true);
         chatMemberMapper.updateChatMember(chatMemberDo);

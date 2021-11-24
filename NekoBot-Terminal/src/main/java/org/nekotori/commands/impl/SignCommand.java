@@ -29,9 +29,9 @@ public class SignCommand extends NoAuthGroupCommand {
 
     @Override
     public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
-        final long menber = sender.getId();
+        final long member = sender.getId();
         final long group = subject.getId();
-        ChatMemberDo chatMemberDo = chatMemberMapper.selectByMemberIdAndGroupId(group, menber);
+        ChatMemberDo chatMemberDo = chatMemberMapper.selectByMemberIdAndGroupId(group, member);
         if(!ObjectUtils.isEmpty(chatMemberDo) && chatMemberDo.getTodaySign()){
             return  new MessageChainBuilder().append(new At(sender.getId()))
                     .append(" ")
@@ -40,7 +40,7 @@ public class SignCommand extends NoAuthGroupCommand {
         }
         if(chatMemberDo == null){
             final ChatMemberDo build = ChatMemberDo.builder()
-                    .memberId(menber)
+                    .memberId(member)
                     .groupId(group)
                     .isBlocked(false)
                     .level(0)
@@ -55,7 +55,7 @@ public class SignCommand extends NoAuthGroupCommand {
             chatMemberDo = build;
         }
         final Random random = new Random();
-        final int rank = random.nextInt(5);
+        final int rank = random.nextInt(4)+1;
         final int incomeExp = random.nextInt((int) Math.pow(10d, rank));
         final ChatMemberDo chatMemberDoNew = calLevel(chatMemberDo, incomeExp+chatMemberDo.getExp());
         chatMemberDoNew.setTodaySign(true);

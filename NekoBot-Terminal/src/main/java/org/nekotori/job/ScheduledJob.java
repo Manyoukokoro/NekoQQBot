@@ -16,6 +16,9 @@ public class ScheduledJob {
     @Resource
     private ChainMessageSelector chainMessageSelector;
 
+    @Resource
+    private ChatMemberMapper chatMemberMapper;
+
     @Scheduled(cron = "0/10 * * * * ? ")
     public void removeExpireChannel(){
         final Map<String, GroupCommandChannel> channels = chainMessageSelector.getChannels();
@@ -24,5 +27,9 @@ public class ScheduledJob {
                 chainMessageSelector.removeChannel(key);
             }
         });
+    }
+    @Scheduled(cron = "0 0 2 * * ?")
+    public void removeEveryDayWelcome(){
+        chatMemberMapper.updateAllEveryDayWelcome();
     }
 }

@@ -4,6 +4,7 @@ import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.core.net.url.UrlBuilder;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.contact.Contact;
@@ -23,7 +24,9 @@ import org.springframework.util.CollectionUtils;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author: JayDeng
@@ -62,17 +65,20 @@ public class AnimePicGroupCommand extends PrivilegeGroupCommand {
               });
       List<LoliconData> loliconData = new ArrayList<>();
       if (ObjectUtil.isNotNull(loliconApiResponse)) {
-        if (loliconApiResponse.getCode().equals(429))
-          return new MessageChainBuilder()
-                  .append(new At(sender.getId()).plus(new PlainText("我的身体已经菠萝菠萝哒")))
-                  .build();
+//        if (loliconApiResponse.getError().equals(429))
+//          return new MessageChainBuilder()
+//                  .append(new At(sender.getId()).plus(new PlainText("我的身体已经菠萝菠萝哒")))
+//                  .build();
         loliconData = loliconApiResponse.getData();
       }
       if (ObjectUtil.isNull(loliconData) || loliconData.isEmpty())
         return new MessageChainBuilder()
                 .append(new At(sender.getId()).plus(new PlainText("您找不到对象")))
                 .build();
-      imgUrl = loliconData.get(0).getUrl();
+      Collection<Object> values = loliconData.get(0).getUrls().values();
+      Optional<Object> firstUrl = values.stream().findFirst();
+      imgUrl = firstUrl.orElseGet(String::new).toString();
+      log.info("request img url: {}", imgUrl);
       InputStream inputStream =
               HttpUtil.createGet(imgUrl).setReadTimeout(20 * 1000).setConnectionTimeout(10 * 1000).execute().bodyStream();
       echo =

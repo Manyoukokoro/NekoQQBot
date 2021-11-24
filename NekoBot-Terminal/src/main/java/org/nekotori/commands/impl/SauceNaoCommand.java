@@ -2,6 +2,7 @@ package org.nekotori.commands.impl;
 
 import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.http.HttpRequest;
+import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
@@ -21,6 +22,7 @@ import java.io.InputStream;
 import java.util.List;
 
 @Command(name = {"sauce","检索图片"},description = "使用sauceNao进行图片检索，格式:(!/-/#)sauce [上传图片]")
+@Slf4j
 public class SauceNaoCommand extends PrivilegeGroupCommand {
 
     @Resource
@@ -70,7 +72,7 @@ public class SauceNaoCommand extends PrivilegeGroupCommand {
                         "\n标签:" +
                         s.getTittle()));
             }catch (IORuntimeException e){
-                e.printStackTrace();
+                log.error("saucenao query error:",e);
             }
         }
         return append.build();

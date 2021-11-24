@@ -9,3 +9,6 @@ bot:
 #和风天气key,请自行申请
 weather:
   key:
+api:
+  hibiapi:
+    sauce:
