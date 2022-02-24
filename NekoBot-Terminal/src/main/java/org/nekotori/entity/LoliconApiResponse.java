@@ -13,15 +13,17 @@ import java.util.List;
 @Data
 public class LoliconApiResponse {
 
-    private Integer code;
+//    private Integer code;
+//
+//    private String msg;
+//
+//    private Integer quota;
+//
+//    private Integer quota_min_ttl;
 
-    private String msg;
+//    private Integer count;
 
-    private Integer quota;
-
-    private Integer quota_min_ttl;
-
-    private Integer count;
+    private String error;
 
     private List<LoliconData> data;
  }

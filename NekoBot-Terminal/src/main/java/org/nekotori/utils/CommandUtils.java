@@ -71,8 +71,7 @@ public class CommandUtils {
         if(IsCommandRegistered(registeredCommand,command)) return registeredCommand;
         List<String> commands = resolveRegisteredCommand(registeredCommand);
         commands.add(command);
-        String join = String.join("#", commands);
-        return join;
+        return String.join("#", commands);
     }
 
     public static String removeCommand(String registeredCommand, String command){

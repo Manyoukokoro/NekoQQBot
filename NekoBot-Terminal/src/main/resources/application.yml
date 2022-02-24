@@ -23,7 +23,7 @@ logging:
 #  mapper-locations: classpath:org.nekotori.dao/*.xml
 #  type-aliases-package: org.nekotori.entity
 img:
-  loli-api: https://api.lolicon.app/setu
+  loli-api: https://api.lolicon.app/setu/v2
   yandere-post: https://yande.re/post.json
   yandere-tag: https://yande.re/tag.json
 weather:

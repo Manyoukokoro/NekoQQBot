@@ -89,6 +89,7 @@ public class YandereGroupCommand extends PrivilegeGroupCommand {
             }
 
             for (YandereData y : imgs) {
+                log.info("request img url: {}", y.getSample_url());
                 InputStream inputStream =
                         HttpUtil.createGet(y.getSample_url()).setReadTimeout(20 * 1000).setConnectionTimeout(10 * 1000).execute().bodyStream();
                 singleMessages.append(Contact.uploadImage(subject, inputStream));

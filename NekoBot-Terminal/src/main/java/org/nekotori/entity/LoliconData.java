@@ -1,5 +1,7 @@
 package org.nekotori.entity;
 
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import lombok.Data;
 
 import java.util.List;
@@ -23,7 +25,7 @@ public class LoliconData {
 
     private String author;
 
-    private String url;
+    private JSONObject urls;
 
     private boolean R18;
 
