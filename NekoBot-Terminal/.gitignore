@@ -4,3 +4,4 @@
 /NekoQQBot.iml
 /.idea/
 /src/main/resources/application-azure.yml
+bot.sqlite
