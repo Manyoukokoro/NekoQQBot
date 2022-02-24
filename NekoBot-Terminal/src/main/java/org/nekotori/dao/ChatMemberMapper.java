@@ -1,5 +1,6 @@
 package org.nekotori.dao;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.nekotori.entity.ChatMemberDo;
@@ -11,13 +12,7 @@ import org.nekotori.entity.ChatMemberDo;
  * @version: {@link }
  */
 @Mapper
-public interface ChatMemberMapper {
-
-    int insertChatMember(ChatMemberDo chatMemberDo);
-
-    ChatMemberDo selectByMemberIdAndGroupId(@Param("groupId") Long groupId, @Param("memberId") Long orgId);
-
-    void updateChatMember(ChatMemberDo chatMemberDo);
+public interface ChatMemberMapper extends BaseMapper<ChatMemberDo> {
 
 }
     

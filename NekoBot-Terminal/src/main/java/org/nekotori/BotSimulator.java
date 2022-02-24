@@ -28,7 +28,7 @@ public class BotSimulator {
         BotConfiguration botConfiguration = new BotConfiguration();
         botConfiguration.fileBasedDeviceInfo(deviceFile);
         //https://github.com/mamoe/mirai/issues/1209 : 当协议选择ANDROID_PAD/WATCH时，概率出现被腾讯风控而发不出消息的异常
-        botConfiguration.setProtocol(BotConfiguration.MiraiProtocol.ANDROID_PHONE);
+        botConfiguration.setProtocol(BotConfiguration.MiraiProtocol.ANDROID_PAD);
         botConfiguration.setBotLoggerSupplier(b->new SpringStyleBotLogger());
         botConfiguration.setNetworkLoggerSupplier(b-> new SpringStyleBotLogger());
         nekoBot = BotFactory.INSTANCE.newBot(qq, password,botConfiguration);

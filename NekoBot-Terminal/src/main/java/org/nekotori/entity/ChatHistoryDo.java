@@ -1,5 +1,6 @@
 package org.nekotori.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@TableName("chat_history")
 public class ChatHistoryDo {
 
     private Integer id;

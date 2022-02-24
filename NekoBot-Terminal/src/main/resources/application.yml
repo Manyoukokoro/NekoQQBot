@@ -19,9 +19,9 @@ spring:
 logging:
   level:
     root: info
-mybatis:
-  mapper-locations: classpath:org.nekotori.dao/*.xml
-  type-aliases-package: org.nekotori.entity
+#mybatis:
+#  mapper-locations: classpath:org.nekotori.dao/*.xml
+#  type-aliases-package: org.nekotori.entity
 img:
   loli-api: https://api.lolicon.app/setu
   yandere-post: https://yande.re/post.json

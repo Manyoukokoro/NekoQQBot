@@ -1,5 +1,6 @@
 package org.nekotori.commands.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.message.data.At;
@@ -31,7 +32,7 @@ public class SignCommand extends NoAuthGroupCommand {
     public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
         final long menber = sender.getId();
         final long group = subject.getId();
-        ChatMemberDo chatMemberDo = chatMemberMapper.selectByMemberIdAndGroupId(group, menber);
+        ChatMemberDo chatMemberDo = chatMemberMapper.selectOne(new QueryWrapper<ChatMemberDo>().eq("group_id", group).eq("member_id", menber));
         if(!ObjectUtils.isEmpty(chatMemberDo) && chatMemberDo.getTodaySign()){
             return  new MessageChainBuilder().append(new At(sender.getId()))
                     .append(" ")
@@ -50,7 +51,7 @@ public class SignCommand extends NoAuthGroupCommand {
                     .totalSign(0)
                     .exp(0L)
                     .build();
-            final int id = chatMemberMapper.insertChatMember(build);
+            final int id = chatMemberMapper.insert(build);
             build.setId(id);
             chatMemberDo = build;
         }
@@ -60,7 +61,7 @@ public class SignCommand extends NoAuthGroupCommand {
         final ChatMemberDo chatMemberDoNew = calLevel(chatMemberDo, incomeExp+chatMemberDo.getExp());
         chatMemberDoNew.setTodaySign(true);
         chatMemberDoNew.setTotalSign(chatMemberDoNew.getTotalSign()+1);
-        chatMemberMapper.updateChatMember(chatMemberDoNew);
+        chatMemberMapper.updateById(chatMemberDoNew);
         return new MessageChainBuilder().append(new At(sender.getId()))
                 .append(" ")
                 .append(new PlainText("签到成功！获得经验"+incomeExp+","+"当前等级"+chatMemberDoNew.getLevel()+",真是太幸运了呢"))

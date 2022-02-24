@@ -1,8 +1,8 @@
 package org.nekotori.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
-import net.mamoe.mirai.message.code.MiraiCode;
 import org.nekotori.dao.ChatGroupMapper;
 import org.nekotori.dao.ChatHistoryMapper;
 import org.nekotori.entity.ChatGroupDo;
@@ -16,6 +16,7 @@ import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author: JayDeng
@@ -34,7 +35,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public boolean checkPrivilege(Long groupId,String command) {
-        ChatGroupDo chatGroupDo = chatGroupMapper.selectGroupById(groupId);
+        ChatGroupDo chatGroupDo = chatGroupMapper.selectOne(new QueryWrapper<ChatGroupDo>().eq("group_id", groupId));
         if(ObjectUtils.isEmpty(chatGroupDo)) return false;
         String commands = chatGroupDo.getCommands();
         return CommandUtils.IsCommandRegistered(commands,command);
@@ -49,12 +50,12 @@ public class GroupServiceImpl implements GroupService {
                 .content(groupMessageEvent.getMessage().serializeToMiraiCode())
                 .isCommand(CommandUtils.isCommand(groupMessageEvent))
                 .build();
-        chatHistoryMapper.insertChatHistory(build);
+        chatHistoryMapper.insert(build);
     }
 
     public boolean IsGroupRegistered(Group group){
         long id = group.getId();
-        List<Long> longs = chatGroupMapper.selectRegisteredGroup();
+        List<Long> longs = chatGroupMapper.selectList(new QueryWrapper<>()).stream().map(ChatGroupDo::getGroupId).collect(Collectors.toList());
         if(longs.contains(id)){
             return true;
         }
@@ -70,19 +71,19 @@ public class GroupServiceImpl implements GroupService {
                 .isBlock(false)
                 .commands("")
                 .build();
-        return chatGroupMapper.insertChatGroup(build);
+        return chatGroupMapper.insert(build);
     }
 
     @Override
     public void updateGroupCommand(Long groupId, String command) {
-        ChatGroupDo chatGroupDo = chatGroupMapper.selectGroupById(groupId);
+        ChatGroupDo chatGroupDo = chatGroupMapper.selectOne(new QueryWrapper<ChatGroupDo>().eq("group_id", groupId));
         chatGroupDo.setCommands(command);
-        chatGroupMapper.updateChatGroup(chatGroupDo);
+        chatGroupMapper.updateById(chatGroupDo);
     }
 
     @Override
     public String getGroupCommands(Long groupId) {
-        ChatGroupDo chatGroupDo = chatGroupMapper.selectGroupById(groupId);
+        ChatGroupDo chatGroupDo = chatGroupMapper.selectOne(new QueryWrapper<ChatGroupDo>().eq("group_id", groupId));
         return Optional.ofNullable(chatGroupDo).orElse(new ChatGroupDo()).getCommands();
     }
 }

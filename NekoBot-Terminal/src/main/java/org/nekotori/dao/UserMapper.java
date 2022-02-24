@@ -1,5 +1,6 @@
 package org.nekotori.dao;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.nekotori.entity.UserDo;
@@ -11,8 +12,6 @@ import org.nekotori.entity.UserDo;
  * @version: {@link }
  */
 @Mapper
-public interface UserMapper {
-
-    UserDo selectByAccount(@Param("account") Long account);
+public interface UserMapper extends BaseMapper<UserDo> {
 }
     

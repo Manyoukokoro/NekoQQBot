@@ -1,5 +1,6 @@
 package org.nekotori.job;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
@@ -59,7 +60,7 @@ public class AsyncJob {
     public void everyDayWelcome(GroupMessageEvent groupMessageEvent){
         Group group = groupMessageEvent.getGroup();
         Member sender = groupMessageEvent.getSender();
-        ChatMemberDo chatMemberDo = chatMemberMapper.selectByMemberIdAndGroupId(group.getId(), sender.getId());
+        ChatMemberDo chatMemberDo = chatMemberMapper.selectOne(new QueryWrapper<ChatMemberDo>().eq("group_id", group.getId()).eq("member_id", sender.getId()));
         if(chatMemberDo==null ||!chatMemberDo.getTodayWelcome())
         {
             sender.nudge().sendTo(group);
@@ -79,6 +80,6 @@ public class AsyncJob {
                     .build();
         }
         chatMemberDo.setTodayWelcome(true);
-        chatMemberMapper.updateChatMember(chatMemberDo);
+        chatMemberMapper.updateById(chatMemberDo);
     }
 }
