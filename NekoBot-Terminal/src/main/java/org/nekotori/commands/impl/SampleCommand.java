@@ -6,7 +6,7 @@ import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
-import org.nekotori.annotations.Command;
+import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.PrivilegeGroupCommand;
 import org.nekotori.entity.CommandAttr;
 import org.nekotori.utils.CommandUtils;
@@ -24,7 +24,7 @@ import java.util.List;
  * @Command注解，打上此注解后，spring容器会自动管理此指令的实现
  * value为指令名数组
  */
-@Command(name = {"测试命令","ping"},description = "测试命令，格式:(!/-/#)ping")
+@IsCommand(name = {"测试命令","ping"},description = "测试命令，格式:(!/-/#)ping")
 public class SampleCommand extends PrivilegeGroupCommand {
 
 

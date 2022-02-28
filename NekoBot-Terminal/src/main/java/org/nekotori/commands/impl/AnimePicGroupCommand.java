@@ -4,14 +4,12 @@ import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.core.net.url.UrlBuilder;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.HttpUtil;
-import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.message.data.*;
-import org.nekotori.annotations.Command;
 import org.nekotori.commands.PrivilegeGroupCommand;
 import org.nekotori.entity.CommandAttr;
 import org.nekotori.entity.LoliconApiResponse;
@@ -34,8 +32,9 @@ import java.util.Optional;
  * @description:
  * @version: {@link }
  */
-@Command(name = {"色图","setu"},description = "使用loliApi检索插画图片，格式:(!/-/#)setu ...[参数]")
+//@Command(name = {"色图","setu"},description = "使用loliApi检索插画图片，格式:(!/-/#)setu ...[参数]")
 @Slf4j
+@Deprecated
 public class AnimePicGroupCommand extends PrivilegeGroupCommand {
 
   @Value("${img.loli-api}")

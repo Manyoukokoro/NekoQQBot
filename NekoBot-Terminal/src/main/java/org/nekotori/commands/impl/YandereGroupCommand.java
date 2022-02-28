@@ -4,7 +4,6 @@ import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.core.net.url.UrlBuilder;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
-import cn.hutool.socket.SocketRuntimeException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.contact.Contact;
@@ -14,8 +13,6 @@ import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
-import net.mamoe.mirai.utils.ExternalResource;
-import org.nekotori.annotations.Command;
 import org.nekotori.commands.PrivilegeGroupCommand;
 import org.nekotori.entity.CommandAttr;
 import org.nekotori.entity.YandereData;
@@ -25,18 +22,16 @@ import org.nekotori.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-@Command(name = {"AniS","anis"},description = "使用yandere进行图片检索,此指令参数格式比较复杂，有兴趣可以参阅yandere的api文档，格式:(!/-/#)anis ...[参数]")
+//@Command(name = {"AniS","anis"},description = "使用yandere进行图片检索,此指令参数格式比较复杂，有兴趣可以参阅yandere的api文档，格式:(!/-/#)anis ...[参数]")
 @Slf4j
+@Deprecated
 public class YandereGroupCommand extends PrivilegeGroupCommand {
 
     @Value("${img.yandere-post}")

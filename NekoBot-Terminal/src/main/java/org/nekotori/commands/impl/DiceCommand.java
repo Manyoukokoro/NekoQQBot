@@ -4,9 +4,8 @@ import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.message.data.Dice;
 import net.mamoe.mirai.message.data.MessageChain;
-import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
-import org.nekotori.annotations.Command;
+import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.NoAuthGroupCommand;
 import org.nekotori.common.InnerConstants;
 import org.nekotori.entity.CommandAttr;
@@ -16,7 +15,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.List;
 
 
-@Command(name = {"d","dice"},description = "随机骰子，格式:(!/-/#)dice ...[数量]")
+@IsCommand(name = {"d","dice"},description = "随机骰子，格式:(!/-/#)dice ...[数量]")
 public class DiceCommand extends NoAuthGroupCommand {
     @Override
     public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {

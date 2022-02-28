@@ -9,7 +9,7 @@ import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
-import org.nekotori.annotations.Command;
+import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.NoAuthGroupCommand;
 import org.nekotori.entity.*;
 import org.nekotori.utils.CommandUtils;
@@ -26,7 +26,7 @@ import java.util.Optional;
  * @description:
  * @version: {@link }
  */
-@Command(name = {"查询天气","天气"},description = "查询天气，格式:(!/-/#)天气 [位置]")
+@IsCommand(name = {"查询天气","天气"},description = "查询天气，格式:(!/-/#)天气 [位置]")
 public class WeatherGroupCommand extends NoAuthGroupCommand {
 
 

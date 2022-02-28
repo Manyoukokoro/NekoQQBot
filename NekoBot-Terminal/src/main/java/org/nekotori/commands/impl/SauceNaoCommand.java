@@ -7,7 +7,6 @@ import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.message.data.*;
-import org.nekotori.annotations.Command;
 import org.nekotori.annotations.HandlerId;
 import org.nekotori.chain.ChainMessageSelector;
 import org.nekotori.chain.channel.handler.SauceNaoChannelHandler;
@@ -21,8 +20,9 @@ import javax.annotation.Resource;
 import java.io.InputStream;
 import java.util.List;
 
-@Command(name = {"sauce","检索图片"},description = "使用sauceNao进行图片检索，格式:(!/-/#)sauce [上传图片]")
+//@Command(name = {"sauce","检索图片"},description = "使用sauceNao进行图片检索，格式:(!/-/#)sauce [上传图片]")
 @Slf4j
+@Deprecated
 public class SauceNaoCommand extends PrivilegeGroupCommand {
 
     @Resource

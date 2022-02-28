@@ -7,13 +7,13 @@ import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
-import org.nekotori.annotations.Command;
+import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.ManagerGroupCommand;
 import org.nekotori.service.GroupService;
 
 import javax.annotation.Resource;
 
-@Command(name = {"注册","注册本群","reg"},description = "将本群注册进bot，格式:(!/-/#)reg")
+@IsCommand(name = {"注册","注册本群","reg"},description = "将本群注册进bot，格式:(!/-/#)reg")
 @Slf4j
 public class RegisterGroupCommand extends ManagerGroupCommand {
 

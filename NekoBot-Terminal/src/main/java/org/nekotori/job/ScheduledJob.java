@@ -22,6 +22,9 @@ public class ScheduledJob {
     @Scheduled(cron = "0/10 * * * * ? ")
     public void removeExpireChannel(){
         final Map<String, GroupCommandChannel> channels = chainMessageSelector.getChannels();
+        if (channels == null){
+            return;
+        }
         channels.forEach((key, value) -> {
             if (value.getExpireTime() < System.currentTimeMillis()) {
                 chainMessageSelector.removeChannel(key);

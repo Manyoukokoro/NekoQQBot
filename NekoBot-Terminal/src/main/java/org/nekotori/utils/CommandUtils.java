@@ -1,6 +1,7 @@
 package org.nekotori.utils;
 
 import net.mamoe.mirai.event.events.GroupMessageEvent;
+import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.Command;
 import org.nekotori.common.InnerConstants;
 import org.nekotori.entity.CommandAttr;
@@ -35,7 +36,7 @@ public class CommandUtils {
     }
 
     public static boolean checkCommand(Command command, GroupMessageEvent event) {
-        if(List.of(command.getClass().getAnnotation(org.nekotori.annotations.Command.class).name())
+        if(List.of(command.getClass().getAnnotation(IsCommand.class).name())
                 .contains( CommandUtils.resolveCommand(event.getMessage().contentToString()).getCommand())){
             return true;
         }

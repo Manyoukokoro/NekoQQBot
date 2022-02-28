@@ -26,8 +26,9 @@ import java.util.List;
  * @description:
  * @version: {@link }
  */
-@HandlerId("114514")
+//@HandlerId("114514")
 @Slf4j
+@Deprecated
 public class SauceNaoChannelHandler implements ChannelHandler {
 
     @Resource
@@ -78,7 +79,7 @@ public class SauceNaoChannelHandler implements ChannelHandler {
                         s.getTittle()));
             }
         }catch (IORuntimeException e){
-            log.error("saucenao query error:",e);
+            log.error("sauceNao query error:",e);
         }finally {
             group.sendMessage(append.build());
             chainMessageSelector.unregisterChannel(group.getId(),this.getClass().getAnnotation(HandlerId.class).value());

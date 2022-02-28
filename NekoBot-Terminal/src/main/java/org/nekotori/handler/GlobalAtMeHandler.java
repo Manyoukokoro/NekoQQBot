@@ -18,7 +18,7 @@ import java.util.Map;
  * @version: {@link }
  */
 @Component
-public class GlobalAtMeHandler {
+public class                                                 GlobalAtMeHandler {
     private static Map<String, AtMeResponse> innerAtMes = new HashMap<>();
 
     public static void init() {

@@ -1,3 +1,7 @@
+#数据库配置
+spring:
+  datasource:
+    url: jdbc:sqlite:bot.sqlite
 #bot基本配置
 bot:
   #qq账号
@@ -5,7 +9,7 @@ bot:
   #密码
   password:
   #特权群号,用逗号分割
-  privilege-groups:
+  privilege-groups: []
 #和风天气key,请自行申请
 weather:
   key:

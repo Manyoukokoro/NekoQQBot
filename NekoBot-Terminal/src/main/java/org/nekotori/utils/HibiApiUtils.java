@@ -14,7 +14,8 @@ import org.springframework.util.ObjectUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+//@Component
+@Deprecated
 public class HibiApiUtils {
 
 

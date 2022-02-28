@@ -7,7 +7,7 @@ import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
-import org.nekotori.annotations.Command;
+import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.NoAuthGroupCommand;
 import org.nekotori.dao.ChatMemberMapper;
 import org.nekotori.entity.ChatMemberDo;
@@ -22,7 +22,7 @@ import java.util.Random;
  * @description:
  * @version: {@link }
  */
-@Command(name = {"签到"}, description = "签到")
+@IsCommand(name = {"签到"}, description = "签到")
 public class SignCommand extends NoAuthGroupCommand {
 
     @Resource
@@ -56,7 +56,7 @@ public class SignCommand extends NoAuthGroupCommand {
             chatMemberDo = build;
         }
         final Random random = new Random();
-        final int rank = random.nextInt(5);
+        final int rank = random.nextInt(5)+1;
         final int incomeExp = random.nextInt((int) Math.pow(10d, rank));
         final ChatMemberDo chatMemberDoNew = calLevel(chatMemberDo, incomeExp+chatMemberDo.getExp());
         chatMemberDoNew.setTodaySign(true);

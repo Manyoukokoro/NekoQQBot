@@ -5,7 +5,7 @@ import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
-import org.nekotori.annotations.Command;
+import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.ManagerGroupCommand;
 import org.nekotori.commands.NoAuthGroupCommand;
 import org.nekotori.service.GroupService;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Command(name = {"h","help"},description = "帮助文档，格式:(!/-/#)help")
+@IsCommand(name = {"h","help"},description = "帮助文档，格式:(!/-/#)help")
 public class HelpCommand extends NoAuthGroupCommand {
 
     @Resource
@@ -38,7 +38,7 @@ public class HelpCommand extends NoAuthGroupCommand {
             if(c instanceof NoAuthGroupCommand || c instanceof ManagerGroupCommand) {
                 return true;
             }
-            String[] name = c.getClass().getAnnotation(Command.class).name();
+            String[] name = c.getClass().getAnnotation(IsCommand.class).name();
             for (String n : name) {
                 if (commands.contains(n)) return true;
             }
@@ -47,7 +47,7 @@ public class HelpCommand extends NoAuthGroupCommand {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("\n本群已经注册指令(注意:多关键词指令可能只注册了其中部分): ");
         for(org.nekotori.commands.Command command:collect){
-            Command annotation = command.getClass().getAnnotation(Command.class);
+            IsCommand annotation = command.getClass().getAnnotation(IsCommand.class);
             String flag = "授权";
             if(command instanceof NoAuthGroupCommand){
                 flag = "任意";

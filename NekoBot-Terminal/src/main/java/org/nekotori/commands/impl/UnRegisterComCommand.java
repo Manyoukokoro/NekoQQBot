@@ -5,7 +5,7 @@ import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
-import org.nekotori.annotations.Command;
+import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.ManagerGroupCommand;
 import org.nekotori.entity.CommandAttr;
 import org.nekotori.service.GroupService;
@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 
-@Command(name = {"取消指令","取消","ucom"},description = "取消指令注册，格式:(!/-/#)ucom ...[指令名]")
+@IsCommand(name = {"取消指令","取消","ucom"},description = "取消指令注册，格式:(!/-/#)ucom ...[指令名]")
 public class UnRegisterComCommand extends ManagerGroupCommand {
     @Resource
     GroupService groupService;

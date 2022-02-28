@@ -46,7 +46,7 @@ public class ChainMessageSelector {
             final GroupCommandChannel groupCommandChannel = channels.get(key);
             groupCommandChannel.setExpireTime(System.currentTimeMillis()+5*60*1000);
             channels.replace(key,groupCommandChannel);
-            throw new RuntimeException("exist channel");
+            throw new RuntimeException("existed channel");
         }
         final GroupCommandChannel build = GroupCommandChannel.builder()
                 .messageHisQueue(new ArrayDeque<>())
