@@ -1,10 +1,16 @@
 package org.nekotori.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.nekotori.utils.DateUtil;
+
+import java.time.LocalDate;
+import java.util.Date;
 
 /**
  * @author: JayDeng
@@ -19,6 +25,7 @@ import lombok.NoArgsConstructor;
 @TableName("chat_member")
 public class ChatMemberDo {
 
+    @TableId(type = IdType.AUTO)
     private Integer id;
 
     private Long memberId;
@@ -37,8 +44,13 @@ public class ChatMemberDo {
 
     private Long exp;
 
-    private Boolean todaySign;
-
     private Integer totalSign;
+
+    private Date lastSign;
+
+    public  boolean checkTodaySign(){
+        LocalDate localDate = DateUtil.date2LocalDate(lastSign);
+        return LocalDate.now().equals(localDate);
+    }
 }
     

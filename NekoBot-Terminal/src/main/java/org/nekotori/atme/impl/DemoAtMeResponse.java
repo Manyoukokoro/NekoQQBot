@@ -19,7 +19,7 @@ public class DemoAtMeResponse extends KeyWordsAtMeResponse {
 
     @Override
     public MessageChain response(GroupMessageEvent groupMessageEvent) {
-        return new MessageChainBuilder().append(new At(groupMessageEvent.getSender().getId())).append(new PlainText("呼んだ？")).build();
+        return new MessageChainBuilder().append(new At(groupMessageEvent.getSender().getId())).append(new PlainText(" 呼んだ？")).build();
     }
 }
     

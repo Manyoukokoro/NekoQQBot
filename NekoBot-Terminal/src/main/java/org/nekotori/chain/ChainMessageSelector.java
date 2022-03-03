@@ -20,11 +20,9 @@ import java.util.stream.Collectors;
 @Component
 public class ChainMessageSelector {
 
-    private static Map<String, GroupCommandChannel> channels = null;
+    private static final Map<String, GroupCommandChannel> channels = new HashMap<>();
 
-    public static void init(){
-        channels = new HashMap<>();
-    }
+    public static void init(){}
 
     //消息分发器，从event中读取消息，分发给不同信道进行处理
     public void selectMessage(GroupMessageEvent groupMessageEvent){
@@ -33,6 +31,7 @@ public class ChainMessageSelector {
         channelKeys.forEach(key->{
             final GroupCommandChannel groupCommandChannel = channels.get(key);
             if(!ObjectUtils.isEmpty(groupCommandChannel)&&groupCommandChannel.checkMember(groupMessageEvent.getSender().getId())){
+
                 groupCommandChannel.handleIncomeMessage(groupMessageEvent);
             }
         });
@@ -51,12 +50,14 @@ public class ChainMessageSelector {
         final GroupCommandChannel build = GroupCommandChannel.builder()
                 .messageHisQueue(new ArrayDeque<>())
                 .members(new ArrayList<>())
+                .stages(channelHandler.getStages())
                 .groupId(groupId)
                 .channelHandler(channelHandler)
                 .expireTime(System.currentTimeMillis()+5*60*1000)
                 .build();
         channels.put(key,build);
     }
+
 
     //移除信道
     public void unregisterChannel(Long groupId,String taskHash){
@@ -72,6 +73,14 @@ public class ChainMessageSelector {
         if(!ObjectUtils.isEmpty(groupCommandChannel)&&!groupCommandChannel.checkMember(senderId)){
             groupCommandChannel.addMember(senderId);
         }
+    }
+
+    public void joinChannel(Long groupId,ChannelHandler channelHandler,Long senderId){
+        joinChannel(groupId, channelHandler.getClass().getAnnotation(HandlerId.class).value(),senderId);
+    }
+
+    public void joinChannel(Long groupId,Class<? extends ChannelHandler> clazz,Long senderId){
+        joinChannel(groupId,clazz.getAnnotation(HandlerId.class).value(),senderId);
     }
 
     public void removeChannel(String key){

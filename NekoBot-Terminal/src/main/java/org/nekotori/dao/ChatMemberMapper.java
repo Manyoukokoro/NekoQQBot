@@ -13,8 +13,5 @@ import org.nekotori.entity.ChatMemberDo;
  */
 @Mapper
 public interface ChatMemberMapper extends BaseMapper<ChatMemberDo> {
-
-    void updateAllEveryDayWelcome();
-
 }
     

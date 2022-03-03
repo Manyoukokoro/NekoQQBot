@@ -10,23 +10,36 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+/**
+ * @author: JayDeng
+ * @date: 2022/3/3 下午3:57
+ * @description: GroupGachaDo
+ * @version: {@link }
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@TableName("chat_history")
-public class ChatHistoryDo {
+@TableName("group_gacha")
+public class GroupGachaDo {
 
     @TableId(type = IdType.AUTO)
     private Integer id;
 
     private Long groupId;
 
-    private Long senderId;
+    private Integer urP;
 
-    private String content;
+    private Integer ssrP;
 
-    private Date time;
+    private Integer srP;
 
-    private Boolean isCommand;
+    private Integer rP;
+
+    private Integer nP;
+
+    private Date createTime;
+
+    private Date updateTime;
+
 }

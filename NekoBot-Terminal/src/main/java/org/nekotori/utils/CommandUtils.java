@@ -24,7 +24,7 @@ public class CommandUtils {
         CommandAttr commandAttr = new CommandAttr();
         commandAttr.setHeader(Arrays.stream(InnerConstants.commandHeader).filter(message::startsWith).findFirst().orElse(""));
         message = message.replaceFirst(commandAttr.getHeader(),"");
-        final String[] s = message.split(" |\\[|]|\\n");
+        final String[] s = message.split("\\[| |]|\\n");
         List<String> collect = Arrays.stream(s).filter(single -> !single.equals("")).collect(Collectors.toList());
         if(collect.size()>0) commandAttr.setCommand(collect.get(0));
         if(collect.size()>1){

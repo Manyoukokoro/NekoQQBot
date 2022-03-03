@@ -7,9 +7,8 @@ import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.message.data.*;
-import org.nekotori.annotations.HandlerId;
 import org.nekotori.chain.ChainMessageSelector;
-import org.nekotori.chain.channel.handler.SauceNaoChannelHandler;
+import org.nekotori.chain.channel.handler.impl.SauceNaoChannelHandler;
 import org.nekotori.commands.PrivilegeGroupCommand;
 import org.nekotori.entity.SauceNaoData;
 import org.nekotori.utils.HibiApiUtils;
@@ -50,7 +49,7 @@ public class SauceNaoCommand extends PrivilegeGroupCommand {
             }catch (RuntimeException e){
                 subject.sendMessage(new PlainText("已经在查询队列中哦，请直接发送图片给NekoBot"));
             }
-            chainMessageSelector.joinChannel(subject.getId(),SauceNaoChannelHandler.class.getAnnotation(HandlerId.class).value(),sender.getId());
+            chainMessageSelector.joinChannel(subject.getId(),SauceNaoChannelHandler.class,sender.getId());
             return null;
         }
         byte[] bytes = HttpRequest.get(imageUrl).execute().bodyBytes();

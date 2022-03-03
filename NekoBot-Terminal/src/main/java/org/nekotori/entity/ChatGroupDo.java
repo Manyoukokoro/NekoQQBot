@@ -1,5 +1,7 @@
 package org.nekotori.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +15,7 @@ import lombok.NoArgsConstructor;
 @TableName("chat_group")
 public class ChatGroupDo {
 
+    @TableId(type = IdType.AUTO)
     private Integer id;
 
     private Long groupId;
@@ -20,6 +23,8 @@ public class ChatGroupDo {
     private String groupName;
 
     private String commands;
+
+    private String customResponse;
 
     private Integer groupLevel;
 

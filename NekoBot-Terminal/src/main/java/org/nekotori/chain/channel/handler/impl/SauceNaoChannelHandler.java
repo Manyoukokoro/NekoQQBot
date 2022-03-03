@@ -1,4 +1,4 @@
-package org.nekotori.chain.channel.handler;
+package org.nekotori.chain.channel.handler.impl;
 
 import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.http.HttpRequest;
@@ -10,6 +10,8 @@ import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.message.data.*;
 import org.nekotori.annotations.HandlerId;
 import org.nekotori.chain.ChainMessageSelector;
+import org.nekotori.chain.channel.GroupCommandChannel;
+import org.nekotori.chain.channel.handler.ChannelHandler;
 import org.nekotori.entity.SauceNaoData;
 import org.nekotori.utils.HibiApiUtils;
 import org.springframework.util.CollectionUtils;
@@ -38,7 +40,13 @@ public class SauceNaoChannelHandler implements ChannelHandler {
     private ChainMessageSelector chainMessageSelector;
 
     @Override
-    public void handleMessage(Deque<GroupMessageEvent> his, GroupMessageEvent groupMessageEvent) {
+    public List<String> getStages() {
+        return null;
+    }
+
+    @Override
+    public void handleMessage(GroupCommandChannel channel, GroupMessageEvent groupMessageEvent) {
+        Deque<GroupMessageEvent> his = channel.getMessageHisQueue();
         final MessageChain message = groupMessageEvent.getMessage();
         final Member sender = groupMessageEvent.getSender();
         final Group group = groupMessageEvent.getGroup();

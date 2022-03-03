@@ -1,8 +1,10 @@
 package org.nekotori.chain.channel.handler;
 
 import net.mamoe.mirai.event.events.GroupMessageEvent;
+import org.nekotori.chain.channel.GroupCommandChannel;
 
 import java.util.Deque;
+import java.util.List;
 
 /**
  * @author: JayDeng
@@ -11,5 +13,7 @@ import java.util.Deque;
  */
 public interface ChannelHandler {
 
-    void handleMessage(Deque<GroupMessageEvent> his, GroupMessageEvent groupMessageEvent);
+    List<String> getStages();
+
+    void handleMessage(GroupCommandChannel channel, GroupMessageEvent groupMessageEvent);
 }

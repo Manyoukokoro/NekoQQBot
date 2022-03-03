@@ -10,23 +10,32 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+/**
+ * @author: JayDeng
+ * @date: 2022/2/28 下午3:31
+ * @description: CustomCommandDo
+ * @version: {@link }
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@TableName("chat_history")
-public class ChatHistoryDo {
+@TableName("custom_command")
+public class CustomCommandDo {
 
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     private Long groupId;
 
-    private Long senderId;
+    private Long creatorId;
 
-    private String content;
+    private Date createTime;
 
-    private Date time;
+    private String authority;
 
-    private Boolean isCommand;
+    private String commandBody;
+
+    private Date updateTime;
+
 }

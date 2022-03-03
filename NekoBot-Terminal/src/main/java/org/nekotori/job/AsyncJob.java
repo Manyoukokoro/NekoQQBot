@@ -10,6 +10,7 @@ import net.mamoe.mirai.message.data.PlainText;
 import org.nekotori.chain.ChainMessageSelector;
 import org.nekotori.dao.ChatMemberMapper;
 import org.nekotori.entity.ChatMemberDo;
+import org.nekotori.handler.CustomCommandHandler;
 import org.nekotori.handler.GlobalAtMeHandler;
 import org.nekotori.handler.GlobalCommandHandler;
 import org.nekotori.service.GroupService;
@@ -23,6 +24,9 @@ public class AsyncJob {
 
     @Resource
     private GlobalCommandHandler globalCommandHandler;
+
+    @Resource
+    private CustomCommandHandler customCommandHandler;
 
     @Resource
     private GlobalAtMeHandler globalAtMeHandler;
@@ -56,30 +60,30 @@ public class AsyncJob {
         groupService.saveHistory(groupMessageEvent);
     }
 
-    @Async
-    public void everyDayWelcome(GroupMessageEvent groupMessageEvent){
-        Group group = groupMessageEvent.getGroup();
-        Member sender = groupMessageEvent.getSender();
-        ChatMemberDo chatMemberDo = chatMemberMapper.selectOne(new QueryWrapper<ChatMemberDo>().eq("group_id", group.getId()).eq("member_id", sender.getId()));
-        if(chatMemberDo==null ||!chatMemberDo.getTodayWelcome())
-        {
-            sender.nudge().sendTo(group);
-            group.sendMessage(new MessageChainBuilder().append(new At(sender.getId())).append(new PlainText(" Hi,新的一天看到你真开心")).build());
-        }
-        if(chatMemberDo==null){
-            chatMemberDo = ChatMemberDo.builder()
-                    .memberId(sender.getId())
-                    .groupId(group.getId())
-                    .isBlocked(false)
-                    .level(0)
-                    .nickName(sender.getNameCard())
-                    .todaySign(false)
-                    .todayWelcome(true)
-                    .totalSign(0)
-                    .exp(0L)
-                    .build();
-        }
-        chatMemberDo.setTodayWelcome(true);
-        chatMemberMapper.updateById(chatMemberDo);
-    }
+//    @Async
+//    public void everyDayWelcome(GroupMessageEvent groupMessageEvent){
+//        Group group = groupMessageEvent.getGroup();
+//        Member sender = groupMessageEvent.getSender();
+//        ChatMemberDo chatMemberDo = chatMemberMapper.selectOne(new QueryWrapper<ChatMemberDo>().eq("group_id", group.getId()).eq("member_id", sender.getId()));
+//        if(chatMemberDo==null ||!chatMemberDo.getTodayWelcome())
+//        {
+//            sender.nudge().sendTo(group);
+//            group.sendMessage(new MessageChainBuilder().append(new At(sender.getId())).append(new PlainText(" Hi,新的一天看到你真开心")).build());
+//        }
+//        if(chatMemberDo==null){
+//            chatMemberDo = ChatMemberDo.builder()
+//                    .memberId(sender.getId())
+//                    .groupId(group.getId())
+//                    .isBlocked(false)
+//                    .level(0)
+//                    .nickName(sender.getNameCard())
+//                    .todaySign(false)
+//                    .todayWelcome(true)
+//                    .totalSign(0)
+//                    .exp(0L)
+//                    .build();
+//        }
+//        chatMemberDo.setTodayWelcome(true);
+//        chatMemberMapper.updateById(chatMemberDo);
+//    }
 }

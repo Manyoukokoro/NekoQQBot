@@ -24,12 +24,16 @@ public class GroupCommandChannel {
 
     private Deque<GroupMessageEvent> messageHisQueue;
 
+    private List<String> stages;
+
+    private String nowStage;
+
     private Long expireTime;
 
     private ChannelHandler channelHandler;
 
     public void handleIncomeMessage(GroupMessageEvent groupMessageEvent){
-        this.channelHandler.handleMessage(messageHisQueue, groupMessageEvent);
+        this.channelHandler.handleMessage(this, groupMessageEvent);
         messageHisQueue.add(groupMessageEvent);
     }
 

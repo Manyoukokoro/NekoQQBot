@@ -14,6 +14,7 @@ import org.nekotori.entity.ChatMemberDo;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.Random;
 
 /**
@@ -33,33 +34,32 @@ public class SignCommand extends NoAuthGroupCommand {
         final long menber = sender.getId();
         final long group = subject.getId();
         ChatMemberDo chatMemberDo = chatMemberMapper.selectOne(new QueryWrapper<ChatMemberDo>().eq("group_id", group).eq("member_id", menber));
-        if(!ObjectUtils.isEmpty(chatMemberDo) && chatMemberDo.getTodaySign()){
+        if(!ObjectUtils.isEmpty(chatMemberDo) && chatMemberDo.checkTodaySign()){
             return  new MessageChainBuilder().append(new At(sender.getId()))
                     .append(" ")
                     .append(new PlainText("老板今天已经签到过了哦"))
                     .build();
         }
         if(chatMemberDo == null){
-            final ChatMemberDo build = ChatMemberDo.builder()
+            chatMemberDo = ChatMemberDo.builder()
                     .memberId(menber)
                     .groupId(group)
                     .isBlocked(false)
                     .level(0)
-                    .nickName(sender.getNameCard())
-                    .todaySign(true)
+                    .nickName(sender.getNick())
+                    .lastSign(new Date())
                     .todayWelcome(false)
                     .totalSign(0)
                     .exp(0L)
                     .build();
-            final int id = chatMemberMapper.insert(build);
-            build.setId(id);
-            chatMemberDo = build;
+            final int id = chatMemberMapper.insert(chatMemberDo);
+            chatMemberDo.setId(id);
         }
         final Random random = new Random();
         final int rank = random.nextInt(5)+1;
         final int incomeExp = random.nextInt((int) Math.pow(10d, rank));
         final ChatMemberDo chatMemberDoNew = calLevel(chatMemberDo, incomeExp+chatMemberDo.getExp());
-        chatMemberDoNew.setTodaySign(true);
+        chatMemberDoNew.setLastSign(new Date());
         chatMemberDoNew.setTotalSign(chatMemberDoNew.getTotalSign()+1);
         chatMemberMapper.updateById(chatMemberDoNew);
         return new MessageChainBuilder().append(new At(sender.getId()))
