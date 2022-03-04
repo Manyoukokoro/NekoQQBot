@@ -32,6 +32,7 @@ public class CustomResponse {
     public enum WAY{
         FULL_CONTEXT("全文"),
         CONTAINS("包含"),
+        REGEX("正则"),
         BEGIN("开头"),
         END("结尾");
 

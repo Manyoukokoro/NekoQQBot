@@ -19,7 +19,9 @@ import org.nekotori.utils.CommandUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -33,7 +35,7 @@ public class CustomResponseCommand extends NoAuthGroupCommand {
     public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
 
 
-        String s = messageChain.serializeToMiraiCode().replace("\\n","");
+        String s = messageChain.contentToString().replace("\\n","");
         CommandAttr commandAttr = CommandUtils.resolveCommand(s);
         List<String> param = commandAttr.getParam();
         if(param.size()<3){
@@ -41,15 +43,22 @@ public class CustomResponseCommand extends NoAuthGroupCommand {
         }
         String way = param.get(0);
         String keyWord = param.get(1);
-        StringBuilder response = new StringBuilder();
-        for(int i=2;i<param.size();i++){
-            response.append(param.get(i));
+        if(Arrays.stream(CustomResponse.WAY.values()).filter(v->v.toString().equals(way)).findAny().isEmpty()){
+            return new MessageChainBuilder().append(new PlainText("什么冥王星匹配方式，你逗你机器人大爷呢")).build();
+        }
+        String join = String.join(" ", param.subList(2, param.size()));
+        if(CustomResponse.WAY.REGEX.toString().equals(way)){
+            try{
+            Pattern compile = Pattern.compile(keyWord);
+            }catch (Exception e){
+                return new MessageChainBuilder().append(new PlainText("您的正则好像有点机车欸")).build();
+            }
         }
         try {
             CustomResponse build = CustomResponse.builder()
                     .keyWord(keyWord)
                     .way(CustomResponse.WAY.of(way))
-                    .response(response.toString()).build();
+                    .response(join).build();
             ChatGroupDo group = chatGroupMapper.selectOne(new QueryWrapper<ChatGroupDo>().eq("group_id", subject.getId()));
             String customResponse = group.getCustomResponse();
             List<CustomResponse> customResponses;

@@ -6,6 +6,7 @@ import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import org.nekotori.annotations.IsCommand;
+import org.nekotori.commands.Command;
 import org.nekotori.commands.ManagerGroupCommand;
 import org.nekotori.commands.NoAuthGroupCommand;
 import org.nekotori.service.GroupService;
@@ -13,10 +14,10 @@ import org.nekotori.utils.CommandUtils;
 import org.nekotori.utils.SpringContextUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @IsCommand(name = {"h","help"},description = "帮助文档，格式:(!/-/#)help")
 public class HelpCommand extends NoAuthGroupCommand {
@@ -33,27 +34,32 @@ public class HelpCommand extends NoAuthGroupCommand {
     }
 
     private String buildHelpDoc(List<String> commands){
-        Map<String, org.nekotori.commands.Command> beansOfType = SpringContextUtils.getContext().getBeansOfType(org.nekotori.commands.Command.class);
-        List<org.nekotori.commands.Command> collect = beansOfType.values().stream().filter(c -> {
-            if(c instanceof NoAuthGroupCommand || c instanceof ManagerGroupCommand) {
-                return true;
-            }
-            String[] name = c.getClass().getAnnotation(IsCommand.class).name();
-            for (String n : name) {
-                if (commands.contains(n)) return true;
-            }
-            return false;
-        }).collect(Collectors.toList());
+        Map<String, Command> beansOfType = SpringContextUtils.getContext().getBeansOfType(org.nekotori.commands.Command.class);
+        List<Command> collect = new ArrayList<>(beansOfType.values());
+//                .stream().filter(c -> {
+//            if(c instanceof NoAuthGroupCommand || c instanceof ManagerGroupCommand) {
+//                return true;
+//            }
+//            String[] name = c.getClass().getAnnotation(IsCommand.class).name();
+//            for (String n : name) {
+//                if (commands.contains(n)) return true;
+//            }
+//            return false;
+//        }).collect(Collectors.toList());
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("\n本群已经注册指令(注意:多关键词指令可能只注册了其中部分): ");
-        for(org.nekotori.commands.Command command:collect){
+        for(Command command:collect){
             IsCommand annotation = command.getClass().getAnnotation(IsCommand.class);
-            String flag = "授权";
+            String[] name = annotation.name();
+            String flag = "未授权";
             if(command instanceof NoAuthGroupCommand){
                 flag = "任意";
             }
             if(command instanceof ManagerGroupCommand){
                 flag = "管理员";
+            }
+            for (String n : name) {
+                if (commands.contains(n)) flag = "已授权";
             }
             stringBuilder.append("\n")
                     .append("[")

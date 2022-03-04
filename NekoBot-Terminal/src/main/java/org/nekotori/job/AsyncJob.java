@@ -1,6 +1,7 @@
 package org.nekotori.job;
 
 import net.mamoe.mirai.event.events.GroupMessageEvent;
+import net.mamoe.mirai.message.code.MiraiCode;
 import org.nekotori.chain.ChainMessageSelector;
 import org.nekotori.dao.ChatMemberMapper;
 import org.nekotori.entity.CustomResponse;
@@ -11,11 +12,14 @@ import org.nekotori.service.GroupService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 @Component
 public class AsyncJob {
@@ -50,19 +54,28 @@ public class AsyncJob {
     @Async
     public void handleCustomResponse(GroupMessageEvent groupMessageEvent){
         List<CustomResponse> customResponses = localCache.get(groupMessageEvent.getGroup().getId());
-        String message = groupMessageEvent.getMessage().serializeToMiraiCode();
+        String message = groupMessageEvent.getMessage().contentToString();
+        List<String> probResponses = new ArrayList<>();
+        if(CollectionUtils.isEmpty(customResponses )){
+            return;
+        }
         customResponses.stream().filter(customResponse -> {
             CustomResponse.WAY way = customResponse.getWay();
             switch (way){
                 case BEGIN: return message.startsWith(customResponse.getKeyWord());
                 case CONTAINS: return message.contains(customResponse.getKeyWord());
                 case END: return message.endsWith(customResponse.getKeyWord());
+                case REGEX: return Pattern.compile(customResponse.getKeyWord()).matcher(message).matches();
                 case FULL_CONTEXT: return message.equals(customResponse.getKeyWord());
                 default: return false;
             }
         }).forEach(v->
-                groupMessageEvent.getGroup().sendMessage(v.getResponse())
+                probResponses.add(v.getResponse())
         );
+        if(probResponses.size()>0){
+            int i = new Random().nextInt(probResponses.size());
+            groupMessageEvent.getSubject().sendMessage(MiraiCode.deserializeMiraiCode(probResponses.get(i)));
+        }
     }
 
     public void repeat(GroupMessageEvent groupMessageEvent){
@@ -91,9 +104,6 @@ public class AsyncJob {
     public void doRecord(GroupMessageEvent groupMessageEvent){
         groupService.saveHistory(groupMessageEvent);
     }
-
-
-
 
 //    @Async
 //    public void everyDayWelcome(GroupMessageEvent groupMessageEvent){

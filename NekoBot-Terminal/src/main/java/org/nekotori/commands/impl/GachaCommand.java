@@ -9,6 +9,7 @@ import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.NoAuthGroupCommand;
+import org.nekotori.commands.PrivilegeGroupCommand;
 import org.nekotori.dao.GroupGachaMapper;
 import org.nekotori.entity.CommandAttr;
 import org.nekotori.entity.GroupGachaDo;
@@ -22,7 +23,7 @@ import java.util.Random;
 
 
 @IsCommand(name = {"抽卡","gacha","g"},description = "模拟抽卡，测试人品，格式:(!/-/#)gacha 数量")
-public class GachaCommand extends NoAuthGroupCommand {
+public class GachaCommand extends PrivilegeGroupCommand {
 
     @Resource
     private GroupGachaMapper groupGachaMapper;
