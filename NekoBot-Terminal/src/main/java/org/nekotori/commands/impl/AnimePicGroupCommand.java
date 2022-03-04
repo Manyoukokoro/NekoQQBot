@@ -45,7 +45,7 @@ public class AnimePicGroupCommand extends PrivilegeGroupCommand {
 
   @Override
   public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
-    String s = messageChain.contentToString();
+    String s = messageChain.serializeToMiraiCode();
     CommandAttr commandAttr = CommandUtils.resolveCommand(s);
     String keyword = CollectionUtils.isEmpty(commandAttr.getParam())?"":commandAttr.getParam().get(0);
     String imgUrl = "";

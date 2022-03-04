@@ -49,13 +49,13 @@ public class ChangeCachaHandler implements ChannelHandler {
             GroupGachaDo groupGachaDo = new GroupGachaDo();
             groupGachaDo.setGroupId(groupMessageEvent.getGroup().getId());
             groupGachaDo.setCreateTime(new Date());
-            int r = Integer.parseInt(channel.getMessageHisQueue().removeLast().getMessage().contentToString());
-            int sr = Integer.parseInt(channel.getMessageHisQueue().removeLast().getMessage().contentToString());
-            int ssr = Integer.parseInt(channel.getMessageHisQueue().removeLast().getMessage().contentToString());
-            int ur = Integer.parseInt(channel.getMessageHisQueue().removeLast().getMessage().contentToString());
+            int r = Integer.parseInt(channel.getMessageHisQueue().removeLast().getMessage().serializeToMiraiCode());
+            int sr = Integer.parseInt(channel.getMessageHisQueue().removeLast().getMessage().serializeToMiraiCode());
+            int ssr = Integer.parseInt(channel.getMessageHisQueue().removeLast().getMessage().serializeToMiraiCode());
+            int ur = Integer.parseInt(channel.getMessageHisQueue().removeLast().getMessage().serializeToMiraiCode());
             int n;
             try {
-                n = Integer.parseInt(groupMessageEvent.getMessage().contentToString());
+                n = Integer.parseInt(groupMessageEvent.getMessage().serializeToMiraiCode());
             }catch (NumberFormatException e){
                 n = 0;
             }
@@ -69,7 +69,7 @@ public class ChangeCachaHandler implements ChannelHandler {
             groupMessageEvent.getGroup().sendMessage("修改成功");
         }
         try {
-            Integer.parseInt(groupMessageEvent.getMessage().contentToString());
+            Integer.parseInt(groupMessageEvent.getMessage().serializeToMiraiCode());
             channel.setNowStage(channel.getStages().get(index+1));
             groupMessageEvent.getGroup().sendMessage("请输入"+channel.getNowStage()+"概率");
         }catch (NumberFormatException e){

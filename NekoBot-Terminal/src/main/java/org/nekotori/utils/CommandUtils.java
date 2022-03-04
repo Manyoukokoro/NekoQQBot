@@ -37,14 +37,14 @@ public class CommandUtils {
 
     public static boolean checkCommand(Command command, GroupMessageEvent event) {
         if(List.of(command.getClass().getAnnotation(IsCommand.class).name())
-                .contains( CommandUtils.resolveCommand(event.getMessage().contentToString()).getCommand())){
+                .contains( CommandUtils.resolveCommand(event.getMessage().serializeToMiraiCode()).getCommand())){
             return true;
         }
         return false;
     }
 
     public static boolean isCommand(GroupMessageEvent groupMessageEvent){
-        String s = groupMessageEvent.getMessage().contentToString();
+        String s = groupMessageEvent.getMessage().serializeToMiraiCode();
         for (String c : InnerConstants.commandHeader) {
             if(s.startsWith(c))return true;
         }

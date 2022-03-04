@@ -40,7 +40,7 @@ public class SampleCommand extends PrivilegeGroupCommand {
         /**
          * 标准方法，解析指令数据
          */
-        final CommandAttr commandAttr = CommandUtils.resolveCommand(messageChain.contentToString());
+        final CommandAttr commandAttr = CommandUtils.resolveCommand(messageChain.serializeToMiraiCode());
         /**
          * 指令头：！ - #
          */

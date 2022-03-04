@@ -1,26 +1,26 @@
 package org.nekotori.job;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import net.mamoe.mirai.contact.Group;
-import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
-import net.mamoe.mirai.message.data.At;
-import net.mamoe.mirai.message.data.MessageChainBuilder;
-import net.mamoe.mirai.message.data.PlainText;
 import org.nekotori.chain.ChainMessageSelector;
 import org.nekotori.dao.ChatMemberMapper;
-import org.nekotori.entity.ChatMemberDo;
+import org.nekotori.entity.CustomResponse;
 import org.nekotori.handler.CustomCommandHandler;
 import org.nekotori.handler.GlobalAtMeHandler;
 import org.nekotori.handler.GlobalCommandHandler;
 import org.nekotori.service.GroupService;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 @Component
 public class AsyncJob {
+
+    public static Map<Long, List<CustomResponse>> localCache;
 
     @Resource
     private GlobalCommandHandler globalCommandHandler;
@@ -41,6 +41,38 @@ public class AsyncJob {
     private ChainMessageSelector chainMessageSelector;
 
 
+    @Bean(name = "groupCusRes")
+    public Map<Long, List<CustomResponse>> getGroupCustomResponse(){
+        localCache = groupService.getGroupCustomResponses();
+        return localCache;
+    }
+
+    @Async
+    public void handleCustomResponse(GroupMessageEvent groupMessageEvent){
+        List<CustomResponse> customResponses = localCache.get(groupMessageEvent.getGroup().getId());
+        String message = groupMessageEvent.getMessage().serializeToMiraiCode();
+        customResponses.stream().filter(customResponse -> {
+            CustomResponse.WAY way = customResponse.getWay();
+            switch (way){
+                case BEGIN: return message.startsWith(customResponse.getKeyWord());
+                case CONTAINS: return message.contains(customResponse.getKeyWord());
+                case END: return message.endsWith(customResponse.getKeyWord());
+                case FULL_CONTEXT: return message.equals(customResponse.getKeyWord());
+                default: return false;
+            }
+        }).forEach(v->
+                groupMessageEvent.getGroup().sendMessage(v.getResponse())
+        );
+    }
+
+    public void repeat(GroupMessageEvent groupMessageEvent){
+        int randomInt = new Random().nextInt(100);
+        if(randomInt<5){
+            groupMessageEvent.getSubject().sendMessage(groupMessageEvent.getMessage());
+        }
+
+    }
+
     @Async
     public void handleCommand(GroupMessageEvent groupMessageEvent){
         globalCommandHandler.handle(groupMessageEvent);
@@ -59,6 +91,9 @@ public class AsyncJob {
     public void doRecord(GroupMessageEvent groupMessageEvent){
         groupService.saveHistory(groupMessageEvent);
     }
+
+
+
 
 //    @Async
 //    public void everyDayWelcome(GroupMessageEvent groupMessageEvent){

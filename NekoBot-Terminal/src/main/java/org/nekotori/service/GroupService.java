@@ -2,6 +2,10 @@ package org.nekotori.service;
 
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
+import org.nekotori.entity.CustomResponse;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author: JayDeng
@@ -21,4 +25,6 @@ public interface GroupService {
     void updateGroupCommand(Long groupId, String command);
 
     String getGroupCommands(Long groupId);
+
+    Map<Long,List<CustomResponse>> getGroupCustomResponses();
 }

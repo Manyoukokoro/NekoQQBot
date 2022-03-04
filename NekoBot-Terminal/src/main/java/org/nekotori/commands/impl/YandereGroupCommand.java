@@ -42,7 +42,7 @@ public class YandereGroupCommand extends PrivilegeGroupCommand {
 
     @Override
     public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
-        CommandAttr commandAttr = CommandUtils.resolveCommand(messageChain.contentToString());
+        CommandAttr commandAttr = CommandUtils.resolveCommand(messageChain.serializeToMiraiCode());
         List<String> param = commandAttr.getParam();
         String build =
                 UrlBuilder.of(yanderePost, StandardCharsets.UTF_8)

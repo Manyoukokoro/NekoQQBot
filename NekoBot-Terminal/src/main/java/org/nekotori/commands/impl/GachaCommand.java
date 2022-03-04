@@ -35,7 +35,7 @@ public class GachaCommand extends NoAuthGroupCommand {
             return new MessageChainBuilder().append("请先修改概率").build();
         }
         GroupGachaDo groupGachaDo = first.get();
-        CommandAttr commandAttr = CommandUtils.resolveCommand(messageChain.contentToString());
+        CommandAttr commandAttr = CommandUtils.resolveCommand(messageChain.serializeToMiraiCode());
         List<String> param = commandAttr.getParam();
         List<String> gachas;
         if(CollectionUtil.isEmpty(param)){
@@ -71,7 +71,6 @@ public class GachaCommand extends NoAuthGroupCommand {
         ssrP = (int) (ssrP.doubleValue()/sum.doubleValue() * 100000)+np;
         srP = (int) (srP.doubleValue()/sum.doubleValue() * 100000)+ssrP;
         rP = (int) (rP.doubleValue()/sum.doubleValue() * 100000)+srP;
-        urP = (int) (urP.doubleValue()/sum.doubleValue() * 100000)+rP;
         List<String> gachas = new ArrayList<>();
         Random random = new Random();
         for(int j = 0;j<num;j++){

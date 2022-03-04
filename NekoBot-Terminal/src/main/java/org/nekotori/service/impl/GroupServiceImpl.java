@@ -1,5 +1,7 @@
 package org.nekotori.service.impl;
 
+import cn.hutool.core.lang.TypeReference;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
@@ -7,15 +9,14 @@ import org.nekotori.dao.ChatGroupMapper;
 import org.nekotori.dao.ChatHistoryMapper;
 import org.nekotori.entity.ChatGroupDo;
 import org.nekotori.entity.ChatHistoryDo;
+import org.nekotori.entity.CustomResponse;
 import org.nekotori.service.GroupService;
 import org.nekotori.utils.CommandUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -85,6 +86,16 @@ public class GroupServiceImpl implements GroupService {
     public String getGroupCommands(Long groupId) {
         ChatGroupDo chatGroupDo = chatGroupMapper.selectOne(new QueryWrapper<ChatGroupDo>().eq("group_id", groupId));
         return Optional.ofNullable(chatGroupDo).orElse(new ChatGroupDo()).getCommands();
+    }
+
+    @Override
+    public Map<Long,List<CustomResponse>> getGroupCustomResponses() {
+        List<ChatGroupDo> chatGroupDo = chatGroupMapper.selectList(new QueryWrapper<>());
+        return chatGroupDo.stream().collect(Collectors.toMap(
+                ChatGroupDo::getGroupId, v ->v.getCustomResponse()==null?new ArrayList<>() :JSONUtil.toBean(v.getCustomResponse(),
+                        new TypeReference<List<CustomResponse>>() {
+                }, true)
+        ));
     }
 }
     

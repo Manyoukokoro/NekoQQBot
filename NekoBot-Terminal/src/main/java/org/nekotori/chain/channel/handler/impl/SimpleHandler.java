@@ -26,8 +26,8 @@ public class SimpleHandler implements ChannelHandler {
         Deque<GroupMessageEvent> his = channel.getMessageHisQueue();
         if(his.size()==0) return;
         final GroupMessageEvent last = his.getLast();
-        final String s = last.getMessage().contentToString();
-        if(groupMessageEvent.getMessage().contentToString().equals(s)){
+        final String s = last.getMessage().serializeToMiraiCode();
+        if(groupMessageEvent.getMessage().serializeToMiraiCode().equals(s)){
             groupMessageEvent.getGroup().sendMessage(groupMessageEvent.getMessage());
         }
     }

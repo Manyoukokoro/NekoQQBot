@@ -101,7 +101,7 @@ public class CustomCommand {
                     info = event.getSender().getNick();
                     break;
                 case TARGET_MESSAGE:
-                    info = event.getMessage().contentToString();
+                    info = event.getMessage().serializeToMiraiCode();
                     break;
                 default:
                     break;

@@ -73,7 +73,7 @@ public class GlobalCommandHandler {
                         final int id = chatMemberMapper.insert(chatMemberDo);
                         chatMemberDo.setId(id);
                     }
-                    chatMemberDo.setLastCommand(groupMessageEvent.getMessage().contentToString());
+                    chatMemberDo.setLastCommand(groupMessageEvent.getMessage().serializeToMiraiCode());
                     chatMemberMapper.updateById(chatMemberDo);
                 });
           }

@@ -19,7 +19,7 @@ import java.util.List;
 public class DiceCommand extends NoAuthGroupCommand {
     @Override
     public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
-        String s = messageChain.contentToString();
+        String s = messageChain.serializeToMiraiCode();
         CommandAttr commandAttr = CommandUtils.resolveCommand(s);
         List<String> param = commandAttr.getParam();
         int num  =  1;

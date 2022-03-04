@@ -41,7 +41,7 @@ public class WeatherGroupCommand extends NoAuthGroupCommand {
 
   @Override
   public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
-    String s = messageChain.contentToString();
+    String s = messageChain.serializeToMiraiCode();
     final CommandAttr commandAttr = CommandUtils.resolveCommand(s);
     final List<String> param = commandAttr.getParam();
     MessageChainBuilder singleMessages = new MessageChainBuilder().append(new At(sender.getId()));

@@ -22,7 +22,7 @@ public class RegisterComCommand extends ManagerGroupCommand {
 
     @Override
     public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
-        String s = messageChain.contentToString();
+        String s = messageChain.serializeToMiraiCode();
         CommandAttr commandAttr = CommandUtils.resolveCommand(s);
         List<String> param = commandAttr.getParam();
         for(String p:param){
