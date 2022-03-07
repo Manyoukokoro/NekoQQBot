@@ -79,6 +79,9 @@ public class CustomResponseCommand extends NoAuthGroupCommand {
             AsyncJob.localCache.put(subject.getId(),customResponses);
             group.setCustomResponse(JSONUtil.toJsonStr(customResponses));
             chatGroupMapper.updateById(group);
+            if(commandAttr.getCommand().equals("撤销回复")){
+                return new MessageChainBuilder().append(new PlainText("撤销自定义回复成功!")).build();
+            }
             return new MessageChainBuilder().append(new PlainText("新增自定义回复成功!")).build();
         }catch (Exception e){
             return new MessageChainBuilder().append(new PlainText("发生了未知错误～QAQ")).build();

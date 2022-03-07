@@ -57,7 +57,23 @@ public class SignCommand extends NoAuthGroupCommand {
         }
         final Random random = new Random();
         final int rank = random.nextInt(5)+1;
-        final int incomeExp = random.nextInt((int) Math.pow(10d, rank));
+        int incomeExp = random.nextInt((int) Math.pow(10d, rank));
+        if(incomeExp == 0){
+            return new MessageChainBuilder().append("叮~~~~~~~，恭喜亲获得了零经验，这边送您重签卡一张~，您真是太欧了呢").build();
+        }
+        if(incomeExp > 99900){
+            try{
+                for(int i=10;i>0;i--){
+                    subject.sendMessage(String.valueOf(i));
+                    Thread.sleep(1000);
+                }
+                subject.sendMessage("毁天灭地！");
+            }catch (InterruptedException e){
+                return new MessageChainBuilder().append("出现了预料之外的事故>x<").build();
+            }
+
+        }
+        incomeExp = 99999;
         final ChatMemberDo chatMemberDoNew = calLevel(chatMemberDo, incomeExp+chatMemberDo.getExp());
         chatMemberDoNew.setLastSign(new Date());
         chatMemberDoNew.setTotalSign(chatMemberDoNew.getTotalSign()+1);

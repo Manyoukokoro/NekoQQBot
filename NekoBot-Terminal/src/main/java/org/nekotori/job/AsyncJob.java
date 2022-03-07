@@ -80,7 +80,7 @@ public class AsyncJob {
 
     public void repeat(GroupMessageEvent groupMessageEvent){
         int randomInt = new Random().nextInt(100);
-        if(randomInt<5){
+        if(randomInt<2){
             groupMessageEvent.getSubject().sendMessage(groupMessageEvent.getMessage());
         }
 
