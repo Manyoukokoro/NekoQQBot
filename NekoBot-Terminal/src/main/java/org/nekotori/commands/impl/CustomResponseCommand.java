@@ -42,10 +42,21 @@ public class CustomResponseCommand extends NoAuthGroupCommand {
         CommandAttr commandAttr = CommandUtils.resolveCommand(s);
         if("查询回复".equals(commandAttr.getCommand())){
             ChatGroupDo group = chatGroupMapper.selectOne(new QueryWrapper<ChatGroupDo>().eq("group_id", subject.getId()));
-            String commands = group.getCommands();
-            JSONArray objects = JSONUtil.parseArray(commands);
-            String join = objects.join("\n");
-            return new MessageChainBuilder().append(new At(sender.getId())).append("查询到本群自定义回复如下：\n").append(join).build();
+            String customResponse = group.getCustomResponse();
+            List<CustomResponse> customResponses;
+            if (customResponse ==null){
+                customResponses = new ArrayList<>();
+            }
+            else {
+                customResponses = JSONUtil.toBean(customResponse,
+                        new TypeReference<List<CustomResponse>>() {
+                        }, true);
+            }
+            StringBuilder stringBuilder = new StringBuilder();
+            for (CustomResponse c:customResponses){
+                stringBuilder.append(c.getWay()).append(":").append(c.getKeyWord()).append(":").append(c.getResponse()).append("\n");
+            }
+            return new MessageChainBuilder().append(new At(sender.getId())).append("查询到本群自定义回复如下：\n").append(stringBuilder.toString()).build();
         }
         List<String> param = commandAttr.getParam();
         if(param.size()<3){

@@ -71,9 +71,8 @@ public class SignCommand extends NoAuthGroupCommand {
             }catch (InterruptedException e){
                 return new MessageChainBuilder().append("出现了预料之外的事故>x<").build();
             }
-
+            incomeExp = 99999;
         }
-        incomeExp = 99999;
         final ChatMemberDo chatMemberDoNew = calLevel(chatMemberDo, incomeExp+chatMemberDo.getExp());
         chatMemberDoNew.setLastSign(new Date());
         chatMemberDoNew.setTotalSign(chatMemberDoNew.getTotalSign()+1);
