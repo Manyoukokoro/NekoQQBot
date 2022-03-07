@@ -1,10 +1,12 @@
 package org.nekotori.commands.impl;
 
 import cn.hutool.core.lang.TypeReference;
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
+import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
@@ -16,6 +18,7 @@ import org.nekotori.entity.CommandAttr;
 import org.nekotori.entity.CustomResponse;
 import org.nekotori.job.AsyncJob;
 import org.nekotori.utils.CommandUtils;
+import org.nekotori.utils.JsonUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -25,7 +28,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
-@IsCommand(name = {"回复","撤销回复","response"},description = "自定义回复，格式:(!/-/#)回复 触发方式 触发文 回复文")
+@IsCommand(name = {"回复","撤销回复","查询回复","response"},description = "自定义回复，格式:(!/-/#)回复 触发方式 触发文 回复文")
 public class CustomResponseCommand extends NoAuthGroupCommand {
 
     @Resource
@@ -37,6 +40,13 @@ public class CustomResponseCommand extends NoAuthGroupCommand {
 
         String s = messageChain.contentToString().replace("\\n","");
         CommandAttr commandAttr = CommandUtils.resolveCommand(s);
+        if("查询回复".equals(commandAttr.getCommand())){
+            ChatGroupDo group = chatGroupMapper.selectOne(new QueryWrapper<ChatGroupDo>().eq("group_id", subject.getId()));
+            String commands = group.getCommands();
+            JSONArray objects = JSONUtil.parseArray(commands);
+            String join = objects.join("\n");
+            return new MessageChainBuilder().append(new At(sender.getId())).append("查询到本群自定义回复如下：\n").append(join).build();
+        }
         List<String> param = commandAttr.getParam();
         if(param.size()<3){
             return new MessageChainBuilder().append(new PlainText("参数过少，请检查一下哦")).build();
