@@ -29,6 +29,8 @@ import java.util.regex.Pattern;
 @HandlerId("442379512")
 public class FiveChessHandler implements ChannelHandler {
 
+    public static final int size = 16;
+
     @Override
     public List<String> getStages() {
         return Arrays.asList("B","W");
@@ -50,7 +52,7 @@ public class FiveChessHandler implements ChannelHandler {
         Resources resources = res.get(groupId);
         Resources re = new Resources();
         if(ObjectUtils.isEmpty(resources)){
-            re.setField(FiveChessUtil.generateField(12));
+            re.setField(FiveChessUtil.generateField(size));
             Map<Long, String> pair = re.getPair();
             pair.put(blackId,"B");
             re.setPair(pair);
@@ -115,7 +117,7 @@ public class FiveChessHandler implements ChannelHandler {
         if(ints == null){
             return;
         }
-        if(field[ints[1]][ints[0]] != 0){
+        if(ints[0]>size||ints[0]<1||ints[1]>size||ints[1]<1||field[ints[1]][ints[0]] != 0){
             groupMessageEvent.getGroup().sendMessage(new MessageChainBuilder().append("不能在此处落子！").build());
             return;
         }
@@ -147,6 +149,12 @@ public class FiveChessHandler implements ChannelHandler {
             chainMessageSelector.unregisterChannel(groupMessageEvent.getGroup().getId(),
                     this.getClass().getAnnotation(HandlerId.class).value());
         }
+        if(isFilled(field)){
+            groupMessageEvent.getGroup().sendMessage("平局！");
+            clear(groupMessageEvent.getSubject().getId());
+            chainMessageSelector.unregisterChannel(groupMessageEvent.getGroup().getId(),
+                    this.getClass().getAnnotation(HandlerId.class).value());
+        }
     }
 
     private int[] resolveLocation(String s){
@@ -159,6 +167,15 @@ public class FiveChessHandler implements ChannelHandler {
         int l = letter.charAt(0)-'A';
         int n = Integer.parseInt(number)-1;
         return new int[]{n,l};
+    }
+
+    private boolean isFilled(int[][] map){
+        for(int[] raw:map){
+            for (int i:raw){
+                if(i==0) return false;
+            }
+        }
+        return true;
     }
 
 }
