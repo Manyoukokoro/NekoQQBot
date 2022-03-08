@@ -3,10 +3,7 @@ package org.nekotori.utils;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 /**
  * @author: JayDeng
@@ -29,10 +26,10 @@ public class FiveChessUtil {
     }
 
     public static InputStream bufferedImageToInputStream(BufferedImage image){
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        File file = new File("temp.png");
         try {
-            ImageIO.write(image, "png", os);
-            return new ByteArrayInputStream(os.toByteArray());
+            ImageIO.write(image, "png", file);
+            return new FileInputStream(file);
         } catch (IOException ignore) {
         }
         return null;
@@ -88,12 +85,11 @@ public class FiveChessUtil {
         // 对一个棋子的一个方向的10颗棋子进行判断 是否满足5子连续
         // 左右
         int num = 1;
-        for (int i = 0; i < 14; i++) {
+    for (int i = 0; i < map.length-1; i++) {
             if (map[x][i] != 0) {
                 if (map[x][i] == map[x][i + 1]) {
                     num++;
                     if (num >= 5) {
-                        System.out.println("win");
                         return map[x][y];
                     }
                 } else {
@@ -104,12 +100,11 @@ public class FiveChessUtil {
 
         // 上下
         num = 1;
-        for (int i = 0; i < 14; i++) {
+    for (int i = 0; i < map.length; i++) {
             if (map[i][y] != 0) {
                 if (map[i][y] == map[i + 1][y]) {
                     num++;
                     if (num >= 5) {
-                        System.out.println("win");
                         return map[x][y];
                     }
                 } else {
@@ -120,14 +115,13 @@ public class FiveChessUtil {
 
         num=1;
         // 右斜 x-1 j+1
-        for (int i = 0; i < map.length*2-1; i++) {
+        for (int i = 0; i < map.length-1; i++) {
             for (int j = 1; j < map.length ; j++) {
                 if (((i - j) >= 0) && ((i - j) < map.length)) {
                     if(map[j][i-j]!=0){
                         if(map[j][i-j]==map[j-1][i-j+1]){
                             num++;
                             if (num >= 5) {
-                                System.out.println("win");
                                 return map[x][y];
                             }
                         }else{
@@ -147,7 +141,6 @@ public class FiveChessUtil {
                         if(map[j][i+j]==map[j+1][i+j+1]){
                             num++;
                             if (num >= 5) {
-                                System.out.println("win");
                                 return map[x][y];
                             }
                         }else{
@@ -160,4 +153,95 @@ public class FiveChessUtil {
 
         return 0;
     }
+
+    public static boolean isWin(int[][] map)
+    {
+        int temp = 0;   //记录当前位置
+        int x,y;    //记录当前坐标
+        for (int i = 0 ; i < map.length; i++)    //横向遍历棋盘
+        {
+            for ( int j = 0 ; j < map.length ; j++)//纵向遍历棋盘
+            {
+                temp = map[i][j];         //
+
+                if (temp !=0)      //判断是否有棋子
+                {
+                    for (int k=0;k<4 ;k++ )        //按向右、向下、右下、左下四个方向判断
+                    {
+                        x = i;
+                        y = j;
+                        switch (k)
+                        {
+                            case 0:          //向右判断
+                            {
+                                for (int t=0;t<5 ;t++ )//判断另外四个棋子
+                                {
+                                    if (4 == t)//t值等于4说明前面四个子和
+                                    {
+                                        return true;
+                                    }
+                                    if (map.length == ++y||temp !=(map[x][y]))//y值等于BOARD_SIZE表明已超出棋盘边界
+                                    {
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
+                            case 1:         //向下判断
+                            {
+                                for (int t=0;t<5 ;t++ )//判断另外四个棋子
+                                {
+                                    if (4 == t)//t值等于4说明前面四个子
+                                    {
+                                        return true;
+                                    }
+                                    if (map.length == ++x||temp != map[x][y])//y值等于BOARD_SIZE表明已超出棋盘边界
+                                    {
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
+                            case 2:        //向右下方向判断
+                            {
+                                for (int t=0;t<5 ;t++ )//判断另外四个棋子
+                                {
+                                    if (4 == t)//t值等于4说明前面四个子
+                                    {
+                                        return true;
+                                    }
+                                    if (map.length == ++x||map.length == ++y||temp != map[x][y])//x、y值等于BOARD_SIZE表明已超出棋盘边界
+                                    {
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
+                            case 3:      //向左下放下判断
+                            {
+                                for (int t=0;t<5 ;t++ )//判断另外四个棋子
+                                {
+                                    if (4 == t)//t值等于4说明前面四个子
+                                    {
+                                        return true;
+                                    }
+                                    if (map.length == ++x||-1 == --y||temp !=map[x][y])//x等于BOARD_SIZE或者y值等于-1表明已超出棋盘边界
+                                    {
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
+                            default:
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }
+

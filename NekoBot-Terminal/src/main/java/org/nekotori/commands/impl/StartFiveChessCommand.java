@@ -41,14 +41,15 @@ public class StartFiveChessCommand extends NoAuthGroupCommand {
         if(ObjectUtils.isEmpty(groupCommandChannel)) {
             chainMessageSelector.registerChannel(subject.getId(),fiveChessHandler);
             chainMessageSelector.joinChannel(subject.getId(),fiveChessHandler,sender.getId());
-            fiveChessHandler.init(sender.getId());
-            subject.sendMessage(new MessageChainBuilder().append("创建对局成功!").append(Contact.uploadImage(subject,
-                    fiveChessHandler.drawMap())).build());
+            fiveChessHandler.init(sender.getId(),subject.getId());
+            subject.sendMessage(new MessageChainBuilder().append("创建对局成功!").build());
+            subject.sendMessage(new MessageChainBuilder().append(Contact.uploadImage(subject,
+                    fiveChessHandler.drawMap(subject.getId()))).build());
         }else {
-            if(fiveChessHandler.isFull()){
+            if(fiveChessHandler.isFull(subject.getId())){
                 return new MessageChainBuilder().append("对局已满").build();
             }
-            fiveChessHandler.join(sender.getId());
+            fiveChessHandler.join(sender.getId(),subject.getId());
             chainMessageSelector.joinChannel(subject.getId(),fiveChessHandler,sender.getId());
             subject.sendMessage(new MessageChainBuilder().append("加入对局成功!").build());
         }

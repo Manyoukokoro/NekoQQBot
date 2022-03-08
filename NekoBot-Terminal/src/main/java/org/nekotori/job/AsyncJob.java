@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -60,6 +61,9 @@ public class AsyncJob {
             return;
         }
         customResponses.stream().filter(customResponse -> {
+            if (ObjectUtils.isEmpty(customResponse)|| customResponse.getWay()==null) {
+                return false;
+            }
             CustomResponse.WAY way = customResponse.getWay();
             switch (way){
                 case BEGIN: return message.startsWith(customResponse.getKeyWord());
@@ -105,30 +109,4 @@ public class AsyncJob {
         groupService.saveHistory(groupMessageEvent);
     }
 
-//    @Async
-//    public void everyDayWelcome(GroupMessageEvent groupMessageEvent){
-//        Group group = groupMessageEvent.getGroup();
-//        Member sender = groupMessageEvent.getSender();
-//        ChatMemberDo chatMemberDo = chatMemberMapper.selectOne(new QueryWrapper<ChatMemberDo>().eq("group_id", group.getId()).eq("member_id", sender.getId()));
-//        if(chatMemberDo==null ||!chatMemberDo.getTodayWelcome())
-//        {
-//            sender.nudge().sendTo(group);
-//            group.sendMessage(new MessageChainBuilder().append(new At(sender.getId())).append(new PlainText(" Hi,新的一天看到你真开心")).build());
-//        }
-//        if(chatMemberDo==null){
-//            chatMemberDo = ChatMemberDo.builder()
-//                    .memberId(sender.getId())
-//                    .groupId(group.getId())
-//                    .isBlocked(false)
-//                    .level(0)
-//                    .nickName(sender.getNick())
-//                    .todaySign(false)
-//                    .todayWelcome(true)
-//                    .totalSign(0)
-//                    .exp(0L)
-//                    .build();
-//        }
-//        chatMemberDo.setTodayWelcome(true);
-//        chatMemberMapper.updateById(chatMemberDo);
-//    }
 }
