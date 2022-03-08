@@ -97,6 +97,13 @@ public class FiveChessHandler implements ChannelHandler {
             groupMessageEvent.getSubject().sendMessage("对局已终止");
             return;
         }
+        if("投降".equals(groupMessageEvent.getMessage().serializeToMiraiCode())){
+            clear(groupMessageEvent.getSubject().getId());
+            chainMessageSelector.unregisterChannel(groupMessageEvent.getGroup().getId(),
+                    this.getClass().getAnnotation(HandlerId.class).value());
+            groupMessageEvent.getSubject().sendMessage(groupMessageEvent.getSender().getNick()+"已投降,游戏结束");
+            return;
+        }
         Resources resources = res.get(groupMessageEvent.getSubject().getId());
         int[][] field = resources.getField();
         Map<Long, String> pair = resources.getPair();
