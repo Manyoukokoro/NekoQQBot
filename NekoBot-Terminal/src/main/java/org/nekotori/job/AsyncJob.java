@@ -121,7 +121,7 @@ public class AsyncJob {
 //                    .groupId(group.getId())
 //                    .isBlocked(false)
 //                    .level(0)
-//                    .nickName(sender.getNameCard())
+//                    .nickName(sender.getNick())
 //                    .todaySign(false)
 //                    .todayWelcome(true)
 //                    .totalSign(0)

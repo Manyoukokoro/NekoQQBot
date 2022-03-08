@@ -42,4 +42,6 @@ public class GroupGachaDo {
 
     private Date updateTime;
 
+    private String pollName;
+
 }

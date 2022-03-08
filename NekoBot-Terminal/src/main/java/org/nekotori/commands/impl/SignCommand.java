@@ -23,7 +23,7 @@ import java.util.Random;
  * @description:
  * @version: {@link }
  */
-@IsCommand(name = {"签到"}, description = "签到")
+@IsCommand(name = {"签到","sign"}, description = "签到")
 public class SignCommand extends NoAuthGroupCommand {
 
     @Resource
@@ -31,9 +31,9 @@ public class SignCommand extends NoAuthGroupCommand {
 
     @Override
     public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
-        final long menber = sender.getId();
+        final long member = sender.getId();
         final long group = subject.getId();
-        ChatMemberDo chatMemberDo = chatMemberMapper.selectOne(new QueryWrapper<ChatMemberDo>().eq("group_id", group).eq("member_id", menber));
+        ChatMemberDo chatMemberDo = chatMemberMapper.selectOne(new QueryWrapper<ChatMemberDo>().eq("group_id", group).eq("member_id", member));
         if(!ObjectUtils.isEmpty(chatMemberDo) && chatMemberDo.checkTodaySign()){
             return  new MessageChainBuilder().append(new At(sender.getId()))
                     .append(" ")
@@ -42,7 +42,7 @@ public class SignCommand extends NoAuthGroupCommand {
         }
         if(chatMemberDo == null){
             chatMemberDo = ChatMemberDo.builder()
-                    .memberId(menber)
+                    .memberId(member)
                     .groupId(group)
                     .isBlocked(false)
                     .level(0)
@@ -74,55 +74,32 @@ public class SignCommand extends NoAuthGroupCommand {
             incomeExp = 99999;
         }
         final ChatMemberDo chatMemberDoNew = calLevel(chatMemberDo, incomeExp+chatMemberDo.getExp());
+        chatMemberDoNew.setNickName(sender.getNick());
         chatMemberDoNew.setLastSign(new Date());
         chatMemberDoNew.setTotalSign(chatMemberDoNew.getTotalSign()+1);
         chatMemberMapper.updateById(chatMemberDoNew);
         return new MessageChainBuilder().append(new At(sender.getId()))
                 .append(" ")
-                .append(new PlainText("签到成功！获得经验"+incomeExp+","+"当前等级"+chatMemberDoNew.getLevel()+",真是太幸运了呢"))
+                .append(new PlainText("签到成功！获得经验"+incomeExp+","+"当前等级"+chatMemberDoNew.getLevel()+"距离下一级还差："+nextLevelExp(chatMemberDoNew.getLevel(),chatMemberDoNew.getExp())+"经验," +
+                        "真是太幸运了呢"))
                 .build();
     }
 
-    private ChatMemberDo calLevel(ChatMemberDo chatMemberDo,long incomeExp){
-        if(chatMemberDo.getLevel()<10 && incomeExp>=10) {
-            chatMemberDo.setLevel(chatMemberDo.getLevel()+1);
-            return calLevel(chatMemberDo,incomeExp-10);
+    private long nextLevelExp(int level, long exp){
+        if(level<100){
+            return (long) (Math.pow(2d,(int)((double) level/10))*10) -  exp;
         }
-        if(chatMemberDo.getLevel()<20 && incomeExp>=20){
+        return 10240L -exp;
+    }
+
+//    public static void main(String[] args) {
+//        System.out.println(calLevel(ChatMemberDo.builder().level(1001).build(),32443));
+//    }
+
+    private static ChatMemberDo calLevel(ChatMemberDo chatMemberDo,long incomeExp){
+        if (chatMemberDo.getLevel()<100 && incomeExp >= (Math.pow(2d,(int)((double) chatMemberDo.getLevel()/10))*10)){
             chatMemberDo.setLevel(chatMemberDo.getLevel()+1);
-            return calLevel(chatMemberDo,incomeExp-20);
-        }
-        if(chatMemberDo.getLevel()<30 && incomeExp>=40){
-            chatMemberDo.setLevel(chatMemberDo.getLevel()+1);
-            return calLevel(chatMemberDo,incomeExp-40);
-        }
-        if(chatMemberDo.getLevel()<40 && incomeExp>=80){
-            chatMemberDo.setLevel(chatMemberDo.getLevel()+1);
-            return calLevel(chatMemberDo,incomeExp-80);
-        }
-        if(chatMemberDo.getLevel()<50 && incomeExp>=160){
-            chatMemberDo.setLevel(chatMemberDo.getLevel()+1);
-            return calLevel(chatMemberDo,incomeExp-160);
-        }
-        if(chatMemberDo.getLevel()<60 && incomeExp>=320){
-            chatMemberDo.setLevel(chatMemberDo.getLevel()+1);
-            return calLevel(chatMemberDo,incomeExp-320);
-        }
-        if(chatMemberDo.getLevel()<70 && incomeExp>=640){
-            chatMemberDo.setLevel(chatMemberDo.getLevel()+1);
-            return calLevel(chatMemberDo,incomeExp-640);
-        }
-        if(chatMemberDo.getLevel()<80 && incomeExp>=1280){
-            chatMemberDo.setLevel(chatMemberDo.getLevel()+1);
-            return calLevel(chatMemberDo,incomeExp-1280);
-        }
-        if(chatMemberDo.getLevel()<90 && incomeExp>=2560){
-            chatMemberDo.setLevel(chatMemberDo.getLevel()+1);
-            return calLevel(chatMemberDo,incomeExp-2560);
-        }
-        if(chatMemberDo.getLevel()<100 && incomeExp>=5120){
-            chatMemberDo.setLevel(chatMemberDo.getLevel()+1);
-            return calLevel(chatMemberDo,incomeExp-5120);
+            return calLevel(chatMemberDo,incomeExp-(long)(Math.pow(2d,(int)((double) chatMemberDo.getLevel()/10))*10));
         }
         if(chatMemberDo.getLevel()>=100 && incomeExp>=10240){
             chatMemberDo.setLevel(chatMemberDo.getLevel()+1);

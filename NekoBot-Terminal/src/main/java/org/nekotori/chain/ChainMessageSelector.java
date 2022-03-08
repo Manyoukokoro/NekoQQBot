@@ -37,6 +37,7 @@ public class ChainMessageSelector {
         });
     }
 
+
     //注册信道
     public void registerChannel(Long groupId,ChannelHandler channelHandler){
         final String value = channelHandler.getClass().getAnnotation(HandlerId.class).value();

@@ -45,8 +45,11 @@ public class GachaCommand extends PrivilegeGroupCommand {
         else {
             try{
                 int i = Integer.parseInt(param.get(0));
-                if(i<1||i>40){
-                    return new MessageChainBuilder().append("输入范围有误，仅支持0～40次抽卡").build();
+                if (i<1){
+                    return new MessageChainBuilder().append("抽你马呢").build();
+                }
+                if(i>40){
+                    return new MessageChainBuilder().append("输入范围有误，仅支持1～40次抽卡").build();
                 }
                 gachas = gacha(i,groupGachaDo);
             }catch (NumberFormatException e){
