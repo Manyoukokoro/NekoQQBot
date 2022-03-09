@@ -65,9 +65,7 @@ public class HelpCommand extends NoAuthGroupCommand {
                     .append("[")
                     .append(flag)
                     .append("]")
-                    .append(Arrays.toString(annotation.name()))
-                    .append(":").
-                    append(annotation.description());
+                    .append(Arrays.toString(annotation.name()));
         }
         return stringBuilder.toString();
     }

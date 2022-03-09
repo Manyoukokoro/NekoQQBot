@@ -46,7 +46,7 @@ public class SignCommand extends NoAuthGroupCommand {
                     .groupId(group)
                     .isBlocked(false)
                     .level(0)
-                    .nickName(sender.getNick())
+                    .nickName(sender.getNameCard())
                     .lastSign(new Date())
                     .todayWelcome(false)
                     .totalSign(0)
