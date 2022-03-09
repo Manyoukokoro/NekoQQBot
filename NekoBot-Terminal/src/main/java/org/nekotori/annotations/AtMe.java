@@ -15,6 +15,7 @@ import java.lang.annotation.*;
 @Documented
 @Component
 public @interface AtMe {
+
     @AliasFor(annotation = Component.class)
     String value() default "";
     String[] name() default {""};

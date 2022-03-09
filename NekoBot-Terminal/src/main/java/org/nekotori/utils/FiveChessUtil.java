@@ -4,6 +4,8 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.Arrays;
+import java.util.Date;
 
 /**
  * @author: JayDeng
@@ -35,123 +37,74 @@ public class FiveChessUtil {
         return null;
     }
 
-    public static BufferedImage draw(int[][] map) throws IOException {
+    public static BufferedImage draw(int[][] map,int x,int y) throws IOException {
         if(map.length<=0) return null;
         int raw = map.length;
         int column = map[0].length;
-        int backWidth = 50*raw+60;
-        int backHeight = 50*column+50;
+        int backWidth = 50*raw+110;
+        int backHeight = 50*column+150;
         BufferedImage bufferedImage = new BufferedImage(backWidth+1, backHeight+1 , BufferedImage.TYPE_INT_BGR);
         Graphics2D graphics = bufferedImage.createGraphics();
-        graphics.setColor(Color.white);
+        graphics.setColor(Color.lightGray);
         graphics.fillRect(0,0,backWidth,backHeight);
+        graphics.setColor(Color.black);
+        graphics.fillOval(50*(raw/2)+17,50*(column/2)+17,16,16);
         for(int i=0;i<raw;i++){
             for(int j=0;j<column;j++){
                 graphics.setColor(Color.black);
-                graphics.drawRect(50*i,50*j,50,50);
+                if(i<raw-1&&j<column-1){
+                    graphics.drawRect(50*i+25,50*j+25,50,50);
+                }
                 if(map[i][j]==1) {
                     graphics.setColor(Color.black);
                     graphics.fillOval(50*i+1,50*j+1,48,48);
                 }
                 if(map[i][j]==-1){
+                    graphics.setColor(Color.white);
+                    graphics.fillOval(50*i+1,50*j+1,48,48);
                     graphics.setColor(Color.black);
                     graphics.drawOval(50*i+1,50*j+1,48,48);
                 }
             }
+        }
+        if(map[x][y] == -1){
+            graphics.setColor(Color.yellow);
+        }
+        if(map[x][y] == 1){
+            graphics.setColor(Color.blue);
+        }
+        if(map[x][y] != 0 ){
+            graphics.fillOval(50*x+1,50*y+1,48,48);
+            graphics.setColor(Color.black);
+            graphics.drawOval(50*x+1,50*y+1,48,48);
         }
         graphics.setStroke(new BasicStroke(40));
         graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         int fontSize = 50;
         Font font = new Font(Font.MONOSPACED,Font.BOLD,fontSize);
         graphics.setFont(font);
+        graphics.setColor(Color.black);
         for(int i=0;i<raw;i++){
-            graphics.drawString(String.valueOf((char)('A'+i)),50*i+8,backHeight-10);
+            graphics.drawString(String.valueOf((char)('A'+i)),50*i+8,backHeight-110);
         }
         for(int j=0;j<column;j++){
-            graphics.drawString(String.valueOf((1+j)),backWidth-60,50*j+40);
+            graphics.drawString(String.valueOf((1+j)),backWidth-110,50*j+40);
         }
+        graphics.drawString("@NekoBot",8,backHeight-10);
+        graphics.dispose();
         return bufferedImage;
     }
 
     public static void main(String[] args) throws IOException {
-        draw(generateField(14));
-    }
-
-    public static int isWin(int x, int y, int[][] map) {
-
-
-        // 对胜负判断
-        // 4个方向 左右 上下 左斜 右斜
-        // 对一个棋子的一个方向的10颗棋子进行判断 是否满足5子连续
-        // 左右
-        int num = 1;
-    for (int i = 0; i < map.length-1; i++) {
-            if (map[x][i] != 0) {
-                if (map[x][i] == map[x][i + 1]) {
-                    num++;
-                    if (num >= 5) {
-                        return map[x][y];
-                    }
-                } else {
-                    num = 1;
-                }
-            }
-        }
-
-        // 上下
-        num = 1;
-    for (int i = 0; i < map.length; i++) {
-            if (map[i][y] != 0) {
-                if (map[i][y] == map[i + 1][y]) {
-                    num++;
-                    if (num >= 5) {
-                        return map[x][y];
-                    }
-                } else {
-                    num = 1;
-                }
-            }
-        }
-
-        num=1;
-        // 右斜 x-1 j+1
-        for (int i = 0; i < map.length-1; i++) {
-            for (int j = 1; j < map.length ; j++) {
-                if (((i - j) >= 0) && ((i - j) < map.length)) {
-                    if(map[j][i-j]!=0){
-                        if(map[j][i-j]==map[j-1][i-j+1]){
-                            num++;
-                            if (num >= 5) {
-                                return map[x][y];
-                            }
-                        }else{
-                            num=1;
-                        }
-                    }
-                }
-            }
-        }
-
-        num=1;
-        //左斜 x+1 y+1
-        for (int i = -map.length; i < map.length; i++) {
-            for (int j = 1; j < map.length; j++) {
-                if(((i+j)>=0)&&((i+j)<map.length)){
-                    if(map[j][j+i]!=0){
-                        if(map[j][i+j]==map[j+1][i+j+1]){
-                            num++;
-                            if (num >= 5) {
-                                return map[x][y];
-                            }
-                        }else{
-                            num=1;
-                        }
-                    }
-                }
-            }
-        }
-
-        return 0;
+        int[][] ints = generateField(15);
+        ints[0][0] = 1;
+        ints[0][1] = 1;
+        ints[0][2] = 1;
+        File file = new File("test.png");
+        ints[4][6] = 1;
+        System.out.println(isOverThree(0,2,ints));
+        BufferedImage draw = draw(ints,4,5);
+        boolean png = ImageIO.write(draw, "png", file);
     }
 
     public static boolean isWin(int[][] map)
@@ -242,6 +195,444 @@ public class FiveChessUtil {
             }
         }
         return false;
+    }
+
+    public static int checkRow(int r, int c,int[][] map) {
+        int count = 1;
+        // 向右
+        for (int j = c + 1; j < map.length; j++) {
+            if (map[r][c] == map[r][j]) {
+                count++;
+            } else {
+                break;
+            }
+        }
+
+        // 往左
+        for (int j = c - 1; j >= 0; j--) {
+            if (map[r][c] == map[r][j]) {
+                count++;
+            } else {
+                break;
+            }
+        }
+        return count;
+
+    }
+
+    public static int checkCol(int r, int c,int[][] map) {
+        int count = 1;
+        // 向上
+        for (int j = r - 1; j >=0; j--) {
+            if (map[r][c] == map[j][c]) {
+                count++;
+            } else {
+                break;
+            }
+        }
+
+        // 往下
+        for (int j = r + 1; j < map.length; j++) {
+            if (map[r][c] == map[j][c]) {
+                count++;
+            } else {
+                break;
+            }
+        }
+        return count;
+
+    }
+
+    public static int checkxiezuo(int r, int c,int[][] map) {
+        int count = 1;
+        // 向左上
+        for (int j = r - 1,i=c-1; j >=0&&i>=0; j--,i--) {
+            if (map[r][c] == map[j][i]) {
+                count++;
+            } else {
+                break;
+            }
+        }
+
+        // 往右下
+        for (int j = r + 1,i=c+1; j <map.length&&i<map.length; j++,i++) {
+            if (map[r][c] == map[j][c]) {
+                count++;
+            } else {
+                break;
+            }
+        }
+        return count;
+
+    }
+
+    public static int checkxieyou(int r, int c,int[][] map) {
+        int count = 1;
+        // 向左下
+        for (int j = r + 1,i=c-1; j <map.length&&i>=0; j++,i--) {
+            if (map[r][c] == map[j][i]) {
+                count++;
+            } else {
+                break;
+            }
+        }
+
+        // 往右上
+        for (int j = r - 1,i=c+1; j >=0&&i<map.length; j--,i++) {
+            if (map[r][c] == map[j][c]) {
+                count++;
+            } else {
+                break;
+            }
+        }
+        return count;
+
+    }
+
+
+    public static boolean longLink(int r, int c,int[][] map) {
+        if (map[r][c] != 0) {
+            return (checkRow(r, c, map) > 5 || checkxiezuo(r, c,map) > 5
+                    || checkCol(r, c,map) > 5 || checkxieyou(r, c,map) > 5);
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isOverThree(int r,int c,int[][] map){
+
+        return three(r,c,map)>1 &&map[r][c]!=0;
+    }
+
+    public static int three(int r,int c,int[][] map){
+        int i = checkRow(r, c, map) >= 3?1:0;
+        int i1 = checkCol(r, c, map)>= 3?1:0;
+        int i2 = checkxieyou(r, c, map)>= 3?1:0;
+        int i3= checkxiezuo(r,c,map)>= 3?1:0;
+        return i+i1+i2+i3;
+    }
+
+    public static boolean isOverFour(int r, int c,int[][] map){
+        int[][] ints = new int[map.length][map.length];
+        for(int i = 0; i< ints.length; i++){
+            for(int j = 0; j< ints.length; j++){
+                if(map[i][j]==1){
+                    ints[i][j]=1;
+                }
+                else {
+                    ints[i][j]=0;
+                }
+            }
+        }
+        return Four(r,c, ints,1,'e')>1 &&map[r][c]!=0;
+    }
+
+
+    public static int Four(int r, int c,int[][] map, int ce, char direction) {
+        if (map[r][c] == 1) {
+            int i, j, count4 = 0;
+            if (ce == 1) {
+                // 判断横向四
+                for (j = 0; j < map.length-4; j++) {
+                    if (map[r][j] + map[r][j + 1] + map[r][j + 2]
+                            + map[r][j + 3] + map[r][j + 4] == 4) {
+                        count4++;
+                        for (int k = 0; k < 5; k++) {
+                            if (map[r][j + k] == 1) {
+                                count4 += Four(r, j + k, map,0, 'a');
+                                if (count4 > 1) {
+                                    return 2;
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
+
+                // 判断纵向四
+                for (i = 0; i < map.length-4; i++) {
+                    if (map[i][c] + map[i + 1][c] + map[i + 2][c]
+                            + map[i + 3][c] + map[i + 4][c] == 4) {
+                        count4++;
+                        for (int k = 0; k < 5; k++) {
+                            if (map[i + k][c] == 1) {
+                                count4 += Four(i + k, c, map,0, 'b');
+                                if (count4 > 1) {
+                                    return 2;
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
+
+                // 判断“\”向四
+                if (c > r) {
+                    for (i = 0, j = c - r; i < (map.length-4 - c + r); i++, j++) {
+                        if (map[i][j] + map[i + 1][j + 1]
+                                + map[i + 2][j + 2] + map[i + 3][j + 3]
+                                + map[i + 4][j + 4] == 4) {
+                            count4++;
+                            for (int k = 0; k < 5; k++) {
+                                if (map[i + k][j + k] == 1) {
+                                    count4 += Four(i + k, j + k,map, 0, 'c');
+                                    if (count4 > 1) {
+                                        return 2;
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                    }
+                } else {
+                    for (i = r - c, j = 0; i < map.length-4; i++, j++) { // 判断“\”向“活三”
+                        if (map[i][j] + map[i + 1][j + 1]
+                                + map[i + 2][j + 2] + map[i + 3][j + 3]
+                                + map[i + 4][j + 4] == 4) {
+                            count4++;
+                            for (int k = 0; k < 5; k++) {
+                                if (map[i + k][j + k] == 1) {
+                                    count4 += Four(i + k, j + k,map, 0, 'c');
+                                    if (count4 > 1) {
+                                        return 2;
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                if (r + c < 15) {
+
+                    for (i = r + c, j = 0; i >= 4; i--, j++) { // 判断“/”向“活三”
+                        if (map[i][j] + map[i - 1][j + 1]
+                                + map[i - 2][j + 2] + map[i - 3][j + 3]
+                                + map[i - 4][j + 4] == 4) {
+                            count4++;
+                            for (int k = 0; k < 5; k++) {
+                                if (map[i - k][j + k] == 1) {
+                                    count4 += Four(i - k, j + k,map, 0, 'd');
+                                    if (count4 > 1) {
+                                        return 2;
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                    }
+                } else {
+                    for (i = map.length-1, j = r + c - (map.length-1); j < map.length-4; i--, j++) { // 判断“/”向“活三”
+                        if (map[i][j] + map[i - 1][j + 1]
+                                + map[i - 2][j + 2] + map[i - 3][j + 3]
+                                + map[i - 4][j + 4] == 4) {
+                            count4++;
+                            for (int k = 0; k < 5; k++) {
+                                if (map[i - k][j + k] == 1) {
+                                    count4 += Four(i - k, j + k,map, 0, 'd');
+                                    if (count4 > 1) {
+                                        return 2;
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                if (count4 > 1) {
+                    return 2;
+                }
+
+            }
+
+            else {
+
+                if (direction != 'a') {
+                    // 判断横向四
+                    for (j = 0; j < map.length-4; j++) {
+                        if (map[r][j] + map[r][j + 1]
+                                + map[r][j + 2] + map[r][j + 3]
+                                + map[r][j + 4] == 4) {
+                            return 1;
+                        }
+                    }
+                }
+
+                if (direction != 'b') {
+                    // 判断纵向四
+                    for (i = 0; i < map.length-4; i++) {
+                        if (map[i][c] + map[i + 1][c]
+                                + map[i + 2][c] + map[i + 3][c]
+                                + map[i + 4][c] == 4) {
+                            return 1;
+                        }
+                    }
+                }
+
+                if (direction != 'c') {
+                    // 判断“\”向四
+                    if (c > r) {
+                        for (i = 0, j = c - r; i < (map.length-4 - c + r); i++, j++) {
+                            if (map[i][j] + map[i + 1][j + 1]
+                                    + map[i + 2][j + 2]
+                                    + map[i + 3][j + 3]
+                                    + map[i + 4][j + 4] == 4) {
+                                return 1;
+                            }
+                        }
+                    } else {
+                        for (i = r - c, j = 0; i < map.length-4; i++, j++) { // 判断“\”向“活三”
+                            if (map[i][j] + map[i + 1][j + 1]
+                                    + map[i + 2][j + 2]
+                                    + map[i + 3][j + 3]
+                                    + map[i + 4][j + 4] == 4) {
+                                return 1;
+                            }
+                        }
+                    }
+                }
+
+                if (direction != 'd') {
+                    if (r + c < 15) {
+
+                        for (i = r + c, j = 0; i >= 4; i--, j++) { // 判断“/”向“活三”
+                            if (map[i][j] + map[i - 1][j + 1]
+                                    + map[i - 2][j + 2]
+                                    + map[i - 3][j + 3]
+                                    + map[i - 4][j + 4] == 4) {
+                                return 1;
+                            }
+                        }
+                    } else {
+                        for (i = map.length-1, j = r + c - (map.length-1); j < map.length-4; i--, j++) { // 判断“/”向“活三”
+                            if (map[i][j] + map[i - 1][j + 1]
+                                    + map[i - 2][j + 2]
+                                    + map[i - 3][j + 3]
+                                    + map[i - 4][j + 4] == 4) {
+                                return 1;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 横向特殊四四
+            if (c > 2 && c < 12 && map[r][c - 3] == 1
+                    && map[r][c - 2] == 0 && map[r][c - 1] == 1
+                    && map[r][c + 3] == 1 && map[r][c + 2] == 0
+                    && map[r][c + 1] == 1) {
+                return 2;
+            } else if (c > 2 && c < map.length-4 && map[r][c - 3] == 1
+                    && map[r][c - 2] == 1 && map[r][c - 1] == 0
+                    && map[r][c + 4] == 1 && map[r][c + 3] == 1
+                    && map[r][c + 2] == 0 && map[r][c + 1] == 1) {
+                return 2;
+            } else if (c > 3 && c < map.length-4 && map[r][c - 4] == 1
+                    && map[r][c - 3] == 1 && map[r][c - 2] == 1
+                    && map[r][c - 1] == 0 && map[r][c + 4] == 1
+                    && map[r][c + 3] == 1 && map[r][c + 2] == 1
+                    && map[r][c + 1] == 0) {
+                return 2;
+            } else if (c > 3 && c < map.length-4 && map[r][c - 4] == 1
+                    && map[r][c - 3] == 1 && map[r][c - 2] == 0
+                    && map[r][c - 1] == 1 && map[r][c + 4] == 1
+                    && map[r][c + 3] == 1 && map[r][c + 2] == 0
+                    && map[r][c + 1] == 1) {
+                return 2;
+            }
+
+            // 纵向特殊四四
+            if (r > 2 && r < 12 && map[r - 3][c] == 1
+                    && map[r - 2][c] == 0 && map[r - 1][c] == 1
+                    && map[r + 3][c] == 1 && map[r + 2][c] == 0
+                    && map[r + 1][c] == 1) {
+                return 2;
+            } else if (r > 2 && r < map.length-4 && map[r - 3][c] == 1
+                    && map[r - 2][c] == 1 && map[r - 1][c] == 0
+                    && map[r + 4][c] == 1 && map[r + 3][c] == 1
+                    && map[r + 2][c] == 0 && map[r + 1][c] == 1) {
+                return 2;
+            } else if (r > 3 && r < map.length-4 && map[r - 4][c] == 1
+                    && map[r - 3][c] == 1 && map[r - 2][c] == 1
+                    && map[r - 1][c] == 0 && map[r + 4][c] == 1
+                    && map[r + 3][c] == 1 && map[r + 2][c] == 1
+                    && map[r + 1][c] == 0) {
+                return 2;
+            } else if (r > 3 && r < map.length-4 && map[r - 4][c] == 1
+                    && map[r - 3][c] == 1 && map[r - 2][c] == 0
+                    && map[r - 1][c] == 1 && map[r + 4][c] == 1
+                    && map[r + 3][c] == 1 && map[r + 2][c] == 0
+                    && map[r + 1][c] == 1) {
+                return 2;
+            }
+
+            // "\"向特殊四四
+            if (c > 2 && c < 12 && r > 2 && r < 12
+                    && map[r - 3][c - 3] == 1 && map[r - 2][c - 2] == 0
+                    && map[r - 1][c - 1] == 1 && map[r + 3][c + 3] == 1
+                    && map[r + 2][c + 2] == 0 && map[r + 1][c + 1] == 1) {
+                return 2;
+            } else if (c > 2 && c < map.length-4 && r > 2 && r < map.length-4
+                    && map[r - 3][c - 3] == 1 && map[r - 2][c - 2] == 1
+                    && map[r - 1][c - 1] == 0 && map[r + 4][c + 4] == 1
+                    && map[r + 3][c + 3] == 1 && map[r + 2][c + 2] == 0
+                    && map[r + 1][c + 1] == 1) {
+                return 2;
+            } else if (c > 3 && c < map.length-4 && r > 3 && r < map.length-4
+                    && map[r - 4][c - 4] == 1 && map[r - 3][c - 3] == 1
+                    && map[r - 2][c - 2] == 1 && map[r - 1][c - 1] == 0
+                    && map[r + 4][c + 4] == 1 && map[r + 3][c + 3] == 1
+                    && map[r + 2][c + 2] == 1 && map[r + 1][c + 1] == 0) {
+                return 2;
+            } else if (c > 3 && c < map.length-4 && r > 3 && r < map.length-4
+                    && map[r - 4][c - 4] == 1 && map[r - 3][c - 3] == 1
+                    && map[r - 2][c - 2] == 0 && map[r - 1][c - 1] == 1
+                    && map[r + 4][c + 4] == 1 && map[r + 3][c + 3] == 1
+                    && map[r + 2][c + 2] == 0 && map[r + 1][c + 1] == 1) {
+                return 2;
+            }
+
+            // "/"向特殊四四
+            // 101 1 101
+            if (c > 2 && c < 12 && r > 2 && r < 12
+                    && map[r - 3][c + 3] == 1 && map[r - 2][c + 2] == 0
+                    && map[r - 1][c + 1] == 1 && map[r + 3][c - 3] == 1
+                    && map[r + 2][c - 2] == 0 && map[r + 1][c - 1] == 1) {
+                return 2;
+            }
+            // map.length-40 1 10map.length-4
+            else if (c > 3 && c < 12 && r > 3 && r < map.length-4
+                    && map[r - 3][c + 3] == 1 && map[r - 2][c + 2] == 1
+                    && map[r - 1][c + 1] == 0 && map[r + 4][c - 4] == 1
+                    && map[r + 3][c - 3] == 1 && map[r + 2][c - 2] == 0
+                    && map[r + 1][c - 1] == 1) {
+                return 2;
+            }
+            // map.length-410 1 0map.length-41
+            else if (c > 3 && c < map.length-4 && r > 3 && r < map.length-4
+                    && map[r - 4][c + 4] == 1 && map[r - 3][c + 3] == 1
+                    && map[r - 2][c + 2] == 1 && map[r - 1][c + 1] == 0
+                    && map[r + 4][c - 4] == 1 && map[r + 3][c - 3] == 1
+                    && map[r + 2][c - 2] == 1 && map[r + 1][c - 1] == 0) {
+                return 2;
+            }
+            // map.length-401 1 0map.length-4
+            else if (c > 3 && c < map.length-4 && r > 3 && r < map.length-4) {
+                if (map[r - 4][c + 4] == 1 && map[r - 3][c + 3] == 1
+                        && map[r - 2][c + 2] == 0
+                        && map[r - 1][c + 1] == 1
+                        && map[r + 4][c - 4] == 1
+                        && map[r + 3][c - 3] == 1
+                        && map[r + 2][c - 2] == 0
+                        && map[r + 1][c - 1] == 1) {
+                    return 2;
+                }
+            }
+        }
+
+        return 0;
+
     }
 }
 
