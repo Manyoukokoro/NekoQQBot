@@ -2,6 +2,10 @@ package org.nekotori.job;
 
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.message.code.MiraiCode;
+import net.mamoe.mirai.message.data.MessageChain;
+import net.mamoe.mirai.message.data.MessageChainBuilder;
+import net.mamoe.mirai.message.data.PlainText;
+import net.mamoe.mirai.message.data.SingleMessage;
 import org.nekotori.chain.ChainMessageSelector;
 import org.nekotori.dao.ChatMemberMapper;
 import org.nekotori.entity.CustomResponse;
@@ -16,11 +20,19 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class AsyncJob {
@@ -78,8 +90,49 @@ public class AsyncJob {
         );
         if(probResponses.size()>0){
             int i = new Random().nextInt(probResponses.size());
-            groupMessageEvent.getSubject().sendMessage(MiraiCode.deserializeMiraiCode(probResponses.get(i)));
+            String finalResponse = probResponses.get(i);
+            MessageChain singleMessages = resolveFinalResponse(finalResponse);
+            groupMessageEvent.getSubject().sendMessage(singleMessages);
         }
+
+    }
+
+    private static MessageChain resolveFinalResponse(String finalResponse){
+        MessageChain singleMessages = MessageChain.deserializeFromJsonString(finalResponse);
+        singleMessages.forEach((m)->{
+            Pattern compile = Pattern.compile("\\$\\{.*}");
+            Matcher matcher = compile.matcher(m.contentToString());
+            if(!matcher.find()){
+                return;
+            }
+            String groups = matcher.group();
+            String[] split = groups.split(",");
+            for(String group:split){
+                String replace = group.replace("${", "").replace("}", "");
+                try {
+                    Process proc = Runtime.getRuntime().exec(replace);
+                    BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+                    BufferedReader stdError = new BufferedReader(new InputStreamReader(proc.getErrorStream()));// read the output from the command
+                    StringBuilder input = new StringBuilder();
+                    String s = null;
+                    while ((s = stdInput.readLine()) != null) {
+                        input.append(s);
+                    }
+                    replace = input.toString();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                m = new PlainText(m.contentToString().replace(group,replace));
+            }
+
+        });
+
+        return singleMessages;
+    }
+
+    public static void main(String[] args) {
+        MessageChain singleMessages = resolveFinalResponse("23123123${ls}\n,${ls}");
+        System.out.println(singleMessages.contentToString());
     }
 
     public void repeat(GroupMessageEvent groupMessageEvent){

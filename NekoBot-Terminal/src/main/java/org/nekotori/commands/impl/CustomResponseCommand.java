@@ -49,7 +49,7 @@ public class CustomResponseCommand extends NoAuthGroupCommand {
             }
             else {
                 customResponses = JSONUtil.toBean(customResponse,
-                        new TypeReference<List<CustomResponse>>() {
+                        new TypeReference<>() {
                         }, true);
             }
             StringBuilder stringBuilder = new StringBuilder();
@@ -88,7 +88,7 @@ public class CustomResponseCommand extends NoAuthGroupCommand {
             }
             else {
                 customResponses = JSONUtil.toBean(customResponse,
-                        new TypeReference<List<CustomResponse>>() {
+                        new TypeReference<>() {
                         }, true);
             }
             if(commandAttr.getCommand().equals("撤销回复")){
