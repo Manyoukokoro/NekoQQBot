@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
+import net.mamoe.mirai.message.MessageReceipt;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import org.nekotori.annotations.HandlerId;
@@ -82,8 +83,9 @@ public class StartFiveChessCommand extends NoAuthGroupCommand {
                 });
             }
             subject.sendMessage(new MessageChainBuilder().append(stringBuilder.toString()).build());
-            subject.sendMessage(new MessageChainBuilder().append(Contact.uploadImage(subject,
+            MessageReceipt<Group> groupMessageReceipt = subject.sendMessage(new MessageChainBuilder().append(Contact.uploadImage(subject,
                     Objects.requireNonNull(FiveChessHandler.drawMap(subject.getId(), 0, 0)))).build());
+            FiveChessHandler.putImage(subject.getId(), groupMessageReceipt);
         }else {
             if(FiveChessHandler.isFull(subject.getId())){
                 return new MessageChainBuilder().append("对局已满").build();

@@ -12,6 +12,7 @@ import org.nekotori.commands.NoAuthGroupCommand;
 import org.nekotori.dao.ChatMemberMapper;
 import org.nekotori.entity.ChatMemberDo;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -61,7 +62,7 @@ public class SignCommand extends NoAuthGroupCommand {
         if(incomeExp == 0){
             return new MessageChainBuilder().append("叮~~~~~~~，恭喜亲获得了零经验，这边送您重签卡一张~，您真是太欧了呢").build();
         }
-        if(incomeExp < 10){
+        if(incomeExp < 100){
             incomeExp = random.nextInt(500)+500;
         }
         if(incomeExp > 99900){
@@ -77,7 +78,7 @@ public class SignCommand extends NoAuthGroupCommand {
             incomeExp = 99999;
         }
         final ChatMemberDo chatMemberDoNew = calLevel(chatMemberDo, incomeExp+chatMemberDo.getExp());
-        chatMemberDoNew.setNickName(sender.getNameCard());
+        chatMemberDoNew.setNickName(StringUtils.isEmpty(sender.getNameCard())?sender.getNick():sender.getNameCard());
         chatMemberDoNew.setLastSign(new Date());
         chatMemberDoNew.setTotalSign(chatMemberDoNew.getTotalSign()+1);
         chatMemberMapper.updateById(chatMemberDoNew);

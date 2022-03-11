@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
  * @description: CustomCommand
  * @version: {@link }
  */
+
 public class CustomCommand {
 
     public enum AUTHORITY{

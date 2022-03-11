@@ -1,11 +1,8 @@
 package org.nekotori.job;
 
 import net.mamoe.mirai.event.events.GroupMessageEvent;
-import net.mamoe.mirai.message.code.MiraiCode;
 import net.mamoe.mirai.message.data.MessageChain;
-import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
-import net.mamoe.mirai.message.data.SingleMessage;
 import org.nekotori.chain.ChainMessageSelector;
 import org.nekotori.dao.ChatMemberMapper;
 import org.nekotori.entity.CustomResponse;
@@ -23,16 +20,12 @@ import javax.annotation.Resource;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 public class AsyncJob {
@@ -91,8 +84,9 @@ public class AsyncJob {
         if(probResponses.size()>0){
             int i = new Random().nextInt(probResponses.size());
             String finalResponse = probResponses.get(i);
-            MessageChain singleMessages = resolveFinalResponse(finalResponse);
-            groupMessageEvent.getSubject().sendMessage(singleMessages);
+            groupMessageEvent.getSubject().sendMessage(finalResponse);
+//            MessageChain singleMessages = resolveFinalResponse(finalResponse);
+//            groupMessageEvent.getSubject().sendMessage(singleMessages);
         }
 
     }
@@ -116,7 +110,7 @@ public class AsyncJob {
                     StringBuilder input = new StringBuilder();
                     String s = null;
                     while ((s = stdInput.readLine()) != null) {
-                        input.append(s);
+                        input.append(s).append("\n");
                     }
                     replace = input.toString();
                 } catch (IOException e) {

@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.Random;
 
 
-@IsCommand(name = {"抽卡","gacha","g"},description = "模拟抽卡，测试人品，格式:(!/-/#)gacha 数量")
+@IsCommand(name = {"抽卡","gacha"},description = "模拟抽卡，测试人品，格式:(!/-/#)gacha 数量")
 public class GachaCommand extends PrivilegeGroupCommand {
 
     @Resource

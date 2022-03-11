@@ -1,2 +1,5 @@
-package org.nekotori.events;public class MemberJoinRequestEvents {
+package org.nekotori.events;
+
+public class MemberJoinRequestEvents {
+
 }

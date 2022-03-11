@@ -3,7 +3,9 @@ package org.nekotori.chain.channel.handler.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.Data;
 import net.mamoe.mirai.contact.Contact;
+import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
+import net.mamoe.mirai.message.MessageReceipt;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.MessageSource;
@@ -18,8 +20,6 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import javax.annotation.sql.DataSourceDefinition;
-import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -56,6 +56,8 @@ public class FiveChessHandler implements ChannelHandler {
         private Map<Long,String> pair = new HashMap<>();
 
         private Set<Integer> forbids = new HashSet<>();
+
+        private Deque<MessageReceipt<Group>> historyImages = new ArrayDeque<>();
     }
 
     public static void init(Long blackId,Long groupId,Set<Integer> forbids){
@@ -67,8 +69,13 @@ public class FiveChessHandler implements ChannelHandler {
             pair.put(blackId,"B");
             re.setPair(pair);
             re.setForbids(forbids);
+            re.setHistoryImages(new ArrayDeque<>());
         }
         res.put(groupId,re);
+    }
+
+    public static void putImage(Long groupId, MessageReceipt<Group> messageReceipt){
+        res.get(groupId).getHistoryImages().add(messageReceipt);
     }
 
     public static void join(Long whiteId,Long groupId){
@@ -160,7 +167,8 @@ public class FiveChessHandler implements ChannelHandler {
             groupMessageEvent.getGroup().sendMessage(new MessageChainBuilder().append("黑方落子:").append(s).build());
             MessageChain build = new MessageChainBuilder().append(Contact.uploadImage(groupMessageEvent.getSubject(),
                     Objects.requireNonNull(drawMap(groupMessageEvent.getSubject().getId(), ints[1], ints[0])))).build();
-            groupMessageEvent.getGroup().sendMessage(build);
+            MessageReceipt<Group> groupMessageReceipt = groupMessageEvent.getGroup().sendMessage(build);
+            putImage(channel.getGroupId(),groupMessageReceipt);
             channel.setNowStage("W");
         }
         else if(channel.getNowStage().equals("W") && pair.get(groupMessageEvent.getSender().getId()).equals("W")){
@@ -168,8 +176,13 @@ public class FiveChessHandler implements ChannelHandler {
             groupMessageEvent.getGroup().sendMessage(new MessageChainBuilder().append("白方落子:").append(s).build());
             MessageChain build = new MessageChainBuilder().append(Contact.uploadImage(groupMessageEvent.getSubject(),
                     Objects.requireNonNull(drawMap(groupMessageEvent.getSubject().getId(), ints[1], ints[0])))).build();
-            groupMessageEvent.getGroup().sendMessage(build);
+            MessageReceipt<Group> groupMessageReceipt = groupMessageEvent.getGroup().sendMessage(build);
+            putImage(channel.getGroupId(),groupMessageReceipt);
             channel.setNowStage("B");
+        }
+        while(resources.getHistoryImages().size()>1){
+            MessageReceipt<Group> groupMessageReceipt = resources.getHistoryImages().removeFirst();
+            groupMessageReceipt.recall();
         }
         boolean winner = FiveChessUtil.isWin(field);
         Long winnerId = 0L;
