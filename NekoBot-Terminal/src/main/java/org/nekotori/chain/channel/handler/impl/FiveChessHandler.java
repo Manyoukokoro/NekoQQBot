@@ -16,6 +16,7 @@ import org.nekotori.chain.channel.handler.ChannelHandler;
 import org.nekotori.dao.ChatMemberMapper;
 import org.nekotori.entity.ChatMemberDo;
 import org.nekotori.utils.FiveChessUtil;
+import org.nekotori.utils.ImageUtil;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -99,7 +100,7 @@ public class FiveChessHandler implements ChannelHandler {
     public static InputStream drawMap(Long groupId,int x,int y){
         try{
             Resources resources = res.get(groupId);
-            return FiveChessUtil.bufferedImageToInputStream(FiveChessUtil.draw(resources.getField(),x,y));
+            return ImageUtil.bufferedImageToInputStream(FiveChessUtil.draw(resources.getField(),x,y));
         }catch (Exception ignore){
         }
         return null;
@@ -185,7 +186,6 @@ public class FiveChessHandler implements ChannelHandler {
             groupMessageReceipt.recall();
         }
         boolean winner = FiveChessUtil.isWin(field);
-        Long winnerId = 0L;
         if(winner && "W".equals(channel.getNowStage())){
             groupMessageEvent.getGroup().sendMessage("黑方胜利");
             clear(groupMessageEvent.getSubject().getId());
@@ -203,7 +203,7 @@ public class FiveChessHandler implements ChannelHandler {
             clear(groupMessageEvent.getSubject().getId());
             chainMessageSelector.unregisterChannel(groupMessageEvent.getGroup().getId(),
                     this.getClass().getAnnotation(HandlerId.class).value());
-            Long b = pair.entrySet().stream().filter(ss -> ss.getValue().equals("B")).map(Map.Entry::getKey).findAny().orElse(0L);
+            Long b = pair.entrySet().stream().filter(ss -> ss.getValue().equals("W")).map(Map.Entry::getKey).findAny().orElse(0L);
             ChatMemberDo chatMemberDo = chatMemberMapper.selectOne(new QueryWrapper<ChatMemberDo>().eq("member_id", b).eq("group_id",
                     groupMessageEvent.getSubject().getId()));
             chatMemberDo.setLevel(chatMemberDo.getLevel()+10);

@@ -28,6 +28,8 @@ import java.util.List;
  */
 public class ImageUtil {
 
+    private static List<AzureLaneCard> cache;
+
     public static InputStream pcrGachaImage(List<String> ids) throws IOException {
         if (ids == null || ids.size() != 10) {
             return InputStream.nullInputStream();
@@ -90,6 +92,41 @@ public class ImageUtil {
             File file = new File("blhx/frames/" + i + "_star.png");
             HttpUtil.downloadFile(BLHX_URL+uris.get(i-1),file);
         }
+    }
+
+    public static List<AzureLaneCard> getEventCards(){
+        if(cache!=null){
+            return cache;
+        }
+        String url = "https://wiki.biligame.com/blhx/游戏活动表";
+        String s = HttpUtil.get(url);
+        Document parse = Jsoup.parse(s);
+        JXDocument document = new JXDocument(parse.getAllElements());
+        List<JXNode> jxNodes = document.selN("./div[@class='timeline2']/dl/dd/a");
+        System.out.println(jxNodes.get(0).sel("./@href").get(0));
+        String s1 = jxNodes.get(0).sel("./@href").get(0).toString();
+        String eventUrl ="https://wiki.biligame.com" + s1;
+        Elements allElements = Jsoup.parse(HttpUtil.get(eventUrl)).getAllElements();
+        JXDocument eventDocument = new JXDocument(allElements);
+        JXNode timer = eventDocument.selN("./span[@class='eventTimer']").get(0);
+        JXNode start = timer.sel("./@data-start").get(0);
+        JXNode end = timer.sel("./@data-end").get(0);
+        List<JXNode> ships = eventDocument.selN("./table[@class='shipinfo']");
+        List<AzureLaneCard> azureLaneCards = new ArrayList<>();
+        for(JXNode ship:ships){
+            String s2 = ship.sel("./tbody/tr/td[2]/p/a/@title").get(0).toString();
+            String s3 = ship.sel("./tbody/tr/td[2]/p/small/text()").get(0).toString();
+            String s4 =CollectionUtils.isEmpty(ship.sel(".//sup/text()"))?"0%":
+                    ship.sel(".//sup/text()").get(0).toString();
+            String s5 = ship.sel("./tbody/tr/td[1]/div/div/div/a/img/@alt").get(0).toString();
+            AzureLaneCard azureLaneCard = new AzureLaneCard();
+            azureLaneCard.setName(s2);
+            azureLaneCard.setType(s3);
+            azureLaneCard.setP(Float.parseFloat(s4.substring(0,s4.length()-1)));
+            azureLaneCard.setFrameName(s5);
+        }
+        cache = azureLaneCards;
+        return azureLaneCards;
     }
 
     public static void downloadAzureLaneSrc() {
@@ -162,7 +199,7 @@ public class ImageUtil {
 
         private String name;
 
-        private String id;
+        private Float p;
 
         private Integer level;
 
@@ -179,171 +216,40 @@ public class ImageUtil {
         private List<Integer> buildType;
     }
 
+    public static InputStream generateAzureCardImage(List<AzureLaneCard> cards) throws IOException {
+        if(cards.size()!=10){
+            return InputStream.nullInputStream();
+        }
+        BufferedImage bufferedImage = new BufferedImage(1000, 400, BufferedImage.TYPE_INT_BGR);
+        Graphics2D graphics = bufferedImage.createGraphics();
+        for (int k = 0; k < 5; k++) {
+            for (int j = 0; j < 2; j++) {
+                int index = j*5 + k;
+                File file1 = new File(cards.get(index).getIconUrl());
+                BufferedImage read1 = ImageIO.read(file1);
+                graphics.drawImage(read1, 200 * k+10, 200 * j+10, 190, 180, (image, i, i1, i2, i3, i4) -> false);
+                File file2 = new File(cards.get(index).getFrameUrl());
+                BufferedImage read2 = ImageIO.read(file2);
+                graphics.drawImage(read2, 200 * k, 200 * j, 200, 200, (image, i, i1, i2, i3, i4) -> false);
+            }
+
+        }
+        return bufferedImageToInputStream(bufferedImage);
+    }
+
+    public static InputStream bufferedImageToInputStream(BufferedImage image){
+        File file = new File("temp.png");
+        try {
+            ImageIO.write(image, "png", file);
+            return new FileInputStream(file);
+        } catch (IOException ignore) {
+        }
+        return null;
+    }
+
 
     public static void main(String[] args) throws IOException {
-//        downloadAzureLaneSrc();
-
-        String url = "https://wiki.biligame.com/blhx/游戏活动表";
-        String s = HttpUtil.get(url);
-        Document parse = Jsoup.parse(s);
-        JXDocument document = new JXDocument(parse.getAllElements());
-        List<JXNode> jxNodes = document.selN("./div[@class='timeline2']/dl/dd/a");
-        System.out.println(jxNodes.get(0).sel("./@href").get(0));
-        String s1 = jxNodes.get(0).sel("./@href").get(0).toString();
-        String eventUrl ="https://wiki.biligame.com" + s1;
-        Elements allElements = Jsoup.parse(HttpUtil.get(eventUrl)).getAllElements();
-        JXDocument eventDocument = new JXDocument(allElements);
-        JXNode timer = eventDocument.selN("./span[@class='eventTimer']").get(0);
-        JXNode start = timer.sel("./@data-start").get(0);
-        JXNode end = timer.sel("./@data-end").get(0);
-        List<JXNode> ships = eventDocument.selN("./table[@class='shipinfo']");
-        for(JXNode ship:ships){
-            String s2 = ship.sel("./tbody/tr/td[2]/p/a/@title").get(0).toString();
-            String s3 = ship.sel("./tbody/tr/td[2]/p/small/text()").get(0).toString();
-            String s4 =CollectionUtils.isEmpty(ship.sel(".//sup/text()"))?"0":
-                    ship.sel(".//sup/text()").get(0).toString();
-            String s5 = ship.sel("./tbody/tr/td[1]/div/div/div/a/img/@alt").get(0).toString();
-            System.out.println(s2);
-            System.out.println(s3);
-            System.out.println(s4);
-            System.out.println(s5);
-        }
+        List<AzureLaneCard> azureLaneCards = GachaUtils.gachaAzureLaneSp();
+        InputStream inputStream = generateAzureCardImage(azureLaneCards);
     }
 }
-
-
-
-//
-//    class AzurChar(BaseData):
-//    type_: str  # 舰娘类型
-//
-//    @property
-//    def star_str(self) -> str:
-//            return ["白", "蓝", "紫", "金"][self.star - 1]
-//
-//
-//    class UpChar(_UpChar):
-//    type_: str  # 舰娘类型
-//
-//
-//    class UpEvent(_UpEvent):
-//    up_char: List[UpChar]  # up对象
-//
-//
-//    class AzurHandle(BaseHandle[AzurChar]):
-//    def __init__(self):
-//            super().__init__("azur", "碧蓝航线")
-//    self.max_star = 4
-//    self.config = draw_config.azur
-//    self.ALL_CHAR: List[AzurChar] = []
-//    self.UP_EVENT: Optional[UpEvent] = None
-//
-//    def get_card(self, pool_name: str, **kwargs) -> AzurChar:
-//            if pool_name == "轻型":
-//    type_ = ["驱逐", "轻巡", "维修"]
-//    elif pool_name == "重型":
-//    type_ = ["重巡", "战列", "战巡", "重炮"]
-//            else:
-//    type_ = ["维修", "潜艇", "重巡", "轻航", "航母"]
-//    up_pool_flag = pool_name == "活动"
-//            # Up
-//            up_ship = (
-//            [x for x in self.UP_EVENT.up_char if x.zoom > 0] if self.UP_EVENT else []
-//            )
-//            # print(up_ship)
-//    acquire_char = None
-//        if up_ship and up_pool_flag:
-//    up_zoom: List[Tuple[float, float]] = [(0, up_ship[0].zoom / 100)]
-//            # 初始化概率
-//            cur_ = up_ship[0].zoom / 100
-//            for i in range(len(up_ship)):
-//            try:
-//            up_zoom.append((cur_, cur_ + up_ship[i + 1].zoom / 100))
-//    cur_ += up_ship[i + 1].zoom / 100
-//    except IndexError:
-//    pass
-//            rand = random.random()
-//            # 抽取up
-//            for i, zoom in enumerate(up_zoom):
-//            if zoom[0] <= rand <= zoom[1]:
-//            try:
-//    acquire_char = [
-//    x for x in self.ALL_CHAR if x.name == up_ship[i].name
-//                        ][0]
-//    except IndexError:
-//    pass
-//        # 没有up或者未抽取到up
-//        if not acquire_char:
-//    star = self.get_star(
-//            [4, 3, 2, 1],
-//            [
-//    self.config.AZUR_FOUR_P,
-//    self.config.AZUR_THREE_P,
-//    self.config.AZUR_TWO_P,
-//    self.config.AZUR_ONE_P,
-//            ],
-//            )
-//    acquire_char = random.choice(
-//            [
-//    x
-//                    for x in self.ALL_CHAR
-//                    if x.star == star and x.type_ in type_ and not x.limited
-//                ]
-//                        )
-//                        return acquire_char
-//
-//    def draw(self, count: int, **kwargs) -> Message:
-//    index2card = self.get_cards(count, **kwargs)
-//    cards = [card[0] for card in index2card]
-//    up_list = [x.name for x in self.UP_EVENT.up_char] if self.UP_EVENT else []
-//    result = self.format_result(index2card, **{**kwargs, "up_list": up_list})
-//            return MessageSegment.image(self.generate_img(cards).pic2bs4()) + result
-//
-//    def generate_card_img(self, card: AzurChar) -> BuildImage:
-//    sep_w = 5
-//    sep_t = 5
-//    sep_b = 20
-//    w = 100
-//    h = 100
-//    bg = BuildImage(w + sep_w * 2, h + sep_t + sep_b)
-//    frame_path = str(self.img_path / f"{card.star}_star.png")
-//    frame = BuildImage(w, h, background=frame_path)
-//    img_path = str(self.img_path / f"{cn2py(card.name)}.png")
-//    img = BuildImage(w, h, background=img_path)
-//        # 加圆角
-//        frame.circle_corner(6)
-//                img.circle_corner(6)
-//                bg.paste(img, (sep_w, sep_t), alpha=True)
-//            bg.paste(frame, (sep_w, sep_t), alpha=True)
-//            # 加名字
-//            text = card.name[:6] + "..." if len(card.name) > 7 else card.name
-//            font = load_font(fontsize=14)
-//    text_w, text_h = font.getsize(text)
-//    draw = ImageDraw.Draw(bg.markImg)
-//            draw.text(
-//            (sep_w + (w - text_w) / 2, h + sep_t + (sep_b - text_h) / 2),
-//    text,
-//    font=font,
-//    fill=["#808080", "#3b8bff", "#8000ff", "#c90", "#ee494c"][card.star - 1],
-//            )
-//            return bg
-
-
-
-//    url = "https://wiki.biligame.com/blhx/游戏活动表"
-//    result = await self.get_url(url)
-//        if not result:
-//            logger.warning(f"{self.game_name_cn}获取活动表出错")
-//            return
-//            try:
-//    dom = etree.HTML(result, etree.HTMLParser())
-//    dd = dom.xpath("//div[@class='timeline2']/dl/dd/a")[0]
-//    except Exception as e:
-//            logger.warning(f"{self.game_name_cn}UP更新出错 {type(e)}：{e}")
-//
-//    async def _reload_pool(self) -> Optional[Message]:
-//    await self.update_up_char()
-//        self.load_up_char()
-//                if self.UP_EVENT:
-//            return Message(f"重载成功！\n当前活动：{self.UP_EVENT.title}")
-//}

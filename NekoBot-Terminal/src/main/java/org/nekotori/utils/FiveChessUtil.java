@@ -27,16 +27,6 @@ public class FiveChessUtil {
         return blocks;
     }
 
-    public static InputStream bufferedImageToInputStream(BufferedImage image){
-        File file = new File("temp.png");
-        try {
-            ImageIO.write(image, "png", file);
-            return new FileInputStream(file);
-        } catch (IOException ignore) {
-        }
-        return null;
-    }
-
     public static BufferedImage draw(int[][] map,int x,int y) throws IOException {
         if(map.length<=0) return null;
         int raw = map.length;
