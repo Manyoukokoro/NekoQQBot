@@ -13,12 +13,15 @@ import org.nekotori.chain.ChainMessageSelector;
 import org.nekotori.chain.channel.GroupCommandChannel;
 import org.nekotori.chain.channel.handler.impl.FiveChessHandler;
 import org.nekotori.commands.NoAuthGroupCommand;
+import org.nekotori.common.InnerConstants;
 import org.nekotori.entity.CommandAttr;
 import org.nekotori.utils.CommandUtils;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
+
+import static org.nekotori.common.InnerConstants.*;
 
 /**
  * @author: JayDeng
@@ -29,7 +32,6 @@ import java.util.*;
 
 @IsCommand(name = {"五子棋"},description = "")
 public class StartFiveChessCommand extends NoAuthGroupCommand {
-
     @Resource
     private ChainMessageSelector chainMessageSelector;
 
@@ -63,22 +65,22 @@ public class StartFiveChessCommand extends NoAuthGroupCommand {
             }
             FiveChessHandler.init(sender.getId(),subject.getId(),fs);
             subject.sendMessage(new MessageChainBuilder().append(sender.getNameCard()).append("创建对局成功!执黑棋先行，").append(
-                    "发送（五子棋）加入对局").build());
+                    STRING0).build());
             StringBuilder stringBuilder = new StringBuilder();
             if(fs.isEmpty()){
-                stringBuilder.append("无禁手");
+                stringBuilder.append(STRING1);
             }
             else {
-                stringBuilder.append("禁手:");
+                stringBuilder.append(STRING2);
                 fs.forEach(ss -> {
                     if (ss.equals(0)) {
-                       stringBuilder.append("三三");
+                       stringBuilder.append(STRING3);
                     }
                     if (ss.equals(1)) {
-                        stringBuilder.append("四四");
+                        stringBuilder.append(STRING4);
                     }
                     if (ss.equals(2)) {
-                        stringBuilder.append("长连");
+                        stringBuilder.append(InnerConstants.STRING5);
                     }
                 });
             }
@@ -88,11 +90,11 @@ public class StartFiveChessCommand extends NoAuthGroupCommand {
             FiveChessHandler.putImage(subject.getId(), groupMessageReceipt);
         }else {
             if(FiveChessHandler.isFull(subject.getId())){
-                return new MessageChainBuilder().append("对局已满").build();
+                return new MessageChainBuilder().append(STRING6).build();
             }
             FiveChessHandler.join(sender.getId(),subject.getId());
             chainMessageSelector.joinChannel(subject.getId(),fiveChessHandler,sender.getId());
-            subject.sendMessage(new MessageChainBuilder().append("加入对局成功!执白棋").build());
+            subject.sendMessage(new MessageChainBuilder().append(STRING7).build());
         }
         return null;
     }

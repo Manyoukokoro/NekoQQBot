@@ -4,6 +4,7 @@ import cn.hutool.core.lang.TypeReference;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.message.data.At;
@@ -41,7 +42,7 @@ public class CustomResponseCommand extends NoAuthGroupCommand {
         CommandAttr commandAttr = CommandUtils.resolveCommand(s);
         //查询回复
         if("查询回复".equals(commandAttr.getCommand())){
-            ChatGroupDo group = chatGroupMapper.selectOne(new QueryWrapper<ChatGroupDo>().eq("group_id", subject.getId()));
+            ChatGroupDo group = chatGroupMapper.selectOne(Wrappers.<ChatGroupDo>lambdaQuery().eq(ChatGroupDo::getGroupId, subject.getId()));
             String customResponse = group.getCustomResponse();
             List<CustomResponse> customResponses;
             if (customResponse ==null){
@@ -88,7 +89,7 @@ public class CustomResponseCommand extends NoAuthGroupCommand {
                     .keyWord(keyWord)
                     .way(CustomResponse.WAY.of(way))
                     .response(join).build();
-            ChatGroupDo group = chatGroupMapper.selectOne(new QueryWrapper<ChatGroupDo>().eq("group_id", subject.getId()));
+            ChatGroupDo group = chatGroupMapper.selectOne(Wrappers.<ChatGroupDo>lambdaQuery().eq(ChatGroupDo::getGroupId, subject.getId()));
             String customResponse = group.getCustomResponse();
             List<CustomResponse> customResponses;
             if (customResponse ==null){

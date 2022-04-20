@@ -191,8 +191,10 @@ public class FiveChessHandler implements ChannelHandler {
             clear(groupMessageEvent.getSubject().getId());
             chainMessageSelector.unregisterChannel(groupMessageEvent.getGroup().getId(),
                     this.getClass().getAnnotation(HandlerId.class).value());
-            Long b = pair.entrySet().stream().filter(ss -> ss.getValue().equals("B")).map(Map.Entry::getKey).findAny().orElse(0L);
-            ChatMemberDo chatMemberDo = chatMemberMapper.selectOne(new QueryWrapper<ChatMemberDo>().eq("member_id", b).eq("group_id",
+            Long w =
+                    pair.entrySet().stream().filter(ss -> ss.getValue().equals("W")).map(Map.Entry::getKey).findAny().orElse(0L);
+            ChatMemberDo chatMemberDo = chatMemberMapper.selectOne(new QueryWrapper<ChatMemberDo>().eq("member_id", w).eq(
+                    "group_id",
                     groupMessageEvent.getSubject().getId()));
             chatMemberDo.setLevel(chatMemberDo.getLevel()+10);
             chatMemberMapper.updateById(chatMemberDo);

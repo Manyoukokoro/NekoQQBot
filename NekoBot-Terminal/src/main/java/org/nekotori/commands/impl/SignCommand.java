@@ -1,6 +1,7 @@
 package org.nekotori.commands.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.message.data.At;
@@ -11,6 +12,7 @@ import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.NoAuthGroupCommand;
 import org.nekotori.dao.ChatMemberMapper;
 import org.nekotori.entity.ChatMemberDo;
+import org.nekotori.utils.ImageUtil;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -41,21 +43,6 @@ public class SignCommand extends NoAuthGroupCommand {
                     .append(new PlainText("老板今天已经签到过了哦"))
                     .build();
         }
-        if(chatMemberDo == null){
-            chatMemberDo = ChatMemberDo.builder()
-                    .memberId(member)
-                    .groupId(group)
-                    .isBlocked(false)
-                    .level(0)
-                    .nickName(sender.getNameCard())
-                    .lastSign(new Date())
-                    .todayWelcome(false)
-                    .totalSign(0)
-                    .exp(0L)
-                    .build();
-            final int id = chatMemberMapper.insert(chatMemberDo);
-            chatMemberDo.setId(id);
-        }
         final Random random = new Random();
         final int rank = random.nextInt(5)+1;
         int incomeExp = random.nextInt((int) Math.pow(10d, rank));
@@ -77,16 +64,33 @@ public class SignCommand extends NoAuthGroupCommand {
             }
             incomeExp = 99999;
         }
-        final ChatMemberDo chatMemberDoNew = calLevel(chatMemberDo, incomeExp+chatMemberDo.getExp());
-        chatMemberDoNew.setNickName(StringUtils.isEmpty(sender.getNameCard())?sender.getNick():sender.getNameCard());
-        chatMemberDoNew.setLastSign(new Date());
-        chatMemberDoNew.setTotalSign(chatMemberDoNew.getTotalSign()+1);
-        chatMemberMapper.updateById(chatMemberDoNew);
+        if(chatMemberDo == null){
+            chatMemberDo = ChatMemberDo.builder()
+                    .memberId(member)
+                    .groupId(group)
+                    .isBlocked(false)
+                    .level(0)
+                    .nickName(StringUtils.hasLength(sender.getNick())?sender.getNick():sender.getNameCard())
+                    .lastSign(new Date())
+                    .todayWelcome(false)
+                    .totalSign(1)
+                    .exp(0L)
+                    .build();
+            chatMemberDo = calLevel(chatMemberDo,incomeExp);
+            final int id = chatMemberMapper.insert(chatMemberDo);
+            chatMemberDo.setId(id);
+        }else {
+            final ChatMemberDo chatMemberDoNew = calLevel(chatMemberDo, incomeExp+chatMemberDo.getExp());
+            chatMemberDoNew.setNickName(StringUtils.hasLength(sender.getNick())?sender.getNick():sender.getNameCard());
+            chatMemberDoNew.setLastSign(new Date());
+            chatMemberDoNew.setTotalSign(chatMemberDoNew.getTotalSign()+1);
+            chatMemberMapper.updateById(chatMemberDoNew);
+        }
         return new MessageChainBuilder().append(new At(sender.getId()))
-                .append(" ")
-                .append(new PlainText("签到成功！获得经验"+incomeExp+","+"当前等级"+chatMemberDoNew.getLevel()+"距离下一级还差："+nextLevelExp(chatMemberDoNew.getLevel(),chatMemberDoNew.getExp())+"经验," +
-                        "真是太幸运了呢"))
+                .append(Contact.uploadImage(subject, ImageUtil.drawSignPic(sender,chatMemberDo,incomeExp)))
                 .build();
+
+
     }
 
     private long nextLevelExp(int level, long exp){

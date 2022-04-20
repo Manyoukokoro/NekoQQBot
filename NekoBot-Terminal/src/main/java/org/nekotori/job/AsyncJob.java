@@ -1,7 +1,9 @@
 package org.nekotori.job;
 
+import cn.hutool.core.collection.CollectionUtil;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.message.data.MessageChain;
+import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
 import org.nekotori.chain.ChainMessageSelector;
 import org.nekotori.dao.ChatMemberMapper;
@@ -93,11 +95,12 @@ public class AsyncJob {
 
     private static MessageChain resolveFinalResponse(String finalResponse){
         MessageChain singleMessages = MessageChain.deserializeFromJsonString(finalResponse);
-        singleMessages.forEach((m)->{
+        MessageChainBuilder builder = new MessageChainBuilder();
+        for(int i=0;i<singleMessages.size();i++){
             Pattern compile = Pattern.compile("\\$\\{.*}");
-            Matcher matcher = compile.matcher(m.contentToString());
+            Matcher matcher = compile.matcher(singleMessages.get(i).contentToString());
             if(!matcher.find()){
-                return;
+               builder.append(singleMessages.get(i));
             }
             String groups = matcher.group();
             String[] split = groups.split(",");
@@ -116,16 +119,18 @@ public class AsyncJob {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                m = new PlainText(m.contentToString().replace(group,replace));
+                builder.append(new PlainText(singleMessages.get(i).contentToString().replace(group,replace)));
             }
 
-        });
+        }
 
-        return singleMessages;
+        return builder.build();
     }
 
     public static void main(String[] args) {
-        MessageChain singleMessages = resolveFinalResponse("23123123${ls}\n,${ls}");
+        MessageChain hello = new MessageChainBuilder().append(new PlainText("23123123${ls ..}\n,${ls ../..}")).build();
+        String s = MessageChain.serializeToJsonString(hello);
+        MessageChain singleMessages = resolveFinalResponse(s);
         System.out.println(singleMessages.contentToString());
     }
 
