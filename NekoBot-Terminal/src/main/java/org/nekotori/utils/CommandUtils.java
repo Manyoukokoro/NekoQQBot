@@ -36,11 +36,8 @@ public class CommandUtils {
     }
 
     public static boolean checkCommand(Command command, GroupMessageEvent event) {
-        if(List.of(command.getClass().getAnnotation(IsCommand.class).name())
-                .contains( CommandUtils.resolveCommand(event.getMessage().serializeToMiraiCode()).getCommand())){
-            return true;
-        }
-        return false;
+        return List.of(command.getClass().getAnnotation(IsCommand.class).name())
+                .contains(CommandUtils.resolveCommand(event.getMessage().serializeToMiraiCode()).getCommand());
     }
 
     public static boolean isCommand(GroupMessageEvent groupMessageEvent){
@@ -79,6 +76,14 @@ public class CommandUtils {
         if(!IsCommandRegistered(registeredCommand,command)) return registeredCommand;
         List<String> commands = resolveRegisteredCommand(registeredCommand);
         commands.remove(command);
+        return String.join("#", commands);
+    }
+
+    public static String replaceCommand(String registeredCommand, String oldCommand, String newCommand){
+        if(!IsCommandRegistered(registeredCommand,oldCommand)) return registeredCommand;
+        List<String> commands = resolveRegisteredCommand(registeredCommand);
+        commands.remove(oldCommand);
+        commands.add(newCommand);
         return String.join("#", commands);
     }
 }

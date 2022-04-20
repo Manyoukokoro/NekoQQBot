@@ -1,12 +1,13 @@
 package org.nekotori.utils;
 
 import cn.hutool.core.img.FontUtil;
+import cn.hutool.core.img.ImgUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import lombok.Data;
+import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Member;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -21,9 +22,7 @@ import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -257,6 +256,10 @@ public class ImageUtil {
 
 
     public static void main(String[] args) {
+        ChatMemberDo chatMemberDo = new ChatMemberDo();
+        chatMemberDo.setLevel(1);
+        chatMemberDo.setExp(0L);
+        drawSignPic(null,chatMemberDo,0);
     }
 
     private static long nextLevelExp(int level, long exp){
@@ -279,7 +282,7 @@ public class ImageUtil {
         graphics.setColor(Color.WHITE);
         BufferedImage back = null;
         try {
-            back = ImageIO.read(new File("/jpg/background0.jpg"));
+            back = ImageIO.read(new File("jpg/background0.jpg"));
             graphics.drawImage(back, 0, 0, width, height, null);
         } catch (IOException e) {
             graphics.fillRect(0, 0, width, height);
@@ -287,18 +290,28 @@ public class ImageUtil {
         graphics.setColor(Color.GRAY);
         graphics.setStroke(new BasicStroke(6));
         graphics.drawLine(50, height*10/15, width-50,height *10/15);
+
         graphics.drawLine(width*2/40+1000,50,width*2/40+1000,height-50);
+
+        graphics.setStroke(new BasicStroke(10));
+        graphics.drawLine(200, 50, width-200,50);
+        graphics.drawLine(200, 100, width-200,100);
+        graphics.drawLine(200, 150, width-200,150);
+
+        graphics.drawLine(200,height-50,  width-200,height-50);
+        graphics.drawLine(200,height-100,  width-200,height-100);
+        graphics.drawLine(200,height-150,  width-200,height-150);
         graphics.setColor(Color.BLACK);
         for(int i=1;i<19;i++){
-            graphics.fillOval(width/20*i+10,10,120,120);
-            graphics.fillOval(width/20*i+10,height-130,120,120);
+//            graphics.fillOval(width/20*i+10,10,120,120);
+//            graphics.fillOval(width/20*i+10,height-130,120,120);
         }
         for(int i=1;i<14;i++){
             graphics.fillOval(10,height/15*i+10,120,120);
-            graphics.fillOval(width-130,height/15*i+10,120,120);
+//            graphics.fillOval(width-130,height/15*i+10,120,120);
         }
         graphics.setFont(npf);
-        String nick = sender.getNick();
+        String nick = sender==null?"": sender.getNick();
         if(nick.length()>6){
             nick = nick.substring(0,6)+"...";
         }
@@ -309,12 +322,16 @@ public class ImageUtil {
         graphics.drawString("获得经验: "+incomeExp, 150, height*11/15+(normalFontSize+50)*2);
         graphics.drawString("距离下级: "+nextLevelExp(chatMemberDo.getLevel(),chatMemberDo.getExp()), 150, height*11/15+(normalFontSize+50)*3);
 
-        String avatarUrl = sender.getAvatarUrl();
+        String avatarUrl = sender==null?"": sender.getAvatarUrl();
         try (InputStream userAvatar = HttpUtil.createGet(avatarUrl).execute().bodyStream()) {
             BufferedImage read = ImageIO.read(userAvatar);
             read = setRadius(read);
             graphics.drawImage(read, 150, height*5/15-500, 1000,1000, (image, i, i1, i2, i3, i4) -> false);
         } catch (Exception e) {
+            graphics.drawOval(150, height*5/15-500, 1000,1000);
+        }finally{
+            graphics.setStroke(new BasicStroke(10));
+            graphics.setColor(Color.gray);
             graphics.drawOval(150, height*5/15-500, 1000,1000);
         }
         try{
@@ -322,16 +339,30 @@ public class ImageUtil {
                     .setConnectionTimeout(10000)
                     .setReadTimeout(10000)
                     .execute().bodyStream();
-            BufferedImage read = ImageIO.read(inputStream);
+            FileUtil.writeFromStream(inputStream,new File("jpg/temp.png"));
+            inputStream.close();
+            BufferedImage read = ImageIO.read(new File("jpg/temp.png"));
             int height1 = read.getHeight()*2400/read.getWidth();
             graphics.drawImage(read,  width*21/40+350-1200, 500, 2400,height1, (image, i, i1, i2, i3, i4) -> false);
-            FileUtil.writeFromStream(inputStream,new File("jpg/temp.png"));
         }catch (Exception e){
+            e.printStackTrace();
             try{
-                BufferedImage read = ImageIO.read(new File("jpg/temp.png"));
-                int height1 = read.getHeight()*2400/read.getWidth();
-                graphics.drawImage(read,  width*21/40+350-1200, 500, 2400,height1, (image, i, i1, i2, i3, i4) -> false);
-            }catch (Exception ignored){}
+                File[] files = FileUtil.ls("pics/");
+                if (files !=null && files.length > 0) {
+                  int index = new Random().nextInt(files.length);
+                  BufferedImage read = ImageIO.read(files[index]);
+                  int height1 = read.getHeight() * 2400 / read.getWidth();
+                  graphics.drawImage(
+                      read,
+                      width * 21 / 40 + 350 - 1200,
+                      500,
+                      2400,
+                      height1,
+                      (image, i, i1, i2, i3, i4) -> false);
+                        }
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
         }
         StringBuilder stringBuilder = new StringBuilder("今日运势:");
         if(incomeExp<=100){
@@ -346,14 +377,42 @@ public class ImageUtil {
             stringBuilder.append("★★★★★☆☆");
         }else if(incomeExp<=50000){
             stringBuilder.append("★★★★★★☆");
+        }else if(incomeExp>=90000){
+            stringBuilder.append("★★★★★★★★");
         }else {
             stringBuilder.append("★★★★★★★");
         }
         graphics.setFont(ipf);
         graphics.setColor(Color.BLACK);
-        graphics.drawString(stringBuilder.toString(),width*2/40+1100,height*11/15+(normalFontSize+50)*2);
-      try {
-           return bufferedImageToInputStream(setRadius(bufferedImage,600,0,0));
+        graphics.drawString(stringBuilder.toString(),width*2/40+1100,height*10/15+50+(normalFontSize+50)*2);
+
+        stringBuilder= new StringBuilder("今日骚气:");
+        int sq = new Random().nextInt(100);
+        if(sq<=10){
+            stringBuilder.append("★☆☆☆☆☆☆");
+        }else if (sq<=30){
+            stringBuilder.append("★★☆☆☆☆☆");
+        }else if  (sq<=50){
+            stringBuilder.append("★★★☆☆☆☆");
+        }else if  (sq<=70){
+            stringBuilder.append("★★★★☆☆☆");
+        }else if  (sq<=90){
+            stringBuilder.append("★★★★★☆☆");
+        }else if  (sq<=96){
+            stringBuilder.append("★★★★★★☆");
+        }else {
+            stringBuilder.append("★★★★★★★");
+        }
+        graphics.setFont(ipf);
+        graphics.setColor(Color.getHSBColor(0.93f,0.78f,0.90f));
+        graphics.drawString(stringBuilder.toString(),width*2/40+1100,height*12/15-50+(normalFontSize+50)*2);
+        try {
+            BufferedImage read = ImageIO.read(new File("jpg/stamp.png"));
+            BufferedImage outImage = setRadius(bufferedImage, 600, 0, 0);
+            InputStream inputStream = bufferedImageToInputStream(outImage);
+            FileUtil.writeFromStream(inputStream,new File("jpg/tempout.png"));
+            ImgUtil.convert(new File("jpg/tempout.png"),new File("jpg/tempout.jpg"));
+            return FileUtil.getInputStream(new File("jpg/tempout.jpg"));
         } catch (IOException e) {
             return bufferedImageToInputStream(bufferedImage);
         }

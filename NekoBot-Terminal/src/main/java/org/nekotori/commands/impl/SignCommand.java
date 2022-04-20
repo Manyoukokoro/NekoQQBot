@@ -70,7 +70,7 @@ public class SignCommand extends NoAuthGroupCommand {
                     .groupId(group)
                     .isBlocked(false)
                     .level(0)
-                    .nickName(StringUtils.hasLength(sender.getNick())?sender.getNick():sender.getNameCard())
+                    .nickName(StringUtils.hasLength(sender.getNameCard())?sender.getNameCard():sender.getNick())
                     .lastSign(new Date())
                     .todayWelcome(false)
                     .totalSign(1)
@@ -81,7 +81,7 @@ public class SignCommand extends NoAuthGroupCommand {
             chatMemberDo.setId(id);
         }else {
             final ChatMemberDo chatMemberDoNew = calLevel(chatMemberDo, incomeExp+chatMemberDo.getExp());
-            chatMemberDoNew.setNickName(StringUtils.hasLength(sender.getNick())?sender.getNick():sender.getNameCard());
+            chatMemberDoNew.setNickName(StringUtils.hasLength(sender.getNameCard())?sender.getNameCard():sender.getNick());
             chatMemberDoNew.setLastSign(new Date());
             chatMemberDoNew.setTotalSign(chatMemberDoNew.getTotalSign()+1);
             chatMemberMapper.updateById(chatMemberDoNew);

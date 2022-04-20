@@ -21,7 +21,7 @@ public class GachaUtils {
         List<ImageUtil.AzureLaneCard> resAzureLaneCards = new ArrayList<>();
         File file = new File("blhx/info.json");
         JSON json = JSONUtil.readJSON(file, StandardCharsets.UTF_8);
-        List<ImageUtil.AzureLaneCard> azureLaneCards = json.toBean(new TypeReference<>() {
+        List<ImageUtil.AzureLaneCard> azureLaneCards = json.toBean(new TypeReference<List<ImageUtil.AzureLaneCard>>() {
         });
         List<String> types;
         switch (type){
@@ -37,15 +37,20 @@ public class GachaUtils {
         List<ImageUtil.AzureLaneCard> ssRs = azureLaneCards.stream().filter((card) -> card.getLevel() == 4 && card.getBuildType().contains(0)).collect(Collectors.toList());
         Random random = new Random();
         for (String s : gacha) {
-          if(s.equals("SSR")){
-              resAzureLaneCards.add(ssRs.get(random.nextInt(ssRs.size())));
-          }else if(s.equals("SR")){
-              resAzureLaneCards.add(sRs.get(random.nextInt(sRs.size())));
-          }else if(s.equals("R")){
-              resAzureLaneCards.add(Rs.get(random.nextInt(Rs.size())));
-          }else if(s.equals("N")){
-              resAzureLaneCards.add(Ns.get(random.nextInt(Ns.size())));
-          }
+            switch (s) {
+                case "SSR":
+                    resAzureLaneCards.add(ssRs.get(random.nextInt(ssRs.size())));
+                    break;
+                case "SR":
+                    resAzureLaneCards.add(sRs.get(random.nextInt(sRs.size())));
+                    break;
+                case "R":
+                    resAzureLaneCards.add(Rs.get(random.nextInt(Rs.size())));
+                    break;
+                case "N":
+                    resAzureLaneCards.add(Ns.get(random.nextInt(Ns.size())));
+                    break;
+            }
         }
         return resAzureLaneCards;
     }
@@ -55,7 +60,7 @@ public class GachaUtils {
         List<ImageUtil.AzureLaneCard> resAzureLaneCards = new ArrayList<>();
         File file = new File("blhx/info.json");
         JSON json = JSONUtil.readJSON(file, StandardCharsets.UTF_8);
-        List<ImageUtil.AzureLaneCard> azureLaneCards = json.toBean(new TypeReference<>() {
+        List<ImageUtil.AzureLaneCard> azureLaneCards = json.toBean(new TypeReference<List<ImageUtil.AzureLaneCard>>() {
         });
         List<String> types;
         switch (type){
@@ -93,7 +98,7 @@ public class GachaUtils {
         File file = new File("blhx/info.json");
         List<ImageUtil.AzureLaneCard> eventCards = ImageUtil.getEventCards();
         JSON json = JSONUtil.readJSON(file, StandardCharsets.UTF_8);
-        List<ImageUtil.AzureLaneCard> azureLaneCards = json.toBean(new TypeReference<>() {
+        List<ImageUtil.AzureLaneCard> azureLaneCards = json.toBean(new TypeReference<List<ImageUtil.AzureLaneCard>>() {
         });
         List<String> collect = eventCards.stream().map(ImageUtil.AzureLaneCard::getName).collect(Collectors.toList());
         azureLaneCards = azureLaneCards.stream().filter(card -> !collect.contains(card.getName())).collect(Collectors.toList());
