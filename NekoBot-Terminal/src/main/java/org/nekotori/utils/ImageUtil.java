@@ -1,6 +1,7 @@
 package org.nekotori.utils;
 
 import cn.hutool.core.img.FontUtil;
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import lombok.Data;
@@ -33,9 +34,9 @@ import java.util.List;
  */
 public class ImageUtil {
 
-    private static final Font fs = FontUtil.createFont(new File(ImageUtil.class.getResource("/font/fangsong.ttf").getPath()));
-    private static final Font pfmb = FontUtil.createFont(new File(ImageUtil.class.getResource("/font/pingfangsimplemidiumblack.ttf").getPath()));
-    private static final Font pf = FontUtil.createFont(new File(ImageUtil.class.getResource("/font/pingfangsimple.ttf").getPath()));
+    private static final Font fs = FontUtil.createFont(new File("font/fangsong.ttf"));
+    private static final Font pfmb = FontUtil.createFont(new File("font/pingfangsimplemidiumblack.ttf"));
+    private static final Font pf = FontUtil.createFont(new File("font/pingfangsimple.ttf"));
     private static List<AzureLaneCard> cache;
 
     public static InputStream pcrGachaImage(List<String> ids) throws IOException {
@@ -268,16 +269,17 @@ public class ImageUtil {
     public static InputStream drawSignPic(Member sender, ChatMemberDo chatMemberDo,int incomeExp) {
         int height = 3192;
         int width = 4096;
-        int impFontSize = 125;
+        int impFontSize = 200;
         int normalFontSize = 125;
         MyFont nfs = new MyFont(fs, normalFontSize);
-        MyFont ipf = new MyFont(pfmb, impFontSize);
+        MyFont npf = new MyFont(pfmb, normalFontSize);
+        MyFont ipf = new MyFont(pf, impFontSize);
         BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_BGR);
         Graphics2D graphics = bufferedImage.createGraphics();
         graphics.setColor(Color.WHITE);
         BufferedImage back = null;
         try {
-            back = ImageIO.read(new File(ImageUtil.class.getResource("/src/background0.jpg").getPath()));
+            back = ImageIO.read(new File("/jpg/background0.jpg"));
             graphics.drawImage(back, 0, 0, width, height, null);
         } catch (IOException e) {
             graphics.fillRect(0, 0, width, height);
@@ -295,17 +297,17 @@ public class ImageUtil {
             graphics.fillOval(10,height/15*i+10,120,120);
             graphics.fillOval(width-130,height/15*i+10,120,120);
         }
-        graphics.setFont(ipf);
+        graphics.setFont(npf);
         String nick = sender.getNick();
         if(nick.length()>6){
             nick = nick.substring(0,6)+"...";
         }
-        graphics.drawString("@: "+nick, 100, height*10/15+impFontSize+50);
+        graphics.drawString("@: "+nick, 100, height*10/15+normalFontSize+50);
         graphics.setFont(nfs);
         graphics.setColor(Color.BLACK);
-        graphics.drawString("当前等级: "+chatMemberDo.getLevel(), 150, height*11/15+impFontSize+50);
-        graphics.drawString("获得经验: "+incomeExp, 150, height*11/15+(impFontSize+50)*2);
-        graphics.drawString("距离下级: "+nextLevelExp(chatMemberDo.getLevel(),chatMemberDo.getExp()), 150, height*11/15+(impFontSize+50)*3);
+        graphics.drawString("当前等级: "+chatMemberDo.getLevel(), 150, height*11/15+normalFontSize+50);
+        graphics.drawString("获得经验: "+incomeExp, 150, height*11/15+(normalFontSize+50)*2);
+        graphics.drawString("距离下级: "+nextLevelExp(chatMemberDo.getLevel(),chatMemberDo.getExp()), 150, height*11/15+(normalFontSize+50)*3);
 
         String avatarUrl = sender.getAvatarUrl();
         try (InputStream userAvatar = HttpUtil.createGet(avatarUrl).execute().bodyStream()) {
@@ -315,7 +317,42 @@ public class ImageUtil {
         } catch (Exception e) {
             graphics.drawOval(150, height*5/15-500, 1000,1000);
         }
-        try {
+        try{
+            InputStream inputStream = HttpUtil.createGet("http://api.wpbom.com/api/secon.php")
+                    .setConnectionTimeout(10000)
+                    .setReadTimeout(10000)
+                    .execute().bodyStream();
+            BufferedImage read = ImageIO.read(inputStream);
+            int height1 = read.getHeight()*2400/read.getWidth();
+            graphics.drawImage(read,  width*21/40+350-1200, 500, 2400,height1, (image, i, i1, i2, i3, i4) -> false);
+            FileUtil.writeFromStream(inputStream,new File("jpg/temp.png"));
+        }catch (Exception e){
+            try{
+                BufferedImage read = ImageIO.read(new File("jpg/temp.png"));
+                int height1 = read.getHeight()*2400/read.getWidth();
+                graphics.drawImage(read,  width*21/40+350-1200, 500, 2400,height1, (image, i, i1, i2, i3, i4) -> false);
+            }catch (Exception ignored){}
+        }
+        StringBuilder stringBuilder = new StringBuilder("今日运势:");
+        if(incomeExp<=100){
+            stringBuilder.append("★☆☆☆☆☆☆");
+        }else if(incomeExp<=500){
+            stringBuilder.append("★★☆☆☆☆☆");
+        }else if(incomeExp<=1000){
+            stringBuilder.append("★★★☆☆☆☆");
+        }else if(incomeExp<=5000){
+            stringBuilder.append("★★★★☆☆☆");
+        }else if(incomeExp<=10000){
+            stringBuilder.append("★★★★★☆☆");
+        }else if(incomeExp<=50000){
+            stringBuilder.append("★★★★★★☆");
+        }else {
+            stringBuilder.append("★★★★★★★");
+        }
+        graphics.setFont(ipf);
+        graphics.setColor(Color.BLACK);
+        graphics.drawString(stringBuilder.toString(),width*2/40+1100,height*11/15+(normalFontSize+50)*2);
+      try {
            return bufferedImageToInputStream(setRadius(bufferedImage,600,0,0));
         } catch (IOException e) {
             return bufferedImageToInputStream(bufferedImage);
