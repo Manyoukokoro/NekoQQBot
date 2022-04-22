@@ -13,7 +13,7 @@ import org.nekotori.service.GroupService;
 
 import javax.annotation.Resource;
 
-@IsCommand(name = {"注册","注册本群","reg"},description = "将本群注册进bot，格式:(!/-/#)reg")
+@IsCommand(name = {"注册", "注册本群", "reg"}, description = "将本群注册进bot，格式:(!/-/#)reg")
 @Slf4j
 public class RegisterGroupCommand extends ManagerGroupCommand {
 
@@ -22,13 +22,13 @@ public class RegisterGroupCommand extends ManagerGroupCommand {
 
     @Override
     public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
-        if(groupService.IsGroupRegistered(subject)){
+        if (groupService.IsGroupRegistered(subject)) {
             return new MessageChainBuilder().append(new At(sender.getId())).append(new PlainText("\n本群已经注册")).build();
         }
         try {
             groupService.registerGroup(subject);
-        }catch (Exception e){
-            log.error(e.getMessage(),e);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
             return new MessageChainBuilder().append(new At(sender.getId())).append(new PlainText("\n注册失败，请前往艾泽拉斯联系管理员")).build();
         }
         return new MessageChainBuilder().append(new At(sender.getId())).append(new PlainText("\n注册成功")).build();

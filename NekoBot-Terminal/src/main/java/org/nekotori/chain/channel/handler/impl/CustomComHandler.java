@@ -6,7 +6,6 @@ import org.nekotori.chain.channel.GroupCommandChannel;
 import org.nekotori.chain.channel.handler.ChannelHandler;
 import org.nekotori.commands.CustomCommand;
 
-import java.util.Deque;
 import java.util.List;
 
 /**
@@ -18,7 +17,7 @@ import java.util.List;
 @HandlerId("32146571")
 public class CustomComHandler implements ChannelHandler {
 
-private static final CustomCommand.STAGES[] stages = CustomCommand.STAGES.values();
+    private static final CustomCommand.STAGES[] stages = CustomCommand.STAGES.values();
 
     @Override
     public List<String> getStages() {

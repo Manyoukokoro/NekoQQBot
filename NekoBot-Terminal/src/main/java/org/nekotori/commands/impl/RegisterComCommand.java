@@ -14,7 +14,7 @@ import org.nekotori.utils.CommandUtils;
 import javax.annotation.Resource;
 import java.util.List;
 
-@IsCommand(name = {"指令","注册指令","com"},description = "注册指令，格式:(!/-/#)com ...[指令名]")
+@IsCommand(name = {"指令", "注册指令", "com"}, description = "注册指令，格式:(!/-/#)com ...[指令名]")
 public class RegisterComCommand extends ManagerGroupCommand {
 
     @Resource
@@ -23,12 +23,12 @@ public class RegisterComCommand extends ManagerGroupCommand {
     @Override
     public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
         String s = messageChain.serializeToMiraiCode();
-        CommandAttr commandAttr = CommandUtils.resolveCommand(s);
+        CommandAttr commandAttr = CommandUtils.resolveTextCommand(s);
         List<String> param = commandAttr.getParam();
-        for(String p:param){
+        for (String p : param) {
             String groupCommands = groupService.getGroupCommands(subject.getId());
             String newCommand = CommandUtils.addCommand(groupCommands, p);
-            groupService.updateGroupCommand(subject.getId(),newCommand);
+            groupService.updateGroupCommand(subject.getId(), newCommand);
         }
         return new MessageChainBuilder().append(new PlainText("更新群指令成功")).build();
     }

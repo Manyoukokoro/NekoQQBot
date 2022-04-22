@@ -21,8 +21,8 @@ public abstract class PrivilegeGroupCommand implements Command {
     public boolean checkAuthorization(GroupMessageEvent event) {
         final long id = event.getGroup().getId();
         String s = event.getMessage().serializeToMiraiCode();
-        CommandAttr commandAttr = CommandUtils.resolveCommand(s);
-        return groupService.checkPrivilege(id,commandAttr.getCommand());
+        CommandAttr commandAttr = CommandUtils.resolveTextCommand(s);
+        return groupService.checkPrivilege(id, commandAttr.getCommand());
     }
 }
     

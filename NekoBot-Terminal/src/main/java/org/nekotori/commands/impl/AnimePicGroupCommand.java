@@ -33,64 +33,48 @@ import java.util.Optional;
  * @description:
  * @version: {@link }
  */
-@IsCommand(name = {"色图","setu"},description = "使用loliApi检索插画图片，格式:(!/-/#)setu ...[参数]")
+@IsCommand(name = {"色图", "setu"}, description = "使用loliApi检索插画图片，格式:(!/-/#)setu ...[参数]")
 @Slf4j
 public class AnimePicGroupCommand extends PrivilegeGroupCommand {
 
-  @Value("${img.loli-api}")
-  private String loliApi;
+    @Value("${img.loli-api}")
+    private String loliApi;
 
-  @Value("${img.loli-key}")
-  private String loliKey;
+    @Value("${img.loli-key}")
+    private String loliKey;
 
-  @Override
-  public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
-    String s = messageChain.serializeToMiraiCode();
-    CommandAttr commandAttr = CommandUtils.resolveCommand(s);
-    String keyword = CollectionUtils.isEmpty(commandAttr.getParam())?"":commandAttr.getParam().get(0);
-    String imgUrl = "";
-    String build =
-        UrlBuilder.of(loliApi, StandardCharsets.UTF_8)
-            .addQuery("apikey", loliKey)
-            .addQuery("r18","0")
-            .addQuery("keyword", keyword)
-            .addQuery("size1200", "true")
-            .build();
-    MessageChain echo;
-    try {
-      String body = HttpUtil.createGet(build).setReadTimeout(5 * 1000).setConnectionTimeout(5 * 1000).executeAsync().body();
-      LoliconApiResponse loliconApiResponse =
-              JsonUtils.json2Object(body, new TypeReference<>() {
-              });
-      List<LoliconData> loliconData = new ArrayList<>();
-      if (ObjectUtil.isNotNull(loliconApiResponse)) {
+    @Override
+    public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
+        String s = messageChain.serializeToMiraiCode();
+        CommandAttr commandAttr = CommandUtils.resolveTextCommand(s);
+        String keyword = CollectionUtils.isEmpty(commandAttr.getParam()) ? "" : commandAttr.getParam().get(0);
+        String imgUrl = "";
+        String build = UrlBuilder.of(loliApi, StandardCharsets.UTF_8).addQuery("apikey", loliKey).addQuery("r18", "0").addQuery("keyword", keyword).addQuery("size1200", "true").build();
+        MessageChain echo;
+        try {
+            String body = HttpUtil.createGet(build).setReadTimeout(5 * 1000).setConnectionTimeout(5 * 1000).executeAsync().body();
+            LoliconApiResponse loliconApiResponse = JsonUtils.json2Object(body, new TypeReference<>() {
+            });
+            List<LoliconData> loliconData = new ArrayList<>();
+            if (ObjectUtil.isNotNull(loliconApiResponse)) {
 //        if (loliconApiResponse.getError().equals(429))
 //          return new MessageChainBuilder()
 //                  .append(new At(sender.getId()).plus(new PlainText("我的身体已经菠萝菠萝哒")))
 //                  .build();
-        loliconData = loliconApiResponse.getData();
-      }
-      if (ObjectUtil.isNull(loliconData) || loliconData.isEmpty())
-        return new MessageChainBuilder()
-                .append(new At(sender.getId()).plus(new PlainText("您找不到对象")))
-                .build();
-      Collection<Object> values = loliconData.get(0).getUrls().values();
-      Optional<Object> firstUrl = values.stream().findFirst();
-      imgUrl = firstUrl.orElseGet(String::new).toString();
-      log.info("request img url: {}", imgUrl);
-      InputStream inputStream =
-              HttpUtil.createGet(imgUrl).setReadTimeout(20 * 1000).setConnectionTimeout(10 * 1000).execute().bodyStream();
-      echo =
-              new MessageChainBuilder()
-                      .append(FlashImage.from(Contact.uploadImage(subject, inputStream)))
-                      .build();
-    }catch (IORuntimeException e){
-      log.error(e.getMessage(),e);
-      echo = new MessageChainBuilder()
-              .append(new At(sender.getId()))
-              .append(new PlainText("\n来到了电波到达不到的地方，请问是异次元吗"))
-              .build();
+                loliconData = loliconApiResponse.getData();
+            }
+            if (ObjectUtil.isNull(loliconData) || loliconData.isEmpty())
+                return new MessageChainBuilder().append(new At(sender.getId()).plus(new PlainText("您找不到对象"))).build();
+            Collection<Object> values = loliconData.get(0).getUrls().values();
+            Optional<Object> firstUrl = values.stream().findFirst();
+            imgUrl = firstUrl.orElseGet(String::new).toString();
+            log.info("request img url: {}", imgUrl);
+            InputStream inputStream = HttpUtil.createGet(imgUrl).setReadTimeout(20 * 1000).setConnectionTimeout(10 * 1000).execute().bodyStream();
+            echo = new MessageChainBuilder().append(FlashImage.from(Contact.uploadImage(subject, inputStream))).build();
+        } catch (IORuntimeException e) {
+            log.error(e.getMessage(), e);
+            echo = new MessageChainBuilder().append(new At(sender.getId())).append(new PlainText("\n来到了电波到达不到的地方，请问是异次元吗")).build();
+        }
+        return echo;
     }
-    return echo;
-  }
 }

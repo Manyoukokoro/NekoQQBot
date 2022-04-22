@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.nekotori.chain.ChainMessageSelector;
 import org.nekotori.handler.GlobalAtMeHandler;
 import org.nekotori.handler.GlobalCommandHandler;
-import org.nekotori.utils.ImageUtil;
 import org.nekotori.utils.LoginUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
@@ -38,14 +37,14 @@ public class BotRunner implements ApplicationRunner {
 //        log.info("开始下载卡图资源......");
 //        ImageUtil.downloadAzureLaneSrc();
 //        log.info("下载完成!");
-        if(ObjectUtils.isEmpty(id)||ObjectUtils.isEmpty(password)) {
+        if (ObjectUtils.isEmpty(id) || ObjectUtils.isEmpty(password)) {
             id = LoginUtils.getUserId();
             password = LoginUtils.getPassword();
         }
         GlobalCommandHandler.init();
         GlobalAtMeHandler.init();
         ChainMessageSelector.init();
-        BotSimulator.run(id,password,deviceInfoLocation);
+        BotSimulator.run(id, password, deviceInfoLocation);
     }
 }
     

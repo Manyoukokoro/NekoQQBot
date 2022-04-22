@@ -8,7 +8,7 @@ package org.nekotori.common;
  */
 public class InnerConstants {
 
-    public static final String[] commandHeader = {"!","-","#",""};
+    public static final String[] commandHeader = {"!", "-", "#", ""};
     public static final Long admin = 1318985307L;
     public static final String STRING5 = "长连";
     public static final String STRING0 = "发送（五子棋）加入对局";

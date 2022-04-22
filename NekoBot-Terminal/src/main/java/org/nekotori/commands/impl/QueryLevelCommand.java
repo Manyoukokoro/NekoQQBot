@@ -8,7 +8,6 @@ import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
 import org.nekotori.annotations.IsCommand;
-import org.nekotori.commands.ManagerGroupCommand;
 import org.nekotori.commands.NoAuthGroupCommand;
 import org.nekotori.dao.ChatMemberMapper;
 import org.nekotori.entity.ChatMemberDo;
@@ -28,7 +27,7 @@ import java.util.List;
  * @version: {@link }
  */
 
-@IsCommand(name = {"查询等级","level"},description = "查询群友等级，格式:(!/-/#)查询等级")
+@IsCommand(name = {"查询等级", "level"}, description = "查询群友等级，格式:(!/-/#)查询等级")
 public class QueryLevelCommand extends NoAuthGroupCommand {
 
     @Resource
@@ -38,23 +37,23 @@ public class QueryLevelCommand extends NoAuthGroupCommand {
     public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
         MessageChainBuilder singleMessages = new MessageChainBuilder();
         String s = messageChain.serializeToMiraiCode();
-        CommandAttr commandAttr = CommandUtils.resolveCommand(s);
-        if ((sender.getPermission().equals(MemberPermission.ADMINISTRATOR)||
+        CommandAttr commandAttr = CommandUtils.resolveTextCommand(s);
+        if ((sender.getPermission().equals(MemberPermission.ADMINISTRATOR) ||
                 sender.getPermission().equals(MemberPermission.OWNER))
-                &&!CollectionUtils.isEmpty(commandAttr.getParam())
-                &&"all".equals(commandAttr.getParam().get(0))) {
+                && !CollectionUtils.isEmpty(commandAttr.getParam())
+                && "all".equals(commandAttr.getParam().get(0))) {
             List<ChatMemberDo> memberDos = chatMemberMapper.selectList(new QueryWrapper<ChatMemberDo>().eq("group_id", subject.getId()));
             singleMessages.append("本群成员等级排行如下：");
-            memberDos.stream().sorted(Comparator.comparing(ChatMemberDo::getLevel).reversed()).forEach(member->{
+            memberDos.stream().sorted(Comparator.comparing(ChatMemberDo::getLevel).reversed()).forEach(member -> {
                 singleMessages.append("\n").append(member.getNickName()).append(":").append(String.valueOf(member.getLevel())).append("级");
             });
-        }else {
+        } else {
             ChatMemberDo chatMemberDo = chatMemberMapper.selectOne(new QueryWrapper<ChatMemberDo>().eq("group_id", subject.getId()).eq("member_id",
                     sender.getId()));
-            if(ObjectUtils.isEmpty(chatMemberDo)){
+            if (ObjectUtils.isEmpty(chatMemberDo)) {
                 singleMessages.append(new PlainText("您还没有签到过哦"));
-            }else {
-                singleMessages.append(new PlainText("您现在为："+chatMemberDo.getLevel()+"级,累计签到:"+chatMemberDo.getTotalSign()+
+            } else {
+                singleMessages.append(new PlainText("您现在为：" + chatMemberDo.getLevel() + "级,累计签到:" + chatMemberDo.getTotalSign() +
                         "天"));
             }
         }

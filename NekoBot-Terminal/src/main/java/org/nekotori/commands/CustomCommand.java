@@ -15,30 +15,31 @@ import java.util.stream.Collectors;
 
 public class CustomCommand {
 
-    public enum AUTHORITY{
-        EVERYONE,ADMIN,OWNER;
+    public enum AUTHORITY {
+        EVERYONE, ADMIN, OWNER;
+
         @Override
-        public String toString(){
+        public String toString() {
             return this.name();
         }
     }
 
-    public enum STAGES{
-        RECORD,CONDITION,HANDLE;
+    public enum STAGES {
+        RECORD, CONDITION, HANDLE;
 
         @Override
-        public String toString(){
+        public String toString() {
             return this.name();
         }
     }
 
-    public enum RECORD{
-        TARGET_NAME("S",new char[]{'c','e'}),
-        TARGET_ID("N",new char[]{'g','l','e'}),
-        TARGET_MESSAGE("S",new char[]{'c','e'}),
-        EVENT_TIME("T",new char[]{'a','b'}),
-        GROUP_ID("N",new char[]{'g','l','e'}),
-        GROUP_NAME("S",new char[]{'c','e'});
+    public enum RECORD {
+        TARGET_NAME("S", new char[]{'c', 'e'}),
+        TARGET_ID("N", new char[]{'g', 'l', 'e'}),
+        TARGET_MESSAGE("S", new char[]{'c', 'e'}),
+        EVENT_TIME("T", new char[]{'a', 'b'}),
+        GROUP_ID("N", new char[]{'g', 'l', 'e'}),
+        GROUP_NAME("S", new char[]{'c', 'e'});
         private String type;
         private char[] operate;
 
@@ -48,16 +49,16 @@ public class CustomCommand {
         }
 
         @Override
-        public String toString(){
+        public String toString() {
             return this.name();
         }
     }
 
-    public enum HANDLE{
-        MEMBER_KICK_OUT,MEMBER_MUTE,MESSAGE,DICE;
+    public enum HANDLE {
+        MEMBER_KICK_OUT, MEMBER_MUTE, MESSAGE, DICE;
 
         @Override
-        public String toString(){
+        public String toString() {
             return this.name();
         }
     }
@@ -70,19 +71,19 @@ public class CustomCommand {
 
     private HANDLE handle;
 
-    public boolean checkAuthority(GroupMessageEvent event){
-        if(AUTHORITY.EVERYONE.equals(this.authority)){
+    public boolean checkAuthority(GroupMessageEvent event) {
+        if (AUTHORITY.EVERYONE.equals(this.authority)) {
             return true;
         }
         MemberPermission permission = event.getSender().getPermission();
-        if(AUTHORITY.ADMIN.equals(this.authority)){
+        if (AUTHORITY.ADMIN.equals(this.authority)) {
             return permission.equals(MemberPermission.ADMINISTRATOR)
                     || permission.equals(MemberPermission.OWNER);
         }
         return permission.equals(MemberPermission.OWNER);
     }
 
-    public void recordInfo(GroupMessageEvent event){
+    public void recordInfo(GroupMessageEvent event) {
         this.recordedInfo = records.stream().map(record -> {
             String info = "";
             switch (record) {
@@ -111,7 +112,7 @@ public class CustomCommand {
         }).collect(Collectors.toList());
     }
 
-    public void handleMessage(GroupMessageEvent event){
+    public void handleMessage(GroupMessageEvent event) {
 
     }
 }

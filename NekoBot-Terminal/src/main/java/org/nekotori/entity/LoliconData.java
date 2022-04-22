@@ -1,6 +1,5 @@
 package org.nekotori.entity;
 
-import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import lombok.Data;
 

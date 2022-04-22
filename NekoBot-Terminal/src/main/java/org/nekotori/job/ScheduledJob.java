@@ -2,13 +2,9 @@ package org.nekotori.job;
 
 
 import org.nekotori.chain.ChainMessageSelector;
-import org.nekotori.chain.channel.GroupCommandChannel;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
-import java.util.Map;
 
 @Component
 public class ScheduledJob {

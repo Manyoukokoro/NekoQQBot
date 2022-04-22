@@ -12,11 +12,11 @@ import org.nekotori.annotations.AtMe;
 public abstract class KeyWordsAtMeResponse implements AtMeResponse {
 
     @Override
-    public boolean checkAuthorization(GroupMessageEvent groupMessageEvent){
+    public boolean checkAuthorization(GroupMessageEvent groupMessageEvent) {
         final String content = groupMessageEvent.getMessage().serializeToMiraiCode();
         final String[] description = this.getClass().getAnnotation(AtMe.class).description();
-        for(String s: description){
-            if(content.contains(s)){
+        for (String s : description) {
+            if (content.contains(s)) {
                 return true;
             }
         }

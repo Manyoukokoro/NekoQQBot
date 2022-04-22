@@ -22,20 +22,20 @@ import javax.annotation.Resource;
 @Event
 public class GroupCommandEvents extends SimpleListenerHost {
 
-  @Resource
-  @Lazy
-  private AsyncJob asyncJob;
+    @Resource
+    @Lazy
+    private AsyncJob asyncJob;
 
 
-  @NotNull
-  @EventHandler(priority = EventPriority.HIGH)
-  public ListeningStatus onMessage(@NotNull GroupMessageEvent groupMessageEvent) {
-    asyncJob.handleCommand(groupMessageEvent);
-    asyncJob.doRecord(groupMessageEvent);
-    asyncJob.handleCustomResponse(groupMessageEvent);
-    asyncJob.repeat(groupMessageEvent);
-    return ListeningStatus.LISTENING;
-  }
+    @NotNull
+    @EventHandler(priority = EventPriority.HIGH)
+    public ListeningStatus onMessage(@NotNull GroupMessageEvent groupMessageEvent) {
+        asyncJob.handleCommand(groupMessageEvent);
+        asyncJob.doRecord(groupMessageEvent);
+        asyncJob.handleCustomResponse(groupMessageEvent);
+        asyncJob.repeat(groupMessageEvent);
+        return ListeningStatus.LISTENING;
+    }
 
 
 }

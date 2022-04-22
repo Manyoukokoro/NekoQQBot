@@ -20,17 +20,17 @@ public class QYKBotAtMeResponse extends NoAuthAtMeResponse {
         UrlBuilder of = UrlBuilder.of("http://api.qingyunke.com/api.php", Charset.defaultCharset());
         String build = of.addQuery("key", "free").addQuery("appid", "0").addQuery("msg", groupMessageEvent.getMessage().contentToString()).build();
         String body = HttpRequest.get(build).execute().body();
-        try{
+        try {
             JSONObject jsonObject = JSONUtil.parseObj(body);
             int result = jsonObject.getInt("result");
-            if (result != 0){
+            if (result != 0) {
                 return null;
             }
             String content = jsonObject.getStr("content");
-            content =  content.replace("菲菲","NekoBot");
-            content =  content.replace("{br}","\n");
+            content = content.replace("菲菲", "NekoBot");
+            content = content.replace("{br}", "\n");
             return new MessageChainBuilder().append(content).build();
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }

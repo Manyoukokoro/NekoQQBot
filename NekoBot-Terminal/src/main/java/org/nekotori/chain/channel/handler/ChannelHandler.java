@@ -3,7 +3,6 @@ package org.nekotori.chain.channel.handler;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import org.nekotori.chain.channel.GroupCommandChannel;
 
-import java.util.Deque;
 import java.util.List;
 
 /**

@@ -12,15 +12,17 @@ import net.mamoe.mirai.message.data.MessageChain;
  */
 public interface Command {
 
-  /**
-   * 检查是否拥有执行指令的权限
-   *
-   * @return
-   */
+    /**
+     * 检查是否拥有执行指令的权限
+     *
+     * @return
+     */
 
-  boolean checkAuthorization(GroupMessageEvent event);
+    boolean checkAuthorization(GroupMessageEvent event);
 
 
-  /** 执行指令 */
-  MessageChain execute(Member sender, MessageChain messageChain, Group subject);
+    /**
+     * 执行指令
+     */
+    MessageChain execute(Member sender, MessageChain messageChain, Group subject);
 }

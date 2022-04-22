@@ -1,9 +1,9 @@
 package org.nekotori.utils;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -20,8 +20,7 @@ public class JsonUtils {
     }
 
     public static String object2Json(Object o) {
-        if (o == null)
-            return null;
+        if (o == null) return null;
 
         String s = null;
 
@@ -34,8 +33,7 @@ public class JsonUtils {
     }
 
     public static <T> List<String> listObject2ListJson(List<T> objects) {
-        if (objects == null)
-            return null;
+        if (objects == null) return null;
 
         List<String> lists = new ArrayList<String>();
         for (T t : objects) {
@@ -46,8 +44,7 @@ public class JsonUtils {
     }
 
     public static <T> List<T> listJson2ListObject(List<String> jsons, Class<T> c) {
-        if (jsons == null)
-            return null;
+        if (jsons == null) return null;
 
         List<T> ts = new ArrayList<T>();
         for (String j : jsons) {
@@ -58,8 +55,7 @@ public class JsonUtils {
     }
 
     public static <T> T json2Object(String json, Class<T> c) {
-        if (!StringUtils.hasLength(json))
-            return null;
+        if (!StringUtils.hasLength(json)) return null;
 
         T t = null;
         try {
@@ -72,8 +68,7 @@ public class JsonUtils {
 
     @SuppressWarnings("unchecked")
     public static <T> T json2Object(String json, TypeReference<T> tr) {
-        if (!StringUtils.hasLength(json))
-            return null;
+        if (!StringUtils.hasLength(json)) return null;
 
         T t = null;
         try {

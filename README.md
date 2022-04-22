@@ -1,21 +1,25 @@
 # NekoQQBot
 
 #### 描述
+
 一个基于Springboot和Mirai框架的QQbot
 
 #### 软件架构
+
 1. SpringBoot
 2. Mirai-Core-Jvm
 3. Mybatis-Plus+Sqlite
 
-
 #### 引导
 
-1.  控制台程序总入口为Springboot项目入口[NekoBotApplication](https://gitee.com/nekotori/neko-qqbot/blob/master/NekoBot-Terminal/src/main/java/org/nekotori/NekoBotApplication.java) 
-2.  Spring项目启动时，会同时按照配置文件创建bot登录QQ，并注册event包下的所有事件(net.mamoe.mirai.event),事件类实现SimpleListenerHost
-3.  mirai事件可以监听不同的QQ动作，并触发相应的动作，比如Command
-4.  如何处理Command: 在command事件中，调用了GlobalCommandHandler对象，此对象中注册了所有实现了Command接口的类(需要实现类用@Command注解被Spring容器管理),command事件被触发后，会遍历注册的Command类测试是否有符合条件的Command需要被执行。
-5.  指令实现类示例:
+1.
+控制台程序总入口为Springboot项目入口[NekoBotApplication](https://gitee.com/nekotori/neko-qqbot/blob/master/NekoBot-Terminal/src/main/java/org/nekotori/NekoBotApplication.java)
+2. Spring项目启动时，会同时按照配置文件创建bot登录QQ，并注册event包下的所有事件(net.mamoe.mirai.event),事件类实现SimpleListenerHost
+3. mirai事件可以监听不同的QQ动作，并触发相应的动作，比如Command
+4. 如何处理Command: 在command事件中，调用了GlobalCommandHandler对象，此对象中注册了所有实现了Command接口的类(需要实现类用@Command注解被Spring容器管理)
+   ,command事件被触发后，会遍历注册的Command类测试是否有符合条件的Command需要被执行。
+5. 指令实现类示例:
+
 ```java
 /**
  * @author: JayDeng
@@ -76,24 +80,24 @@ public class SampleCommand extends PrivilegeGroupCommand {
 }
     
 ```
+
 #### 历史
+
 1. add sentence generator
 2. add sample command implement
 
-
 #### 部署
 
-1.  环境: jvm运行环境 推荐版本jdk11,低版本会造成代码不兼容
-2.  准备配置文件application-sample.yml,填写基本信息
-3.  使用maven将项目代码打包为jar,即可在服务器上运行
-4.  登录中所遇问题请参考mirai官方解决方案
-
+1. 环境: jvm运行环境 推荐版本jdk11,低版本会造成代码不兼容
+2. 准备配置文件application-sample.yml,填写基本信息
+3. 使用maven将项目代码打包为jar,即可在服务器上运行
+4. 登录中所遇问题请参考mirai官方解决方案
 
 #### Gitee Feature
 
-1.  You can use Readme\_XXX.md to support different languages, such as Readme\_en.md, Readme\_zh.md
-2.  Gitee blog [blog.gitee.com](https://blog.gitee.com)
-3.  Explore open source project [https://gitee.com/explore](https://gitee.com/explore)
-4.  The most valuable open source project [GVP](https://gitee.com/gvp)
-5.  The manual of Gitee [https://gitee.com/help](https://gitee.com/help)
-6.  The most popular members  [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+1. You can use Readme\_XXX.md to support different languages, such as Readme\_en.md, Readme\_zh.md
+2. Gitee blog [blog.gitee.com](https://blog.gitee.com)
+3. Explore open source project [https://gitee.com/explore](https://gitee.com/explore)
+4. The most valuable open source project [GVP](https://gitee.com/gvp)
+5. The manual of Gitee [https://gitee.com/help](https://gitee.com/help)
+6. The most popular members  [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)

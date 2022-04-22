@@ -21,18 +21,18 @@ import java.util.List;
  */
 
 /**
- * @Command注解，打上此注解后，spring容器会自动管理此指令的实现
- * value为指令名数组
+ * @Command注解，打上此注解后，spring容器会自动管理此指令的实现 value为指令名数组
  */
-@IsCommand(name = {"测试命令","ping"},description = "测试命令，格式:(!/-/#)ping")
+@IsCommand(name = {"测试命令", "ping"}, description = "测试命令，格式:(!/-/#)ping")
 public class SampleCommand extends PrivilegeGroupCommand {
 
 
     /**
      * 重写的execute方法，决定指令的输入输出
-     * @param sender 发起指令的人
+     *
+     * @param sender       发起指令的人
      * @param messageChain 带有指令的那条消息
-     * @param subject 发指令人所在的群
+     * @param subject      发指令人所在的群
      * @return
      */
     @Override
@@ -40,7 +40,7 @@ public class SampleCommand extends PrivilegeGroupCommand {
         /**
          * 标准方法，解析指令数据
          */
-        final CommandAttr commandAttr = CommandUtils.resolveCommand(messageChain.serializeToMiraiCode());
+        final CommandAttr commandAttr = CommandUtils.resolveTextCommand(messageChain.serializeToMiraiCode());
         /**
          * 指令头：！ - #
          */

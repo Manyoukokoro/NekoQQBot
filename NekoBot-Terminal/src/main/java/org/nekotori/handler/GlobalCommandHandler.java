@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,56 +27,56 @@ import java.util.Map;
 @Slf4j
 public class GlobalCommandHandler {
 
-  private static Map<String, Command> innerCommands = new HashMap<>();
+    private static Map<String, Command> innerCommands = new HashMap<>();
 
-  @Resource
-  private ChatMemberMapper chatMemberMapper;
+    @Resource
+    private ChatMemberMapper chatMemberMapper;
 
-  public static void init() {
-    innerCommands = SpringContextUtils.getContext().getBeansOfType(Command.class);
-    log.info("注册了以下指令:{}",
-            innerCommands.keySet());
-  }
+    public static void init() {
+        innerCommands = SpringContextUtils.getContext().getBeansOfType(Command.class);
+        log.info("注册了以下指令:{}",
+                innerCommands.keySet());
+    }
 
-  public void handle(GroupMessageEvent groupMessageEvent) {
-      if(!CommandUtils.isCommand(groupMessageEvent)) {
-        return;
-      }
-      for (Command command : innerCommands.values()) {
-          if (command.checkAuthorization(groupMessageEvent) && CommandUtils.checkCommand(command,groupMessageEvent)) {
-            ThreadSingleton.run(
-                () -> {
-                    MessageChain execute = command.execute(
-                            groupMessageEvent.getSender(),
-                            groupMessageEvent.getMessage(),
-                            groupMessageEvent.getGroup());
-                    if(!ObjectUtils.isEmpty(execute)){
-                        groupMessageEvent
-                                .getGroup()
-                                .sendMessage(execute);
-                    }
-                    ChatMemberDo chatMemberDo = chatMemberMapper.selectOne(new QueryWrapper<ChatMemberDo>().eq("group_id",
-                            groupMessageEvent.getGroup().getId()).eq(
-                            "member_id", groupMessageEvent.getSender().getId()));
-                    if(ObjectUtils.isEmpty(chatMemberDo)){
-                        chatMemberDo = ChatMemberDo.builder()
-                                .memberId(groupMessageEvent.getSender().getId())
-                                .groupId( groupMessageEvent.getGroup().getId())
-                                .isBlocked(false)
-                                .level(0)
-                                .nickName(groupMessageEvent.getSender().getNick())
-                                .todayWelcome(false)
-                                .totalSign(0)
-                                .exp(0L)
-                                .build();
-                        final int id = chatMemberMapper.insert(chatMemberDo);
-                        chatMemberDo.setId(id);
-                    }
-                    chatMemberDo.setLastCommand(groupMessageEvent.getMessage().serializeToMiraiCode());
-                    chatMemberMapper.updateById(chatMemberDo);
-                });
-          }
-      }
-  }
+    public void handle(GroupMessageEvent groupMessageEvent) {
+        if (!CommandUtils.isCommand(groupMessageEvent)) {
+            return;
+        }
+        for (Command command : innerCommands.values()) {
+            if (command.checkAuthorization(groupMessageEvent) && CommandUtils.checkCommand(command, groupMessageEvent)) {
+                ThreadSingleton.run(
+                        () -> {
+                            MessageChain execute = command.execute(
+                                    groupMessageEvent.getSender(),
+                                    groupMessageEvent.getMessage(),
+                                    groupMessageEvent.getGroup());
+                            if (!ObjectUtils.isEmpty(execute)) {
+                                groupMessageEvent
+                                        .getGroup()
+                                        .sendMessage(execute);
+                            }
+                            ChatMemberDo chatMemberDo = chatMemberMapper.selectOne(new QueryWrapper<ChatMemberDo>().eq("group_id",
+                                    groupMessageEvent.getGroup().getId()).eq(
+                                    "member_id", groupMessageEvent.getSender().getId()));
+                            if (ObjectUtils.isEmpty(chatMemberDo)) {
+                                chatMemberDo = ChatMemberDo.builder()
+                                        .memberId(groupMessageEvent.getSender().getId())
+                                        .groupId(groupMessageEvent.getGroup().getId())
+                                        .isBlocked(false)
+                                        .level(0)
+                                        .nickName(groupMessageEvent.getSender().getNick())
+                                        .todayWelcome(false)
+                                        .totalSign(0)
+                                        .exp(0L)
+                                        .build();
+                                final int id = chatMemberMapper.insert(chatMemberDo);
+                                chatMemberDo.setId(id);
+                            }
+                            chatMemberDo.setLastCommand(groupMessageEvent.getMessage().serializeToMiraiCode());
+                            chatMemberMapper.updateById(chatMemberDo);
+                        });
+            }
+        }
+    }
 
 }

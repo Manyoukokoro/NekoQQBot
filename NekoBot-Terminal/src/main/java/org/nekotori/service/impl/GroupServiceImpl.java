@@ -3,6 +3,7 @@ package org.nekotori.service.impl;
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import org.nekotori.dao.ChatGroupMapper;
@@ -13,6 +14,7 @@ import org.nekotori.entity.CustomResponse;
 import org.nekotori.service.GroupService;
 import org.nekotori.utils.CommandUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
@@ -35,15 +37,19 @@ public class GroupServiceImpl implements GroupService {
     private ChatGroupMapper chatGroupMapper;
 
     @Override
-    public boolean checkPrivilege(Long groupId,String command) {
+    public boolean checkPrivilege(Long groupId, String command) {
         ChatGroupDo chatGroupDo = chatGroupMapper.selectOne(new QueryWrapper<ChatGroupDo>().eq("group_id", groupId));
-        if(ObjectUtils.isEmpty(chatGroupDo)) return false;
+        if (ObjectUtils.isEmpty(chatGroupDo)) return false;
         String commands = chatGroupDo.getCommands();
-        return CommandUtils.IsCommandRegistered(commands,command);
+        return CommandUtils.IsCommandRegistered(commands, command);
     }
 
     @Override
     public void saveHistory(GroupMessageEvent groupMessageEvent) {
+        List<ChatGroupDo> chatGroupDos = chatGroupMapper.selectList(Wrappers.<ChatGroupDo>lambdaQuery().eq(ChatGroupDo::getGroupId, groupMessageEvent.getGroup().getId()));
+        if (CollectionUtils.isEmpty(chatGroupDos)) {
+            registerGroup(groupMessageEvent.getGroup());
+        }
         ChatHistoryDo build = ChatHistoryDo.builder()
                 .groupId(groupMessageEvent.getGroup().getId())
                 .senderId(groupMessageEvent.getSender().getId())
@@ -54,10 +60,10 @@ public class GroupServiceImpl implements GroupService {
         chatHistoryMapper.insert(build);
     }
 
-    public boolean IsGroupRegistered(Group group){
+    public boolean IsGroupRegistered(Group group) {
         long id = group.getId();
         List<Long> longs = chatGroupMapper.selectList(new QueryWrapper<>()).stream().map(ChatGroupDo::getGroupId).collect(Collectors.toList());
-        if(longs.contains(id)){
+        if (longs.contains(id)) {
             return true;
         }
         return false;
@@ -70,7 +76,7 @@ public class GroupServiceImpl implements GroupService {
                 .groupName(group.getName())
                 .groupLevel(0)
                 .isBlock(false)
-                .commands("")
+                .commands("签到")
                 .build();
         return chatGroupMapper.insert(build);
     }
@@ -89,12 +95,12 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public Map<Long,List<CustomResponse>> getGroupCustomResponses() {
+    public Map<Long, List<CustomResponse>> getGroupCustomResponses() {
         List<ChatGroupDo> chatGroupDo = chatGroupMapper.selectList(new QueryWrapper<>());
         return chatGroupDo.stream().collect(Collectors.toMap(
-                ChatGroupDo::getGroupId, v ->v.getCustomResponse()==null?new ArrayList<>() :JSONUtil.toBean(v.getCustomResponse(),
+                ChatGroupDo::getGroupId, v -> v.getCustomResponse() == null ? new ArrayList<>() : JSONUtil.toBean(v.getCustomResponse(),
                         new TypeReference<List<CustomResponse>>() {
-                }, true)
+                        }, true)
         ));
     }
 }

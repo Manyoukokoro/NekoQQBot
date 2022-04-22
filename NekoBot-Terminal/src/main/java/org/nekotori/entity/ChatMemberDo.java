@@ -48,7 +48,7 @@ public class ChatMemberDo {
 
     private Date lastSign;
 
-    public  boolean checkTodaySign(){
+    public boolean checkTodaySign() {
         LocalDate localDate = DateUtil.date2LocalDate(lastSign);
         return LocalDate.now().equals(localDate);
     }

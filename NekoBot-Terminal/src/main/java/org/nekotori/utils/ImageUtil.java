@@ -6,7 +6,6 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import lombok.Data;
-import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Member;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -22,8 +21,8 @@ import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * @author: JayDeng
@@ -79,10 +78,7 @@ public class ImageUtil {
         if (Arrays.asList("舰娘头像外框海上传奇.png", "舰娘头像外框彩色.png").contains(frame)) {
             return 5;
         }
-        if (Arrays.asList("舰娘头像外框最高方案.png",
-                "舰娘头像外框决战方案.png",
-                "舰娘头像外框超稀有META.png",
-                "舰娘头像外框精锐META.png").contains(frame)) {
+        if (Arrays.asList("舰娘头像外框最高方案.png", "舰娘头像外框决战方案.png", "舰娘头像外框超稀有META.png", "舰娘头像外框精锐META.png").contains(frame)) {
             return 6;
         }
         return 6;
@@ -90,11 +86,7 @@ public class ImageUtil {
 
     public static void downloadFrame() {
         String BLHX_URL = "https://patchwiki.biligame.com/images/blhx";
-        List<String> uris = Arrays.asList("/1/15/pxho13xsnkyb546tftvh49etzdh74cf.png",
-                "/a/a9/k8t7nx6c8pan5vyr8z21txp45jxeo66.png",
-                "/a/a5/5whkzvt200zwhhx0h0iz9qo1kldnidj.png",
-                "/a/a2/ptog1j220x5q02hytpwc8al7f229qk9.png",
-                "/6/6d/qqv5oy3xs40d3055cco6bsm0j4k4gzk.png");
+        List<String> uris = Arrays.asList("/1/15/pxho13xsnkyb546tftvh49etzdh74cf.png", "/a/a9/k8t7nx6c8pan5vyr8z21txp45jxeo66.png", "/a/a5/5whkzvt200zwhhx0h0iz9qo1kldnidj.png", "/a/a2/ptog1j220x5q02hytpwc8al7f229qk9.png", "/6/6d/qqv5oy3xs40d3055cco6bsm0j4k4gzk.png");
         for (int i = 1; i <= uris.size(); i++) {
             File file = new File("blhx/frames/" + i + "_star.png");
             HttpUtil.downloadFile(BLHX_URL + uris.get(i - 1), file);
@@ -123,8 +115,7 @@ public class ImageUtil {
         for (JXNode ship : ships) {
             String s2 = ship.sel("./tbody/tr/td[2]/p/a/@title").get(0).toString();
             String s3 = ship.sel("./tbody/tr/td[2]/p/small/text()").get(0).toString();
-            String s4 = CollectionUtils.isEmpty(ship.sel(".//sup/text()")) ? "0%" :
-                    ship.sel(".//sup/text()").get(0).toString();
+            String s4 = CollectionUtils.isEmpty(ship.sel(".//sup/text()")) ? "0%" : ship.sel(".//sup/text()").get(0).toString();
             String s5 = ship.sel("./tbody/tr/td[1]/div/div/div/a/img/@alt").get(0).toString();
             AzureLaneCard azureLaneCard = new AzureLaneCard();
             azureLaneCard.setName(s2);
@@ -158,8 +149,7 @@ public class ImageUtil {
 
         downloadFrame();
 
-        Integer minType =
-                azurLaneCards.stream().min(Comparator.comparing(AzureLaneCard::getTypeInt)).map(AzureLaneCard::getTypeInt).orElse(0);
+        Integer minType = azurLaneCards.stream().min(Comparator.comparing(AzureLaneCard::getTypeInt)).map(AzureLaneCard::getTypeInt).orElse(0);
 
         azurLaneCards.forEach(a -> {
             a.setType(azureLaneTypes(a.getTypeInt() - minType));
@@ -259,17 +249,75 @@ public class ImageUtil {
         ChatMemberDo chatMemberDo = new ChatMemberDo();
         chatMemberDo.setLevel(1);
         chatMemberDo.setExp(0L);
-        drawSignPic(null,chatMemberDo,0);
+        drawSignPic(null, chatMemberDo, 0);
     }
 
-    private static long nextLevelExp(int level, long exp){
-        if(level<100){
-            return (long) (Math.pow(2d,(int)((double) level/10))*10) -  exp;
+    private static long nextLevelExp(int level, long exp) {
+        if (level < 100) {
+            return (long) (Math.pow(2d, (int) ((double) level / 10)) * 10) - exp;
         }
-        return 10240L -exp;
+        return 10240L - exp;
     }
 
-    public static InputStream drawSignPic(Member sender, ChatMemberDo chatMemberDo,int incomeExp) {
+    public static BufferedImage drawFiveChess(int[][] map, int x, int y) throws IOException {
+        if (map.length <= 0) return null;
+        int raw = map.length;
+        int column = map[0].length;
+        int backWidth = 50 * raw + 110;
+        int backHeight = 50 * column + 150;
+        BufferedImage bufferedImage = new BufferedImage(backWidth + 1, backHeight + 1, BufferedImage.TYPE_INT_BGR);
+        Graphics2D graphics = bufferedImage.createGraphics();
+        graphics.setColor(Color.lightGray);
+        graphics.fillRect(0, 0, backWidth, backHeight);
+        graphics.setColor(Color.black);
+        graphics.fillOval(50 * (raw / 2) + 17, 50 * (column / 2) + 17, 16, 16);
+        for (int i = 0; i < raw; i++) {
+            for (int j = 0; j < column; j++) {
+                graphics.setColor(Color.black);
+                if (i < raw - 1 && j < column - 1) {
+                    graphics.drawRect(50 * i + 25, 50 * j + 25, 50, 50);
+                }
+                if (map[i][j] == 1) {
+                    graphics.setColor(Color.black);
+                    graphics.fillOval(50 * i + 1, 50 * j + 1, 48, 48);
+                }
+                if (map[i][j] == -1) {
+                    graphics.setColor(Color.white);
+                    graphics.fillOval(50 * i + 1, 50 * j + 1, 48, 48);
+                    graphics.setColor(Color.black);
+                    graphics.drawOval(50 * i + 1, 50 * j + 1, 48, 48);
+                }
+            }
+        }
+        if (map[x][y] == -1) {
+            graphics.setColor(Color.yellow);
+        }
+        if (map[x][y] == 1) {
+            graphics.setColor(Color.blue);
+        }
+        if (map[x][y] != 0) {
+            graphics.fillOval(50 * x + 1, 50 * y + 1, 48, 48);
+            graphics.setColor(Color.black);
+            graphics.drawOval(50 * x + 1, 50 * y + 1, 48, 48);
+        }
+        graphics.setStroke(new BasicStroke(40));
+        graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        int fontSize = 50;
+        MyFont font = new MyFont(fs, fontSize);
+        graphics.setFont(font);
+        graphics.setColor(Color.black);
+        for (int i = 0; i < raw; i++) {
+            graphics.drawString(String.valueOf((char) ('A' + i)), 50 * i + 8, backHeight - 110);
+        }
+        for (int j = 0; j < column; j++) {
+            graphics.drawString(String.valueOf((1 + j)), backWidth - 110, 50 * j + 40);
+        }
+        graphics.drawString("@NekoBot", 8, backHeight - 10);
+        graphics.dispose();
+        return bufferedImage;
+    }
+
+    public static InputStream drawSignPic(Member sender, ChatMemberDo chatMemberDo, int incomeExp) {
         int height = 3192;
         int width = 4096;
         int impFontSize = 200;
@@ -289,130 +337,127 @@ public class ImageUtil {
         }
         graphics.setColor(Color.GRAY);
         graphics.setStroke(new BasicStroke(6));
-        graphics.drawLine(50, height*10/15, width-50,height *10/15);
+        graphics.drawLine(50, height * 10 / 15, width - 50, height * 10 / 15);
 
-        graphics.drawLine(width*2/40+1000,50,width*2/40+1000,height-50);
+        graphics.drawLine(width * 2 / 40 + 1000, 50, width * 2 / 40 + 1000, height - 50);
 
         graphics.setStroke(new BasicStroke(10));
-        graphics.drawLine(200, 50, width-200,50);
-        graphics.drawLine(200, 100, width-200,100);
-        graphics.drawLine(200, 150, width-200,150);
+        graphics.drawLine(200, 50, width - 200, 50);
+        graphics.drawLine(200, 100, width - 200, 100);
+        graphics.drawLine(200, 150, width - 200, 150);
 
-        graphics.drawLine(200,height-50,  width-200,height-50);
-        graphics.drawLine(200,height-100,  width-200,height-100);
-        graphics.drawLine(200,height-150,  width-200,height-150);
+        graphics.drawLine(200, height - 50, width - 200, height - 50);
+        graphics.drawLine(200, height - 100, width - 200, height - 100);
+        graphics.drawLine(200, height - 150, width - 200, height - 150);
         graphics.setColor(Color.BLACK);
-        for(int i=1;i<19;i++){
+        for (int i = 1; i < 19; i++) {
 //            graphics.fillOval(width/20*i+10,10,120,120);
 //            graphics.fillOval(width/20*i+10,height-130,120,120);
         }
-        for(int i=1;i<14;i++){
-            graphics.fillOval(10,height/15*i+10,120,120);
+        for (int i = 1; i < 14; i++) {
+            graphics.fillOval(10, height / 15 * i + 10, 120, 120);
 //            graphics.fillOval(width-130,height/15*i+10,120,120);
         }
         graphics.setFont(npf);
-        String nick = sender==null?"": sender.getNick();
-        if(nick.length()>6){
-            nick = nick.substring(0,6)+"...";
+        String nick = sender == null ? "" : sender.getNameCard();
+        if (nick.length() > 6) {
+            nick = nick.substring(0, 6) + "...";
         }
-        graphics.drawString("@: "+nick, 100, height*10/15+normalFontSize+50);
+        graphics.drawString("@: " + nick, 100, height * 10 / 15 + normalFontSize + 50);
         graphics.setFont(nfs);
         graphics.setColor(Color.BLACK);
-        graphics.drawString("当前等级: "+chatMemberDo.getLevel(), 150, height*11/15+normalFontSize+50);
-        graphics.drawString("获得经验: "+incomeExp, 150, height*11/15+(normalFontSize+50)*2);
-        graphics.drawString("距离下级: "+nextLevelExp(chatMemberDo.getLevel(),chatMemberDo.getExp()), 150, height*11/15+(normalFontSize+50)*3);
+        graphics.drawString("当前等级: " + chatMemberDo.getLevel(), 150, height * 11 / 15 + normalFontSize + 50);
+        graphics.drawString("获得经验: " + incomeExp, 150, height * 11 / 15 + (normalFontSize + 50) * 2);
+        graphics.drawString("距离下级: " + nextLevelExp(chatMemberDo.getLevel(), chatMemberDo.getExp()), 150, height * 11 / 15 + (normalFontSize + 50) * 3);
 
-        String avatarUrl = sender==null?"": sender.getAvatarUrl();
+        String avatarUrl = sender == null ? "" : sender.getAvatarUrl();
         try (InputStream userAvatar = HttpUtil.createGet(avatarUrl).execute().bodyStream()) {
             BufferedImage read = ImageIO.read(userAvatar);
             read = setRadius(read);
-            graphics.drawImage(read, 150, height*5/15-500, 1000,1000, (image, i, i1, i2, i3, i4) -> false);
+            graphics.drawImage(read, 150, height * 5 / 15 - 500, 1000, 1000, (image, i, i1, i2, i3, i4) -> false);
         } catch (Exception e) {
-            graphics.drawOval(150, height*5/15-500, 1000,1000);
-        }finally{
+            graphics.drawOval(150, height * 5 / 15 - 500, 1000, 1000);
+        } finally {
             graphics.setStroke(new BasicStroke(10));
             graphics.setColor(Color.gray);
-            graphics.drawOval(150, height*5/15-500, 1000,1000);
+            graphics.drawOval(150, height * 5 / 15 - 500, 1000, 1000);
         }
-        try{
-            InputStream inputStream = HttpUtil.createGet("http://api.wpbom.com/api/secon.php")
-                    .setConnectionTimeout(10000)
-                    .setReadTimeout(10000)
-                    .execute().bodyStream();
-            FileUtil.writeFromStream(inputStream,new File("jpg/temp.png"));
+        try {
+            InputStream inputStream = HttpUtil.createGet("http://api.wpbom.com/api/secon.php").setConnectionTimeout(10000).setReadTimeout(10000).execute().bodyStream();
+            FileUtil.writeFromStream(inputStream, new File("jpg/temp.png"));
             inputStream.close();
             BufferedImage read = ImageIO.read(new File("jpg/temp.png"));
-            int height1 = read.getHeight()*2400/read.getWidth();
-            graphics.drawImage(read,  width*21/40+350-1200, 500, 2400,height1, (image, i, i1, i2, i3, i4) -> false);
-        }catch (Exception e){
+            int height1 = read.getHeight() * 2400 / read.getWidth();
+            graphics.drawImage(read, width * 21 / 40 + 350 - 1200, 500, 2400, height1, (image, i, i1, i2, i3, i4) -> false);
+        } catch (Exception e) {
             e.printStackTrace();
-            try{
+            try {
                 File[] files = FileUtil.ls("pics/");
-                if (files !=null && files.length > 0) {
-                  int index = new Random().nextInt(files.length);
-                  BufferedImage read = ImageIO.read(files[index]);
-                  int height1 = read.getHeight() * 2400 / read.getWidth();
-                  graphics.drawImage(
-                      read,
-                      width * 21 / 40 + 350 - 1200,
-                      500,
-                      2400,
-                      height1,
-                      (image, i, i1, i2, i3, i4) -> false);
-                        }
-            }catch (Exception ex){
+                if (files != null && files.length > 0) {
+                    int index = new Random().nextInt(files.length);
+                    BufferedImage read = ImageIO.read(files[index]);
+                    int height1 = read.getHeight() * 2400 / read.getWidth();
+                    graphics.drawImage(read, width * 21 / 40 + 350 - 1200, 500, 2400, height1, (image, i, i1, i2, i3, i4) -> false);
+                }
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
         StringBuilder stringBuilder = new StringBuilder("今日运势:");
-        if(incomeExp<=100){
+        if (incomeExp <= 100) {
             stringBuilder.append("★☆☆☆☆☆☆");
-        }else if(incomeExp<=500){
+        } else if (incomeExp <= 500) {
             stringBuilder.append("★★☆☆☆☆☆");
-        }else if(incomeExp<=1000){
+        } else if (incomeExp <= 1000) {
             stringBuilder.append("★★★☆☆☆☆");
-        }else if(incomeExp<=5000){
+        } else if (incomeExp <= 5000) {
             stringBuilder.append("★★★★☆☆☆");
-        }else if(incomeExp<=10000){
+        } else if (incomeExp <= 10000) {
             stringBuilder.append("★★★★★☆☆");
-        }else if(incomeExp<=50000){
+        } else if (incomeExp <= 50000) {
             stringBuilder.append("★★★★★★☆");
-        }else if(incomeExp>=90000){
+        } else if (incomeExp >= 90000) {
             stringBuilder.append("★★★★★★★★");
-        }else {
+        } else {
             stringBuilder.append("★★★★★★★");
         }
         graphics.setFont(ipf);
         graphics.setColor(Color.BLACK);
-        graphics.drawString(stringBuilder.toString(),width*2/40+1100,height*10/15+50+(normalFontSize+50)*2);
+        graphics.drawString(stringBuilder.toString(), width * 2 / 40 + 1100, height * 10 / 15 + 50 + (normalFontSize + 50) * 2);
 
-        stringBuilder= new StringBuilder("今日骚气:");
+        stringBuilder = new StringBuilder("今日骚气:");
         int sq = new Random().nextInt(100);
-        if(sq<=10){
+        if (sq <= 10) {
             stringBuilder.append("★☆☆☆☆☆☆");
-        }else if (sq<=30){
+        } else if (sq <= 30) {
             stringBuilder.append("★★☆☆☆☆☆");
-        }else if  (sq<=50){
+        } else if (sq <= 50) {
             stringBuilder.append("★★★☆☆☆☆");
-        }else if  (sq<=70){
+        } else if (sq <= 70) {
             stringBuilder.append("★★★★☆☆☆");
-        }else if  (sq<=90){
+        } else if (sq <= 90) {
             stringBuilder.append("★★★★★☆☆");
-        }else if  (sq<=96){
+        } else if (sq <= 96) {
             stringBuilder.append("★★★★★★☆");
-        }else {
+        } else {
             stringBuilder.append("★★★★★★★");
         }
         graphics.setFont(ipf);
-        graphics.setColor(Color.getHSBColor(0.93f,0.78f,0.90f));
-        graphics.drawString(stringBuilder.toString(),width*2/40+1100,height*12/15-50+(normalFontSize+50)*2);
+        graphics.setColor(Color.getHSBColor(0.93f, 0.78f, 0.90f));
+        graphics.drawString(stringBuilder.toString(), width * 2 / 40 + 1100, height * 12 / 15 - 50 + (normalFontSize + 50) * 2);
+
+        MyFont myFont = new MyFont(fs, 75);
+        graphics.setFont(myFont);
+        graphics.setColor(Color.gray);
+        graphics.drawString("NekoBot By Nekotori", 200, 300);
+        graphics.dispose();
         try {
-            BufferedImage read = ImageIO.read(new File("jpg/stamp.png"));
+            //BufferedImage read = ImageIO.read(new File("jpg/stamp.png"));
             BufferedImage outImage = setRadius(bufferedImage, 600, 0, 0);
             InputStream inputStream = bufferedImageToInputStream(outImage);
-            FileUtil.writeFromStream(inputStream,new File("jpg/tempout.png"));
-            ImgUtil.convert(new File("jpg/tempout.png"),new File("jpg/tempout.jpg"));
-            return FileUtil.getInputStream(new File("jpg/tempout.jpg"));
+            FileUtil.writeFromStream(inputStream, new File("jpg/temp_out.png"));
+            ImgUtil.convert(new File("jpg/temp_out.png"), new File("jpg/temp_out.jpg"));
+            return FileUtil.getInputStream(new File("jpg/temp_out.jpg"));
         } catch (IOException e) {
             return bufferedImageToInputStream(bufferedImage);
         }
@@ -490,13 +535,16 @@ public class ImageUtil {
 
     public static class MyFont extends Font {
         private int size;
+
         public MyFont(String name, int style, int size) {
             super(name, style, size);
         }
+
         public MyFont(Font f, int size) {
             super(f);
             this.size = size;
         }
+
         @Override
         public int getSize() {
             return this.size;

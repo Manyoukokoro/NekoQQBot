@@ -51,19 +51,19 @@ public class SauceNaoChannelHandler implements ChannelHandler {
         final Member sender = groupMessageEvent.getSender();
         final Group group = groupMessageEvent.getGroup();
         String imageUrl = "";
-        for(SingleMessage s:message){
-            if(s instanceof Image){
-                imageUrl = Image.queryUrl((Image)s);
+        for (SingleMessage s : message) {
+            if (s instanceof Image) {
+                imageUrl = Image.queryUrl((Image) s);
             }
         }
-        if(StringUtils.isEmpty(imageUrl)){
+        if (StringUtils.isEmpty(imageUrl)) {
             group.sendMessage(new MessageChainBuilder().append(new At(sender.getId())).append(new PlainText(" 这看起来不是一张图片...")).build());
             return;
         }
         byte[] bytes = HttpRequest.get(imageUrl).execute().bodyBytes();
         List<SauceNaoData> sauceNaoDataList = hibiApiUtils.queryImage(bytes);
         MessageChainBuilder append = new MessageChainBuilder().append(new At(sender.getId()));
-        if(CollectionUtils.isEmpty(sauceNaoDataList)) {
+        if (CollectionUtils.isEmpty(sauceNaoDataList)) {
             group.sendMessage(append.append(new PlainText("\nNekoBot找不到关于此图片的信息")).build());
             return;
         }
@@ -71,26 +71,17 @@ public class SauceNaoChannelHandler implements ChannelHandler {
         try {
             for (SauceNaoData s : sauceNaoDataList) {
                 String thumbnailUrl = s.getThumbnailUrl();
-                InputStream inputStream = HttpRequest
-                        .get(thumbnailUrl)
-                        .setConnectionTimeout(5 * 1000)
-                        .setReadTimeout(5 * 1000)
-                        .execute().bodyStream();
+                InputStream inputStream = HttpRequest.get(thumbnailUrl).setConnectionTimeout(5 * 1000).setReadTimeout(5 * 1000).execute().bodyStream();
                 if (Float.parseFloat(s.getSimilarity()) > 60) {
                     append.append(Contact.uploadImage(group, inputStream));
                 }
-                append.append(new PlainText("\n相似度:" +
-                        s.getSimilarity() +
-                        "\n源地址:" +
-                        s.getExtUrls() +
-                        "\n标签:" +
-                        s.getTittle()));
+                append.append(new PlainText("\n相似度:" + s.getSimilarity() + "\n源地址:" + s.getExtUrls() + "\n标签:" + s.getTittle()));
             }
-        }catch (IORuntimeException e){
-            log.error("sauceNao query error:",e);
-        }finally {
+        } catch (IORuntimeException e) {
+            log.error("sauceNao query error:", e);
+        } finally {
             group.sendMessage(append.build());
-            chainMessageSelector.unregisterChannel(group.getId(),this.getClass().getAnnotation(HandlerId.class).value());
+            chainMessageSelector.unregisterChannel(group.getId(), this.getClass().getAnnotation(HandlerId.class).value());
         }
     }
 }

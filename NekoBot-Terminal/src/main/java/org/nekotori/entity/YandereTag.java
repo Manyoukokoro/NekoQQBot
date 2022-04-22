@@ -1,6 +1,6 @@
 /**
-  * Copyright 2021 bejson.com 
-  */
+ * Copyright 2021 bejson.com
+ */
 package org.nekotori.entity;
 
 /**
@@ -16,39 +16,45 @@ public class YandereTag {
     private int count;
     private int type;
     private boolean ambiguous;
+
     public void setId(long id) {
-         this.id = id;
-     }
-     public long getId() {
-         return id;
-     }
+        this.id = id;
+    }
+
+    public long getId() {
+        return id;
+    }
 
     public void setName(String name) {
-         this.name = name;
-     }
-     public String getName() {
-         return name;
-     }
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 
     public void setCount(int count) {
-         this.count = count;
-     }
-     public int getCount() {
-         return count;
-     }
+        this.count = count;
+    }
+
+    public int getCount() {
+        return count;
+    }
 
     public void setType(int type) {
-         this.type = type;
-     }
-     public int getType() {
-         return type;
-     }
+        this.type = type;
+    }
+
+    public int getType() {
+        return type;
+    }
 
     public void setAmbiguous(boolean ambiguous) {
-         this.ambiguous = ambiguous;
-     }
-     public boolean getAmbiguous() {
-         return ambiguous;
-     }
+        this.ambiguous = ambiguous;
+    }
+
+    public boolean getAmbiguous() {
+        return ambiguous;
+    }
 
 }

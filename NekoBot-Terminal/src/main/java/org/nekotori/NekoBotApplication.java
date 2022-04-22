@@ -20,8 +20,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 //强制使用CGLIB代理，否则会导致类型转换异常（jdk代理会导致代理类跳过抽象类实现更高层的接口）
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 public class NekoBotApplication {
-  public static void main(String[] args) {
-      SpringApplication.run(NekoBotApplication.class,args);
-  }
+    public static void main(String[] args) {
+        SpringApplication.run(NekoBotApplication.class, args);
+    }
 }
     

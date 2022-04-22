@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 
-@IsCommand(name = {"取消指令","取消","ucom"},description = "取消指令注册，格式:(!/-/#)ucom ...[指令名]")
+@IsCommand(name = {"取消指令", "取消", "ucom"}, description = "取消指令注册，格式:(!/-/#)ucom ...[指令名]")
 public class UnRegisterComCommand extends ManagerGroupCommand {
     @Resource
     GroupService groupService;
@@ -23,12 +23,12 @@ public class UnRegisterComCommand extends ManagerGroupCommand {
     @Override
     public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
         String s = messageChain.serializeToMiraiCode();
-        CommandAttr commandAttr = CommandUtils.resolveCommand(s);
+        CommandAttr commandAttr = CommandUtils.resolveTextCommand(s);
         List<String> param = commandAttr.getParam();
-        for(String p:param){
+        for (String p : param) {
             String groupCommands = groupService.getGroupCommands(subject.getId());
             String newCommand = CommandUtils.removeCommand(groupCommands, p);
-            groupService.updateGroupCommand(subject.getId(),newCommand);
+            groupService.updateGroupCommand(subject.getId(), newCommand);
         }
         return new MessageChainBuilder().append(new PlainText("更新群指令成功")).build();
     }

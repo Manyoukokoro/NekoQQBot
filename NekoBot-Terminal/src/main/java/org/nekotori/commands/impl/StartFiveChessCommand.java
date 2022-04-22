@@ -19,7 +19,10 @@ import org.nekotori.utils.CommandUtils;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import static org.nekotori.common.InnerConstants.*;
 
@@ -30,7 +33,7 @@ import static org.nekotori.common.InnerConstants.*;
  * @version: {@link }
  */
 
-@IsCommand(name = {"五子棋"},description = "")
+@IsCommand(name = {"五子棋"}, description = "")
 public class StartFiveChessCommand extends NoAuthGroupCommand {
     @Resource
     private ChainMessageSelector chainMessageSelector;
@@ -44,37 +47,36 @@ public class StartFiveChessCommand extends NoAuthGroupCommand {
         Map<String, GroupCommandChannel> channels = chainMessageSelector.getChannels();
         GroupCommandChannel groupCommandChannel =
                 channels.get(subject.getId() + "@" + FiveChessHandler.class.getAnnotation(HandlerId.class).value());
-        if(ObjectUtils.isEmpty(groupCommandChannel)) {
-            chainMessageSelector.registerChannel(subject.getId(),fiveChessHandler);
-            chainMessageSelector.joinChannel(subject.getId(),fiveChessHandler,sender.getId());
+        if (ObjectUtils.isEmpty(groupCommandChannel)) {
+            chainMessageSelector.registerChannel(subject.getId(), fiveChessHandler);
+            chainMessageSelector.joinChannel(subject.getId(), fiveChessHandler, sender.getId());
             Set<Integer> fs = new HashSet<>();
             String s = messageChain.contentToString();
-            CommandAttr commandAttr = CommandUtils.resolveCommand(s);
-            if(CollectionUtil.isNotEmpty(commandAttr.getParam())){
-                commandAttr.getParam().forEach(ss->{
-                    if(ss.equals("T")){
+            CommandAttr commandAttr = CommandUtils.resolveTextCommand(s);
+            if (CollectionUtil.isNotEmpty(commandAttr.getParam())) {
+                commandAttr.getParam().forEach(ss -> {
+                    if (ss.equals("T")) {
                         fs.add(0);
                     }
-                    if(ss.equals("F")){
+                    if (ss.equals("F")) {
                         fs.add(1);
                     }
-                    if(ss.equals("L")){
+                    if (ss.equals("L")) {
                         fs.add(2);
                     }
                 });
             }
-            FiveChessHandler.init(sender.getId(),subject.getId(),fs);
+            FiveChessHandler.init(sender.getId(), subject.getId(), fs);
             subject.sendMessage(new MessageChainBuilder().append(sender.getNameCard()).append("创建对局成功!执黑棋先行，").append(
                     STRING0).build());
             StringBuilder stringBuilder = new StringBuilder();
-            if(fs.isEmpty()){
+            if (fs.isEmpty()) {
                 stringBuilder.append(STRING1);
-            }
-            else {
+            } else {
                 stringBuilder.append(STRING2);
                 fs.forEach(ss -> {
                     if (ss.equals(0)) {
-                       stringBuilder.append(STRING3);
+                        stringBuilder.append(STRING3);
                     }
                     if (ss.equals(1)) {
                         stringBuilder.append(STRING4);
@@ -88,12 +90,12 @@ public class StartFiveChessCommand extends NoAuthGroupCommand {
             MessageReceipt<Group> groupMessageReceipt = subject.sendMessage(new MessageChainBuilder().append(Contact.uploadImage(subject,
                     Objects.requireNonNull(FiveChessHandler.drawMap(subject.getId(), 0, 0)))).build());
             FiveChessHandler.putImage(subject.getId(), groupMessageReceipt);
-        }else {
-            if(FiveChessHandler.isFull(subject.getId())){
+        } else {
+            if (FiveChessHandler.isFull(subject.getId())) {
                 return new MessageChainBuilder().append(STRING6).build();
             }
-            FiveChessHandler.join(sender.getId(),subject.getId());
-            chainMessageSelector.joinChannel(subject.getId(),fiveChessHandler,sender.getId());
+            FiveChessHandler.join(sender.getId(), subject.getId());
+            chainMessageSelector.joinChannel(subject.getId(), fiveChessHandler, sender.getId());
             subject.sendMessage(new MessageChainBuilder().append(STRING7).build());
         }
         return null;

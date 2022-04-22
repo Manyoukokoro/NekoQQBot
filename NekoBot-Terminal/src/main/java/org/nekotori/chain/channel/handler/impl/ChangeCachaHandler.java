@@ -1,12 +1,10 @@
 package org.nekotori.chain.channel.handler.impl;
 
-import cn.hutool.core.collection.CollectionUtil;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import org.nekotori.annotations.HandlerId;
 import org.nekotori.chain.ChainMessageSelector;
 import org.nekotori.chain.channel.GroupCommandChannel;
 import org.nekotori.chain.channel.handler.ChannelHandler;
-import org.nekotori.commands.CustomCommand;
 import org.nekotori.dao.GroupGachaMapper;
 import org.nekotori.entity.GroupGachaDo;
 import org.springframework.util.ObjectUtils;
@@ -23,7 +21,7 @@ import java.util.*;
 @HandlerId("3245236522")
 public class ChangeCachaHandler implements ChannelHandler {
 
-    public static final List<String> stages = Arrays.asList("NAME","UR","SSR","SR","R","N");
+    public static final List<String> stages = Arrays.asList("NAME", "UR", "SSR", "SR", "R", "N");
 
     @Resource
     private GroupGachaMapper groupGachaMapper;
@@ -38,14 +36,14 @@ public class ChangeCachaHandler implements ChannelHandler {
 
     @Override
     public void handleMessage(GroupCommandChannel channel, GroupMessageEvent groupMessageEvent) {
-        if(ObjectUtils.isEmpty(channel.getNowStage())){
+        if (ObjectUtils.isEmpty(channel.getNowStage())) {
             channel.setNowStage(channel.getStages().get(1));
             groupMessageEvent.getGroup().sendMessage("请输入" + channel.getNowStage() + "概率");
             return;
         }
         int index = channel.getStages().indexOf(channel.getNowStage());
 
-        if(index == channel.getStages().size()-1){
+        if (index == channel.getStages().size() - 1) {
 
             GroupGachaDo groupGachaDo = new GroupGachaDo();
             groupGachaDo.setGroupId(groupMessageEvent.getGroup().getId());
@@ -59,22 +57,20 @@ public class ChangeCachaHandler implements ChannelHandler {
             }
             messageHisQueue.add(groupMessageEvent);
             List<String> hisMesReverse = new ArrayList<>();
-            while(!messageHisQueue.isEmpty()){
-               hisMesReverse.add(messageHisQueue.removeLast().getMessage().serializeToMiraiCode());
+            while (!messageHisQueue.isEmpty()) {
+                hisMesReverse.add(messageHisQueue.removeLast().getMessage().serializeToMiraiCode());
             }
             List<String> validMes = new ArrayList<>();
-            for(int i=0;i<hisMesReverse.size();i++){
-                if(validMes.size()==stages.size()){
+            for (int i = 0; i < hisMesReverse.size(); i++) {
+                if (validMes.size() == stages.size()) {
                     break;
-                }
-                else if(validMes.size()==stages.size()-1){
+                } else if (validMes.size() == stages.size() - 1) {
                     validMes.add(hisMesReverse.get(i));
-                }
-                else {
+                } else {
                     try {
                         int i1 = Integer.parseInt(hisMesReverse.get(i));
                         validMes.add(String.valueOf(i1));
-                    }catch (NumberFormatException ignored){
+                    } catch (NumberFormatException ignored) {
                     }
                 }
             }

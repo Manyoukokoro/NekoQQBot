@@ -1,12 +1,14 @@
 package org.nekotori.job;
 
-import cn.hutool.core.collection.CollectionUtil;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
 import org.nekotori.chain.ChainMessageSelector;
+import org.nekotori.dao.ChatGroupMapper;
 import org.nekotori.dao.ChatMemberMapper;
+import org.nekotori.entity.ChatGroupDo;
 import org.nekotori.entity.CustomResponse;
 import org.nekotori.handler.CustomCommandHandler;
 import org.nekotori.handler.GlobalAtMeHandler;
@@ -34,6 +36,8 @@ public class AsyncJob {
 
     public static Map<Long, List<CustomResponse>> localCache;
 
+    public static List<Long> noRepeatGroup = new ArrayList<>();
+
     @Resource
     private GlobalCommandHandler globalCommandHandler;
 
@@ -50,40 +54,59 @@ public class AsyncJob {
     private ChatMemberMapper chatMemberMapper;
 
     @Resource
+    private ChatGroupMapper chatGroupMapper;
+
+    @Resource
     private ChainMessageSelector chainMessageSelector;
 
 
     @Bean(name = "groupCusRes")
-    public Map<Long, List<CustomResponse>> getGroupCustomResponse(){
+    public Map<Long, List<CustomResponse>> getGroupCustomResponse() {
         localCache = groupService.getGroupCustomResponses();
+        List<ChatGroupDo> chatGroupDos = chatGroupMapper.selectList(Wrappers.<ChatGroupDo>lambdaQuery());
+        if (!ObjectUtils.isEmpty(chatGroupDos)) {
+            chatGroupDos.forEach(
+                    chatGroupDo -> {
+                        if (chatGroupDo.getIsBlock()) {
+                            noRepeatGroup.add(chatGroupDo.getGroupId());
+                        }
+                    }
+            );
+        }
         return localCache;
     }
 
     @Async
-    public void handleCustomResponse(GroupMessageEvent groupMessageEvent){
+    public void handleCustomResponse(GroupMessageEvent groupMessageEvent) {
         List<CustomResponse> customResponses = localCache.get(groupMessageEvent.getGroup().getId());
         String message = groupMessageEvent.getMessage().contentToString();
         List<String> probResponses = new ArrayList<>();
-        if(CollectionUtils.isEmpty(customResponses )){
+        if (CollectionUtils.isEmpty(customResponses)) {
             return;
         }
         customResponses.stream().filter(customResponse -> {
-            if (ObjectUtils.isEmpty(customResponse)|| customResponse.getWay()==null) {
+            if (ObjectUtils.isEmpty(customResponse) || customResponse.getWay() == null) {
                 return false;
             }
             CustomResponse.WAY way = customResponse.getWay();
-            switch (way){
-                case BEGIN: return message.startsWith(customResponse.getKeyWord());
-                case CONTAINS: return message.contains(customResponse.getKeyWord());
-                case END: return message.endsWith(customResponse.getKeyWord());
-                case REGEX: return Pattern.compile(customResponse.getKeyWord()).matcher(message).matches();
-                case FULL_CONTEXT: return message.equals(customResponse.getKeyWord());
-                default: return false;
+            switch (way) {
+                case BEGIN:
+                    return message.startsWith(customResponse.getKeyWord());
+                case CONTAINS:
+                    return message.contains(customResponse.getKeyWord());
+                case END:
+                    return message.endsWith(customResponse.getKeyWord());
+                case REGEX:
+                    return Pattern.compile(customResponse.getKeyWord()).matcher(message).matches();
+                case FULL_CONTEXT:
+                    return message.equals(customResponse.getKeyWord());
+                default:
+                    return false;
             }
-        }).forEach(v->
+        }).forEach(v ->
                 probResponses.add(v.getResponse())
         );
-        if(probResponses.size()>0){
+        if (probResponses.size() > 0) {
             int i = new Random().nextInt(probResponses.size());
             String finalResponse = probResponses.get(i);
             groupMessageEvent.getSubject().sendMessage(finalResponse);
@@ -93,18 +116,18 @@ public class AsyncJob {
 
     }
 
-    private static MessageChain resolveFinalResponse(String finalResponse){
+    private static MessageChain resolveFinalResponse(String finalResponse) {
         MessageChain singleMessages = MessageChain.deserializeFromJsonString(finalResponse);
         MessageChainBuilder builder = new MessageChainBuilder();
-        for(int i=0;i<singleMessages.size();i++){
+        for (int i = 0; i < singleMessages.size(); i++) {
             Pattern compile = Pattern.compile("\\$\\{.*}");
             Matcher matcher = compile.matcher(singleMessages.get(i).contentToString());
-            if(!matcher.find()){
-               builder.append(singleMessages.get(i));
+            if (!matcher.find()) {
+                builder.append(singleMessages.get(i));
             }
             String groups = matcher.group();
             String[] split = groups.split(",");
-            for(String group:split){
+            for (String group : split) {
                 String replace = group.replace("${", "").replace("}", "");
                 try {
                     Process proc = Runtime.getRuntime().exec(replace);
@@ -119,7 +142,7 @@ public class AsyncJob {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                builder.append(new PlainText(singleMessages.get(i).contentToString().replace(group,replace)));
+                builder.append(new PlainText(singleMessages.get(i).contentToString().replace(group, replace)));
             }
 
         }
@@ -134,30 +157,33 @@ public class AsyncJob {
         System.out.println(singleMessages.contentToString());
     }
 
-    public void repeat(GroupMessageEvent groupMessageEvent){
+    public void repeat(GroupMessageEvent groupMessageEvent) {
+        if (noRepeatGroup.contains(groupMessageEvent.getGroup().getId())) {
+            return;
+        }
         int randomInt = new Random().nextInt(100);
-        if(randomInt<2){
+        if (randomInt < 2) {
             groupMessageEvent.getSubject().sendMessage(groupMessageEvent.getMessage());
         }
 
     }
 
     @Async
-    public void handleCommand(GroupMessageEvent groupMessageEvent){
+    public void handleCommand(GroupMessageEvent groupMessageEvent) {
         globalCommandHandler.handle(groupMessageEvent);
     }
 
     @Async
-    public void handleAtMe(GroupMessageEvent groupMessageEvent){
+    public void handleAtMe(GroupMessageEvent groupMessageEvent) {
         globalAtMeHandler.handle(groupMessageEvent);
     }
 
-    public void messageSelect(GroupMessageEvent groupMessageEvent){
+    public void messageSelect(GroupMessageEvent groupMessageEvent) {
         chainMessageSelector.selectMessage(groupMessageEvent);
     }
 
     @Async
-    public void doRecord(GroupMessageEvent groupMessageEvent){
+    public void doRecord(GroupMessageEvent groupMessageEvent) {
         groupService.saveHistory(groupMessageEvent);
     }
 

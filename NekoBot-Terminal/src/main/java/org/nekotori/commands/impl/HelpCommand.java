@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-@IsCommand(name = {"h","help"},description = "帮助文档，格式:(!/-/#)help")
+@IsCommand(name = {"h", "help"}, description = "帮助文档，格式:(!/-/#)help")
 public class HelpCommand extends NoAuthGroupCommand {
 
     @Resource
@@ -33,7 +33,7 @@ public class HelpCommand extends NoAuthGroupCommand {
         return new MessageChainBuilder().append(new At(sender.getId())).append(s).build();
     }
 
-    private String buildHelpDoc(List<String> commands){
+    private String buildHelpDoc(List<String> commands) {
         Map<String, Command> beansOfType = SpringContextUtils.getContext().getBeansOfType(org.nekotori.commands.Command.class);
         List<Command> collect = new ArrayList<>(beansOfType.values());
 //                .stream().filter(c -> {
@@ -48,14 +48,14 @@ public class HelpCommand extends NoAuthGroupCommand {
 //        }).collect(Collectors.toList());
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("\n本群已经注册指令(注意:多关键词指令可能只注册了其中部分): ");
-        for(Command command:collect){
+        for (Command command : collect) {
             IsCommand annotation = command.getClass().getAnnotation(IsCommand.class);
             String[] name = annotation.name();
             String flag = "未授权";
-            if(command instanceof NoAuthGroupCommand){
+            if (command instanceof NoAuthGroupCommand) {
                 flag = "任意";
             }
-            if(command instanceof ManagerGroupCommand){
+            if (command instanceof ManagerGroupCommand) {
                 flag = "管理员";
             }
             for (String n : name) {

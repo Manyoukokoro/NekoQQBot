@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public interface GroupService {
 
-    boolean checkPrivilege(Long groupId,String command);
+    boolean checkPrivilege(Long groupId, String command);
 
     void saveHistory(GroupMessageEvent groupMessageEvent);
 
@@ -26,5 +26,5 @@ public interface GroupService {
 
     String getGroupCommands(Long groupId);
 
-    Map<Long,List<CustomResponse>> getGroupCustomResponses();
+    Map<Long, List<CustomResponse>> getGroupCustomResponses();
 }

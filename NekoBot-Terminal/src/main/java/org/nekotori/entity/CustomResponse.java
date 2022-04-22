@@ -1,12 +1,10 @@
 package org.nekotori.entity;
 
 import cn.hutool.json.JSONUtil;
-import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.nekotori.utils.JsonUtils;
 
 /**
  * @author: JayDeng
@@ -29,7 +27,7 @@ public class CustomResponse {
         System.out.println(customResponse);
     }
 
-    public enum WAY{
+    public enum WAY {
         FULL_CONTEXT("全文"),
         CONTAINS("包含"),
         REGEX("正则"),
@@ -42,9 +40,9 @@ public class CustomResponse {
             this.description = description;
         }
 
-        public static WAY of(String description){
-            for(WAY way:WAY.values()){
-                if(way.description.equals(description)){
+        public static WAY of(String description) {
+            for (WAY way : WAY.values()) {
+                if (way.description.equals(description)) {
                     return way;
                 }
             }

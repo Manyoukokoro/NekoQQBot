@@ -18,6 +18,8 @@ public @interface AtMe {
 
     @AliasFor(annotation = Component.class)
     String value() default "";
+
     String[] name() default {""};
+
     String[] description() default "";
 }

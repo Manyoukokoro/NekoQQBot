@@ -1,7 +1,6 @@
 package org.nekotori.commands;
 
 import net.mamoe.mirai.event.events.GroupMessageEvent;
-import org.nekotori.utils.CommandUtils;
 
 /**
  * @author: JayDeng

@@ -1,6 +1,7 @@
 package org.nekotori.entity;
 
 import lombok.Data;
+import net.mamoe.mirai.message.data.SingleMessage;
 
 import java.util.List;
 
@@ -19,5 +20,7 @@ public class CommandAttr {
     private String command;
 
     private List<String> param;
+
+    private List<SingleMessage> extMessage;
 }
     

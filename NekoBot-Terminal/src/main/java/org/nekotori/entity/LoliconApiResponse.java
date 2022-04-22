@@ -26,4 +26,4 @@ public class LoliconApiResponse {
     private String error;
 
     private List<LoliconData> data;
- }
+}

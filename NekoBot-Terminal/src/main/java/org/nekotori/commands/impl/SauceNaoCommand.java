@@ -37,31 +37,32 @@ public class SauceNaoCommand extends PrivilegeGroupCommand {
     public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
 
         String imageUrl = "";
-        for(SingleMessage s:messageChain){
-            if(s instanceof Image){
-                imageUrl = Image.queryUrl((Image)s);
+        for (SingleMessage s : messageChain) {
+            if (s instanceof Image) {
+                imageUrl = Image.queryUrl((Image) s);
             }
         }
-        if(StringUtils.isEmpty(imageUrl)) {
+        if (StringUtils.isEmpty(imageUrl)) {
             try {
                 chainMessageSelector.registerChannel(subject.getId(), sauceNaoChannelHandler);
                 subject.sendMessage(new PlainText("请直接发送图片给NekoBot"));
-            }catch (RuntimeException e){
+            } catch (RuntimeException e) {
                 subject.sendMessage(new PlainText("已经在查询队列中哦，请直接发送图片给NekoBot"));
             }
-            chainMessageSelector.joinChannel(subject.getId(),SauceNaoChannelHandler.class,sender.getId());
+            chainMessageSelector.joinChannel(subject.getId(), SauceNaoChannelHandler.class, sender.getId());
             return null;
         }
         byte[] bytes = HttpRequest.get(imageUrl).execute().bodyBytes();
         List<SauceNaoData> sauceNaoDataList = hibiApiUtils.queryImage(bytes);
         MessageChainBuilder append = new MessageChainBuilder().append(new At(sender.getId()));
-        if(CollectionUtils.isEmpty(sauceNaoDataList)) return append.append(new PlainText("\nNekoBot找不到关于此图片的信息")).build();
+        if (CollectionUtils.isEmpty(sauceNaoDataList))
+            return append.append(new PlainText("\nNekoBot找不到关于此图片的信息")).build();
         append.append(new PlainText("\nNekoBot找到以下信息:\n"));
-        for (SauceNaoData s:sauceNaoDataList){
+        for (SauceNaoData s : sauceNaoDataList) {
             String thumbnailUrl = s.getThumbnailUrl();
             try {
                 InputStream inputStream = HttpRequest.get(thumbnailUrl).setConnectionTimeout(5 * 1000).setReadTimeout(5 * 1000).execute().bodyStream();
-                if(Float.parseFloat(s.getSimilarity())>60){
+                if (Float.parseFloat(s.getSimilarity()) > 60) {
                     append.append(Contact.uploadImage(subject, inputStream));
                 }
                 append.append(new PlainText("\n相似度:" +
@@ -70,8 +71,8 @@ public class SauceNaoCommand extends PrivilegeGroupCommand {
                         s.getExtUrls() +
                         "\n标签:" +
                         s.getTittle()));
-            }catch (IORuntimeException e){
-                log.error("saucenao query error:",e);
+            } catch (IORuntimeException e) {
+                log.error("saucenao query error:", e);
             }
         }
         return append.build();

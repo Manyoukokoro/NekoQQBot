@@ -24,10 +24,10 @@ public class SimpleHandler implements ChannelHandler {
     @Override
     public void handleMessage(GroupCommandChannel channel, GroupMessageEvent groupMessageEvent) {
         Deque<GroupMessageEvent> his = channel.getMessageHisQueue();
-        if(his.size()==0) return;
+        if (his.size() == 0) return;
         final GroupMessageEvent last = his.getLast();
         final String s = last.getMessage().serializeToMiraiCode();
-        if(groupMessageEvent.getMessage().serializeToMiraiCode().equals(s)){
+        if (groupMessageEvent.getMessage().serializeToMiraiCode().equals(s)) {
             groupMessageEvent.getGroup().sendMessage(groupMessageEvent.getMessage());
         }
     }

@@ -32,16 +32,16 @@ public class GroupCommandChannel {
 
     private ChannelHandler channelHandler;
 
-    public void handleIncomeMessage(GroupMessageEvent groupMessageEvent){
+    public void handleIncomeMessage(GroupMessageEvent groupMessageEvent) {
         this.channelHandler.handleMessage(this, groupMessageEvent);
         messageHisQueue.add(groupMessageEvent);
     }
 
-    public boolean checkMember(Long memberId){
-        return members.stream().anyMatch(l->l.equals(memberId));
+    public boolean checkMember(Long memberId) {
+        return members.stream().anyMatch(l -> l.equals(memberId));
     }
 
-    public void addMember(Long memberId){
+    public void addMember(Long memberId) {
         members.add(memberId);
     }
 }
