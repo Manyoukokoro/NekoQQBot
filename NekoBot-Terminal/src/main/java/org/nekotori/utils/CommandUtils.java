@@ -50,8 +50,10 @@ public class CommandUtils {
     }
 
     public static boolean checkCommand(Command command, GroupMessageEvent event) {
-        return List.of(command.getClass().getAnnotation(IsCommand.class).name())
-                .contains(CommandUtils.resolveTextCommand(event.getMessage().serializeToMiraiCode()).getCommand());
+        CommandAttr commandAttr = CommandUtils.resolveTextCommand(event.getMessage().serializeToMiraiCode());
+        String commandText = commandAttr.getCommand();
+        return StringUtils.hasLength(commandText) && List.of(command.getClass().getAnnotation(IsCommand.class).name())
+                .contains(commandText);
     }
 
     public static boolean isCommand(GroupMessageEvent groupMessageEvent) {
