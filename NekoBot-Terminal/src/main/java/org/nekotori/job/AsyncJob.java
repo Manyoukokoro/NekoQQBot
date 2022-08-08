@@ -159,13 +159,6 @@ public class AsyncJob {
     }
 
     public void repeat(GroupMessageEvent groupMessageEvent) {
-//        if (noRepeatGroup.contains(groupMessageEvent.getGroup().getId())) {
-//            return;
-//        }
-//        int randomInt = new Random().nextInt(100);
-//        if (randomInt < 2) {
-//            groupMessageEvent.getSubject().sendMessage(groupMessageEvent.getMessage());
-//        }
         String s = groupMessageEvent.getMessage().contentToString();
         if(s.matches("[\\d()\\+\\-\\*/^]+[\\+\\-\\*/^][\\d()\\+\\-\\*/^]+")){
             try {

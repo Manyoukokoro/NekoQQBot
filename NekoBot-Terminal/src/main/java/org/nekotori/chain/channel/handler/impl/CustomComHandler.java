@@ -19,10 +19,6 @@ public class CustomComHandler implements ChannelHandler {
 
     private static final CustomCommand.STAGES[] stages = CustomCommand.STAGES.values();
 
-    @Override
-    public List<String> getStages() {
-        return null;
-    }
 
     @Override
     public void handleMessage(GroupCommandChannel channel, GroupMessageEvent groupMessageEvent) {

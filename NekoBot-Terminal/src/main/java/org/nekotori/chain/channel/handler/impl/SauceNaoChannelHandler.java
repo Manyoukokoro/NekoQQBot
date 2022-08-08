@@ -39,10 +39,6 @@ public class SauceNaoChannelHandler implements ChannelHandler {
     @Resource
     private ChainMessageSelector chainMessageSelector;
 
-    @Override
-    public List<String> getStages() {
-        return null;
-    }
 
     @Override
     public void handleMessage(GroupCommandChannel channel, GroupMessageEvent groupMessageEvent) {

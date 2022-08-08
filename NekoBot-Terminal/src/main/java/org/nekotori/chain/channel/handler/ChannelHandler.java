@@ -12,7 +12,9 @@ import java.util.List;
  */
 public interface ChannelHandler {
 
-    List<String> getStages();
+    default List<String> getStages(){
+        return null;
+    };
 
     void handleMessage(GroupCommandChannel channel, GroupMessageEvent groupMessageEvent);
 }

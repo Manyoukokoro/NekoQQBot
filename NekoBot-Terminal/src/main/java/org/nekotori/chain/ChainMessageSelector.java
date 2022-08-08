@@ -59,6 +59,7 @@ public class ChainMessageSelector {
         channels.remove(groupId + "@" + taskHash);
     }
 
+
     //添加信道成员
     public void joinChannel(Long groupId, String taskHash, Long senderId) {
         final GroupCommandChannel groupCommandChannel = channels.get(groupId + "@" + taskHash);

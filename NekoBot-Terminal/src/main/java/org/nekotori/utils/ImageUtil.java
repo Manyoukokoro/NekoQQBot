@@ -14,6 +14,7 @@ import org.nekotori.entity.ChatMemberDo;
 import org.seimicrawler.xpath.JXDocument;
 import org.seimicrawler.xpath.JXNode;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -23,6 +24,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author: JayDeng
@@ -328,20 +330,31 @@ public class ImageUtil {
         BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_BGR);
         Graphics2D graphics = bufferedImage.createGraphics();
         graphics.setColor(Color.WHITE);
-        BufferedImage back = null;
-        try {
-            back = ImageIO.read(new File("jpg/background0.jpg"));
-            graphics.drawImage(back, 0, 0, width, height, null);
-        } catch (IOException e) {
-            graphics.fillRect(0, 0, width, height);
+        BufferedImage back;
+        if(StringUtils.hasLength(chatMemberDo.getBackgroundUri())){
+            try(InputStream inputStream = HttpUtil.createGet(chatMemberDo.getBackgroundUri()).execute().bodyStream()){
+                back = ImageIO.read(inputStream);
+                graphics.drawImage(back, 0, 0, width, height, null);
+            }catch (Exception e){
+                graphics.fillRect(0, 0, width, height);
+            }
+        }else {
+            try {
+                back = ImageIO.read(new File("jpg/background" + new Random().nextInt(5) + ".jpg"));
+                graphics.drawImage(back, 0, 0, width, height, null);
+            } catch (IOException e) {
+                graphics.fillRect(0, 0, width, height);
+            }
         }
         graphics.setColor(Color.GRAY);
         graphics.setStroke(new BasicStroke(6));
+        //分割线（横）
         graphics.drawLine(50, height * 10 / 15, width - 50, height * 10 / 15);
-
+        //分割线（竖）
         graphics.drawLine(width * 2 / 40 + 1000, 50, width * 2 / 40 + 1000, height - 50);
 
         graphics.setStroke(new BasicStroke(10));
+        //边框线
         graphics.drawLine(200, 50, width - 200, 50);
         graphics.drawLine(200, 100, width - 200, 100);
         graphics.drawLine(200, 150, width - 200, 150);
@@ -349,14 +362,10 @@ public class ImageUtil {
         graphics.drawLine(200, height - 50, width - 200, height - 50);
         graphics.drawLine(200, height - 100, width - 200, height - 100);
         graphics.drawLine(200, height - 150, width - 200, height - 150);
+
         graphics.setColor(Color.BLACK);
-        for (int i = 1; i < 19; i++) {
-//            graphics.fillOval(width/20*i+10,10,120,120);
-//            graphics.fillOval(width/20*i+10,height-130,120,120);
-        }
         for (int i = 1; i < 14; i++) {
             graphics.fillOval(10, height / 15 * i + 10, 120, 120);
-//            graphics.fillOval(width-130,height/15*i+10,120,120);
         }
         graphics.setFont(npf);
         String nick = sender == null ? "" : sender.getNameCard();
@@ -371,7 +380,7 @@ public class ImageUtil {
         graphics.drawString("距离下级: " + nextLevelExp(chatMemberDo.getLevel(), chatMemberDo.getExp()), 150, height * 11 / 15 + (normalFontSize + 50) * 3);
 
         String avatarUrl = sender == null ? "" : sender.getAvatarUrl();
-        try (InputStream userAvatar = HttpUtil.createGet(avatarUrl).execute().bodyStream()) {
+        try (InputStream userAvatar = HttpUtil.createGet(avatarUrl).setConnectionTimeout(5000).execute().bodyStream()) {
             BufferedImage read = ImageIO.read(userAvatar);
             read = setRadius(read);
             graphics.drawImage(read, 150, height * 5 / 15 - 500, 1000, 1000, (image, i, i1, i2, i3, i4) -> false);
@@ -383,12 +392,14 @@ public class ImageUtil {
             graphics.drawOval(150, height * 5 / 15 - 500, 1000, 1000);
         }
         try {
-            InputStream inputStream = HttpUtil.createGet("http://api.wpbom.com/api/secon.php").setConnectionTimeout(10000).setReadTimeout(10000).execute().bodyStream();
+            String string = HttpUtil.createGet("https://www.dmoe.cc/random.php?return=json").setConnectionTimeout(5000).setReadTimeout(10000).execute().body();
+            Object acgurl = JSONUtil.parseObj(string).get("imgurl");
+            InputStream inputStream = HttpUtil.createGet(String.valueOf(acgurl)).setConnectionTimeout(5000).setReadTimeout(10000).execute().bodyStream();
             FileUtil.writeFromStream(inputStream, new File("jpg/temp.png"));
             inputStream.close();
             BufferedImage read = ImageIO.read(new File("jpg/temp.png"));
             int height1 = read.getHeight() * 2400 / read.getWidth();
-            graphics.drawImage(read, width * 21 / 40 + 350 - 1200, 500, 2400, height1, (image, i, i1, i2, i3, i4) -> false);
+            graphics.drawImage(read, width * 21 / 40 + 350 - 1200, ((height * 10 / 15)+225)/2-(height1/2), 2400, height1, (image, i, i1, i2, i3, i4) -> false);
         } catch (Exception e) {
             e.printStackTrace();
             try {

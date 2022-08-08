@@ -46,15 +46,6 @@ public class GlobalCommandHandler {
             if (command.checkAuthorization(groupMessageEvent) && CommandUtils.checkCommand(command, groupMessageEvent)) {
                 ThreadSingleton.run(
                         () -> {
-                            MessageChain execute = command.execute(
-                                    groupMessageEvent.getSender(),
-                                    groupMessageEvent.getMessage(),
-                                    groupMessageEvent.getGroup());
-                            if (!ObjectUtils.isEmpty(execute)) {
-                                groupMessageEvent
-                                        .getGroup()
-                                        .sendMessage(execute);
-                            }
                             ChatMemberDo chatMemberDo = chatMemberMapper.selectOne(new QueryWrapper<ChatMemberDo>().eq("group_id",
                                     groupMessageEvent.getGroup().getId()).eq(
                                     "member_id", groupMessageEvent.getSender().getId()));
@@ -74,6 +65,16 @@ public class GlobalCommandHandler {
                             }
                             chatMemberDo.setLastCommand(groupMessageEvent.getMessage().serializeToMiraiCode());
                             chatMemberMapper.updateById(chatMemberDo);
+
+                            MessageChain execute = command.execute(
+                                    groupMessageEvent.getSender(),
+                                    groupMessageEvent.getMessage(),
+                                    groupMessageEvent.getGroup());
+                            if (!ObjectUtils.isEmpty(execute)) {
+                                groupMessageEvent
+                                        .getGroup()
+                                        .sendMessage(execute);
+                            }
                         });
             }
         }
