@@ -46,7 +46,7 @@ public class CustomResponseCommand extends NoAuthGroupCommand {
                 customResponses = new ArrayList<>();
             } else {
                 customResponses = JSONUtil.toBean(customResponse,
-                        new TypeReference<List<CustomResponse>>() {
+                        new TypeReference<>() {
                         }, true);
             }
             StringBuilder stringBuilder = new StringBuilder();

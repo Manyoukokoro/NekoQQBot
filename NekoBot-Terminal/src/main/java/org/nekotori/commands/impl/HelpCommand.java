@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-@IsCommand(name = {"h", "help"}, description = "帮助文档，格式:(!/-/#)help")
+@IsCommand(name = {"h", "help","帮助"}, description = "帮助文档，格式:(!/-/#)help")
 public class HelpCommand extends NoAuthGroupCommand {
 
     @Resource
@@ -36,16 +36,6 @@ public class HelpCommand extends NoAuthGroupCommand {
     private String buildHelpDoc(List<String> commands) {
         Map<String, Command> beansOfType = SpringContextUtils.getContext().getBeansOfType(org.nekotori.commands.Command.class);
         List<Command> collect = new ArrayList<>(beansOfType.values());
-//                .stream().filter(c -> {
-//            if(c instanceof NoAuthGroupCommand || c instanceof ManagerGroupCommand) {
-//                return true;
-//            }
-//            String[] name = c.getClass().getAnnotation(IsCommand.class).name();
-//            for (String n : name) {
-//                if (commands.contains(n)) return true;
-//            }
-//            return false;
-//        }).collect(Collectors.toList());
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("\n本群已经注册指令(注意:多关键词指令可能只注册了其中部分): ");
         for (Command command : collect) {
@@ -59,7 +49,10 @@ public class HelpCommand extends NoAuthGroupCommand {
                 flag = "管理员";
             }
             for (String n : name) {
-                if (commands.contains(n)) flag = "已授权";
+                if (commands.contains(n)) {
+                    flag = "已授权";
+                    break;
+                }
             }
             stringBuilder.append("\n")
                     .append("[")
@@ -67,6 +60,7 @@ public class HelpCommand extends NoAuthGroupCommand {
                     .append("]")
                     .append(Arrays.toString(annotation.name()));
         }
+        stringBuilder.append("\n更多详细信息请浏览：https://github.com/Manyoukokoro/NekoQQBot/blob/master/HELP.md");
         return stringBuilder.toString();
     }
 }

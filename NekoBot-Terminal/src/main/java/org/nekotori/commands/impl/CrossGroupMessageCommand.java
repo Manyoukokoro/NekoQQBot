@@ -21,7 +21,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 
-@IsCommand(name = {"跨群发消息", "跨服聊天", "k", "跨", "聊天列表"}, description = "跨群发送消息")
+@IsCommand(name = { "k", "跨", "聊天列表"}, description = "跨群发送消息")
 public class CrossGroupMessageCommand extends NoAuthGroupCommand {
     @Override
     public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
@@ -81,7 +81,7 @@ public class CrossGroupMessageCommand extends NoAuthGroupCommand {
         }
 
         MessageChainBuilder response = new MessageChainBuilder();
-        response.append(new PlainText("收到来自" + tag + "的跨群消息：\n"));
+        response.append(new PlainText(tag +"=>User:" +sender.getId()%10000 + ":\n"));
         response.append(new PlainText(join));
         if (!CollectionUtils.isEmpty(commandAttr.getExtMessage())) {
             for (SingleMessage singleMessage : commandAttr.getExtMessage()) {

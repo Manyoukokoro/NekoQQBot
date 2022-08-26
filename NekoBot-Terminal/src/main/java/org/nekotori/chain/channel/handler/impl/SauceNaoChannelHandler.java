@@ -19,7 +19,6 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.io.InputStream;
-import java.util.Deque;
 import java.util.List;
 
 /**
@@ -28,7 +27,7 @@ import java.util.List;
  * @description:
  * @version: {@link }
  */
-//@HandlerId("114514")
+
 @Slf4j
 @Deprecated
 public class SauceNaoChannelHandler implements ChannelHandler {
@@ -42,7 +41,6 @@ public class SauceNaoChannelHandler implements ChannelHandler {
 
     @Override
     public void handleMessage(GroupCommandChannel channel, GroupMessageEvent groupMessageEvent) {
-        Deque<GroupMessageEvent> his = channel.getMessageHisQueue();
         final MessageChain message = groupMessageEvent.getMessage();
         final Member sender = groupMessageEvent.getSender();
         final Group group = groupMessageEvent.getGroup();
@@ -68,6 +66,8 @@ public class SauceNaoChannelHandler implements ChannelHandler {
             for (SauceNaoData s : sauceNaoDataList) {
                 String thumbnailUrl = s.getThumbnailUrl();
                 InputStream inputStream = HttpRequest.get(thumbnailUrl).setConnectionTimeout(5 * 1000).setReadTimeout(5 * 1000).execute().bodyStream();
+
+                
                 if (Float.parseFloat(s.getSimilarity()) > 60) {
                     append.append(Contact.uploadImage(group, inputStream));
                 }

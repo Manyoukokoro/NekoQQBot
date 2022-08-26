@@ -99,7 +99,7 @@ public class GroupServiceImpl implements GroupService {
         List<ChatGroupDo> chatGroupDo = chatGroupMapper.selectList(new QueryWrapper<>());
         return chatGroupDo.stream().collect(Collectors.toMap(
                 ChatGroupDo::getGroupId, v -> v.getCustomResponse() == null ? new ArrayList<>() : JSONUtil.toBean(v.getCustomResponse(),
-                        new TypeReference<List<CustomResponse>>() {
+                        new TypeReference<>() {
                         }, true)
         ));
     }

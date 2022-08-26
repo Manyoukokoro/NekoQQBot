@@ -516,11 +516,8 @@ public class ImageUtil {
             gs.setStroke(new BasicStroke(border));
             gs.drawRoundRect(padding, padding, canvasWidth - 2 * padding, canvasHeight - 2 * padding, radius, radius);
         }
-
         gs.dispose();
-
         return image;
-
     }
 
     /**

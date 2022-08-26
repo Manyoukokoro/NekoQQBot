@@ -18,6 +18,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
@@ -47,7 +48,8 @@ public class SignCommand extends PrivilegeGroupCommand {
                     .append(new PlainText("老板今天已经签到过了哦"))
                     .build();
         }
-        final Random random = new Random();
+        long seed = (sender.getId() | Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(new Date()))) % 559;
+        final Random random = new Random(seed);
         final int rank = random.nextInt(5) + 1;
         int incomeExp = random.nextInt((int) Math.pow(10d, rank));
         if (incomeExp == 0) {
@@ -57,15 +59,7 @@ public class SignCommand extends PrivilegeGroupCommand {
             incomeExp = random.nextInt(500) + 500;
         }
         if (incomeExp > 99900) {
-            try {
-                for (int i = 10; i > 0; i--) {
-                    subject.sendMessage(String.valueOf(i));
-                    Thread.sleep(1000);
-                }
-                subject.sendMessage("毁天灭地！");
-            } catch (InterruptedException e) {
-                return new MessageChainBuilder().append("出现了预料之外的事故>x<").build();
-            }
+            subject.sendMessage("今日好运爆棚哦~");
             incomeExp = 99999;
         }
         if (chatMemberDo == null) {

@@ -93,12 +93,3 @@ public class SampleCommand extends PrivilegeGroupCommand {
 2. 准备配置文件application-sample.yml,填写基本信息
 3. 使用maven将项目代码打包为jar,即可在服务器上运行
 4. 登录中所遇问题请参考mirai官方解决方案
-
-#### Gitee Feature
-
-1. You can use Readme\_XXX.md to support different languages, such as Readme\_en.md, Readme\_zh.md
-2. Gitee blog [blog.gitee.com](https://blog.gitee.com)
-3. Explore open source project [https://gitee.com/explore](https://gitee.com/explore)
-4. The most valuable open source project [GVP](https://gitee.com/gvp)
-5. The manual of Gitee [https://gitee.com/help](https://gitee.com/help)
-6. The most popular members  [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)

@@ -26,6 +26,7 @@ public class HibiApiUtils {
     }
 
     public List<SauceNaoData> queryImage(byte[] image) {
+
         HttpResponse file = HttpRequest.post(sauceNao).form("file", image, "file.jpg").setConnectionTimeout(20 * 1000).setReadTimeout(20 * 1000).execute();
         if (!JSONUtil.isJson(file.body())) return new ArrayList<>();
         JSONObject jsonObject = JSONUtil.parseObj(file.body());
@@ -34,6 +35,7 @@ public class HibiApiUtils {
         if (ObjectUtils.isEmpty(results) || results.isEmpty()) return new ArrayList<>();
         int size = results.size();
         List<SauceNaoData> sauceNaoDataList = new ArrayList<>();
+
         for (int i = 0; i < size && i < 3; i++) {
             SauceNaoData sauceNaoData = new SauceNaoData();
             JSONObject jsonObject1 = JSONUtil.parseObj(results.get(i));
@@ -45,6 +47,7 @@ public class HibiApiUtils {
             sauceNaoData.setExtUrls(CollectionUtils.isEmpty(data.getJSONArray("ext_urls")) ? new ArrayList<>() : data.getJSONArray("ext_urls").toList(String.class));
             sauceNaoDataList.add(sauceNaoData);
         }
+
         return sauceNaoDataList;
     }
 }

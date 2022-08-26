@@ -14,7 +14,6 @@ import org.nekotori.handler.CustomCommandHandler;
 import org.nekotori.handler.GlobalAtMeHandler;
 import org.nekotori.handler.GlobalCommandHandler;
 import org.nekotori.service.GroupService;
-import org.nekotori.utils.LittleUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -162,7 +161,7 @@ public class AsyncJob {
         String s = groupMessageEvent.getMessage().contentToString();
         if(s.matches("[\\d()\\+\\-\\*/^]+[\\+\\-\\*/^][\\d()\\+\\-\\*/^]+")){
             try {
-                groupMessageEvent.getSubject().sendMessage(LittleUtils.resolve(s));
+
             }catch (Exception ignore){
             }
         }
