@@ -60,7 +60,7 @@ public class HelpCommand extends NoAuthGroupCommand {
                     .append("]")
                     .append(Arrays.toString(annotation.name()));
         }
-        stringBuilder.append("\n更多详细信息请浏览：https://github.com/Manyoukokoro/NekoQQBot/blob/master/HELP.md");
+        stringBuilder.append("\n更多详细信息请浏览：https://github.com/Manyoukokoro/NekoQQBot/blob/master/README.md");
         return stringBuilder.toString();
     }
 }
