@@ -13,6 +13,7 @@ import org.nekotori.chain.ChainMessageSelector;
 import org.nekotori.chain.channel.GroupCommandChannel;
 import org.nekotori.chain.channel.handler.impl.FiveChessHandler;
 import org.nekotori.commands.NoAuthGroupCommand;
+import org.nekotori.commands.PrivilegeGroupCommand;
 import org.nekotori.common.InnerConstants;
 import org.nekotori.entity.CommandAttr;
 import org.nekotori.utils.CommandUtils;
@@ -34,7 +35,7 @@ import static org.nekotori.common.InnerConstants.*;
  */
 
 @IsCommand(name = {"五子棋"}, description = "")
-public class StartFiveChessCommand extends NoAuthGroupCommand {
+public class StartFiveChessCommand extends PrivilegeGroupCommand {
     @Resource
     private ChainMessageSelector chainMessageSelector;
 

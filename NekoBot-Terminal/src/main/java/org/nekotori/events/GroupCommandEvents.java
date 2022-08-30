@@ -33,7 +33,8 @@ public class GroupCommandEvents extends SimpleListenerHost {
         asyncJob.handleCommand(groupMessageEvent);
         asyncJob.doRecord(groupMessageEvent);
         asyncJob.handleCustomResponse(groupMessageEvent);
-        asyncJob.repeat(groupMessageEvent);
+        asyncJob.cal(groupMessageEvent);
+        asyncJob.dispatchMessage(groupMessageEvent);
         return ListeningStatus.LISTENING;
     }
 
