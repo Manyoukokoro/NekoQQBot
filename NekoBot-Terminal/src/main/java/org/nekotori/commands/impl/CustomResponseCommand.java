@@ -40,15 +40,7 @@ public class CustomResponseCommand extends NoAuthGroupCommand {
         //查询回复
         if ("查询回复".equals(commandAttr.getCommand())) {
             ChatGroupDo group = chatGroupMapper.selectOne(Wrappers.<ChatGroupDo>lambdaQuery().eq(ChatGroupDo::getGroupId, subject.getId()));
-            String customResponse = group.getCustomResponse();
-            List<CustomResponse> customResponses;
-            if (customResponse == null) {
-                customResponses = new ArrayList<>();
-            } else {
-                customResponses = JSONUtil.toBean(customResponse,
-                        new TypeReference<>() {
-                        }, true);
-            }
+            List<CustomResponse> customResponses = getCustomResponses(group);
             StringBuilder stringBuilder = new StringBuilder();
             for (CustomResponse c : customResponses) {
                 stringBuilder.append(c.getWay()).append(":").append(c.getKeyWord()).append(":").append(c.getResponse()).append("\n");
@@ -86,15 +78,7 @@ public class CustomResponseCommand extends NoAuthGroupCommand {
                     .way(CustomResponse.WAY.of(way))
                     .response(join).build();
             ChatGroupDo group = chatGroupMapper.selectOne(Wrappers.<ChatGroupDo>lambdaQuery().eq(ChatGroupDo::getGroupId, subject.getId()));
-            String customResponse = group.getCustomResponse();
-            List<CustomResponse> customResponses;
-            if (customResponse == null) {
-                customResponses = new ArrayList<>();
-            } else {
-                customResponses = JSONUtil.toBean(customResponse,
-                        new TypeReference<>() {
-                        }, true);
-            }
+            List<CustomResponse> customResponses = getCustomResponses(group);
             if (commandAttr.getCommand().equals("撤销回复")) {
                 customResponses =
                         customResponses.stream().filter(se -> !se.getKeyWord().equals(keyWord)).collect(Collectors.toList());
@@ -111,5 +95,18 @@ public class CustomResponseCommand extends NoAuthGroupCommand {
         } catch (Exception e) {
             return new MessageChainBuilder().append(new PlainText("发生了未知错误～QAQ")).build();
         }
+    }
+
+    private List<CustomResponse> getCustomResponses(ChatGroupDo group) {
+        String customResponse = group.getCustomResponse();
+        List<CustomResponse> customResponses;
+        if (customResponse == null) {
+            customResponses = new ArrayList<>();
+        } else {
+            customResponses = JSONUtil.toBean(customResponse,
+                    new TypeReference<>() {
+                    }, true);
+        }
+        return customResponses;
     }
 }

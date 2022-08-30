@@ -53,7 +53,7 @@ public class SignCommand extends PrivilegeGroupCommand {
         final int rank = random.nextInt(5) + 1;
         int incomeExp = random.nextInt((int) Math.pow(10d, rank));
         if (incomeExp == 0) {
-            return new MessageChainBuilder().append("叮~~~~~~~，恭喜亲获得了零经验，这边送您重签卡一张~，您真是太欧了呢").build();
+            incomeExp = new Random().nextInt(50000)+20000;
         }
         if (incomeExp < 100) {
             incomeExp = random.nextInt(500) + 500;

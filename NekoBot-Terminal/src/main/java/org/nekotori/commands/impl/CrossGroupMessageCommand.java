@@ -89,7 +89,7 @@ public class CrossGroupMessageCommand extends NoAuthGroupCommand {
             }
         }
         if (targetgroup == null) {
-            return new MessageChainBuilder().append(new PlainText("找不到目标")).build();
+            return new MessageChainBuilder().append(new PlainText("找不到对象")).build();
         }
         Objects.requireNonNull(targetgroup).sendMessage(response.build());
         String ss = String.valueOf(targetgroup.getId());
