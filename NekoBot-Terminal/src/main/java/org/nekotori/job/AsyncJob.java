@@ -1,13 +1,15 @@
 package org.nekotori.job;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import net.mamoe.mirai.contact.Friend;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
+import org.nekotori.BotSimulator;
 import org.nekotori.chain.ChainMessageSelector;
+import org.nekotori.common.InnerConstants;
 import org.nekotori.dao.ChatGroupMapper;
-import org.nekotori.dao.ChatMemberMapper;
 import org.nekotori.entity.ChatGroupDo;
 import org.nekotori.entity.CustomResponse;
 import org.nekotori.handler.CustomCommandHandler;
@@ -39,20 +41,16 @@ public class AsyncJob {
 
     public static List<Long> noRepeatGroup = new ArrayList<>();
 
-    @Resource
-    private GlobalCommandHandler globalCommandHandler;
+    public static long nowDispatchGroup = 0L;
 
     @Resource
-    private CustomCommandHandler customCommandHandler;
+    private GlobalCommandHandler globalCommandHandler;
 
     @Resource
     private GlobalAtMeHandler globalAtMeHandler;
 
     @Resource
     private GroupService groupService;
-
-    @Resource
-    private ChatMemberMapper chatMemberMapper;
 
     @Resource
     private ChatGroupMapper chatGroupMapper;
@@ -158,7 +156,7 @@ public class AsyncJob {
         System.out.println(singleMessages.contentToString());
     }
 
-    public void repeat(GroupMessageEvent groupMessageEvent) {
+    public void cal(GroupMessageEvent groupMessageEvent) {
         String s = groupMessageEvent.getMessage().contentToString();
         if(s.matches("[\\d()\\+\\-\\*/^]+[\\+\\-\\*/^][\\d()\\+\\-\\*/^]+")){
             try {
@@ -186,6 +184,18 @@ public class AsyncJob {
     @Async
     public void doRecord(GroupMessageEvent groupMessageEvent) {
         groupService.saveHistory(groupMessageEvent);
+    }
+
+    public void dispatchMessage(GroupMessageEvent groupMessageEvent){
+        if(nowDispatchGroup == groupMessageEvent.getSubject().getId()){
+            Friend friend = BotSimulator.getBot().getFriendOrFail(InnerConstants.admin);
+            String name = "\n----[" + groupMessageEvent.getSender().getNick() + "](" + groupMessageEvent.getSender().getId() + ")";
+            MessageChain message = groupMessageEvent.getMessage();
+            MessageChainBuilder singleMessages = new MessageChainBuilder();
+            singleMessages.addAll(message);
+            singleMessages.append(new PlainText(name));
+            friend.sendMessage(singleMessages.build());
+        }
     }
 
 }
