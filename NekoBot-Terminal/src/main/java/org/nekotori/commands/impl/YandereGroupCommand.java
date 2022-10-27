@@ -13,6 +13,7 @@ import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
+import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.PrivilegeGroupCommand;
 import org.nekotori.entity.CommandAttr;
 import org.nekotori.entity.YandereData;
@@ -23,15 +24,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
 
 import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-//@IsCommand(name = {"AniS","anis"},description = "使用yandere进行图片检索,此指令参数格式比较复杂，有兴趣可以参阅yandere的api文档，格式:(!/-/#)anis ...[参数]")
+@IsCommand(name = {"AniS","anis"},description = "使用yandere进行图片检索,此指令参数格式比较复杂，有兴趣可以参阅yandere的api文档，格式:(!/-/#)anis ...[参数]")
 @Slf4j
-@Deprecated
 public class YandereGroupCommand extends PrivilegeGroupCommand {
 
     @Value("${img.yandere-post}")
@@ -50,9 +52,10 @@ public class YandereGroupCommand extends PrivilegeGroupCommand {
                         .addQuery("tags", CollectionUtils.isEmpty(param) ? "" : String.join(" ", param))
                         .build();
         MessageChainBuilder singleMessages = new MessageChainBuilder();
+        Proxy proxy = new Proxy(Proxy.Type.HTTP,new InetSocketAddress("127.0.0.1", 7890));
         singleMessages.append(new At(sender.getId()));
         try {
-            String body = HttpUtil.createGet(build).setReadTimeout(5 * 1000).setConnectionTimeout(5 * 1000).executeAsync().body();
+            String body = HttpUtil.createGet(build).setProxy(proxy).setReadTimeout(5 * 1000).setConnectionTimeout(5 * 1000).executeAsync().body();
             List<YandereData> yandereData =
                     JsonUtils.json2Object(body, new TypeReference<>() {
                     });
@@ -63,7 +66,7 @@ public class YandereGroupCommand extends PrivilegeGroupCommand {
                                 .addQuery("limit", "50")
                                 .addQuery("name", CollectionUtils.isEmpty(param) ? "" : String.join(" ", param))
                                 .build();
-                String body1 = HttpRequest.get(tag).executeAsync().body();
+                String body1 = HttpRequest.get(tag).setProxy(proxy).executeAsync().body();
                 List<YandereTag> yandereTags = JsonUtils.json2Object(body1, new TypeReference<>() {
                 });
                 if (!CollectionUtils.isEmpty(yandereTags)) {
@@ -85,7 +88,7 @@ public class YandereGroupCommand extends PrivilegeGroupCommand {
                 for (YandereData y : imgs) {
                     log.info("request img url: {}", y.getSample_url());
                     InputStream inputStream =
-                            HttpUtil.createGet(y.getSample_url()).setReadTimeout(20 * 1000).setConnectionTimeout(10 * 1000).execute().bodyStream();
+                            HttpUtil.createGet(y.getSample_url()).setProxy(proxy).setReadTimeout(20 * 1000).setConnectionTimeout(10 * 1000).execute().bodyStream();
                     singleMessages.append(Contact.uploadImage(subject, inputStream));
                     singleMessages.append(new PlainText("源地址:" + y.getSource() + "\n"));
                 }
