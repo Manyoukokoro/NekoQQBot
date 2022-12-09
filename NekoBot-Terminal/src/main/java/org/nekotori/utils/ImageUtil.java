@@ -3,6 +3,7 @@ package org.nekotori.utils;
 import cn.hutool.core.img.FontUtil;
 import cn.hutool.core.img.ImgUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.lang.Pair;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import lombok.Data;
@@ -251,7 +252,7 @@ public class ImageUtil {
         ChatMemberDo chatMemberDo = new ChatMemberDo();
         chatMemberDo.setLevel(1);
         chatMemberDo.setExp(0L);
-        drawSignPic(null, chatMemberDo, 0);
+        drawSignPic(null, chatMemberDo, 0,0,0);
     }
 
     private static long nextLevelExp(int level, long exp) {
@@ -319,7 +320,7 @@ public class ImageUtil {
         return bufferedImage;
     }
 
-    public static InputStream drawSignPic(Member sender, ChatMemberDo chatMemberDo, int incomeExp) {
+    public static Pair<InputStream,String> drawSignPic(Member sender, ChatMemberDo chatMemberDo, int incomeExp,int talkingIndex,int eroIndex) {
         int height = 3192;
         int width = 4096;
         int impFontSize = 200;
@@ -368,11 +369,28 @@ public class ImageUtil {
             graphics.fillOval(10, height / 15 * i + 10, 120, 120);
         }
         graphics.setFont(npf);
-        String nick = sender == null ? "" : sender.getNameCard();
+        String nick = sender == null ? "" : StringUtils.hasLength(sender.getNameCard())?sender.getNick():sender.getNameCard();
         if (nick.length() > 6) {
             nick = nick.substring(0, 6) + "...";
         }
-        graphics.drawString("@: " + nick, 100, height * 10 / 15 + normalFontSize + 50);
+        if(talkingIndex<10){
+            graphics.setColor(Color.GRAY);
+        }else if(talkingIndex<50){
+            graphics.setColor(Color.CYAN);
+        }else if(talkingIndex<100){
+            graphics.setColor(Color.BLUE);
+        }else if(talkingIndex<250){
+            graphics.setColor(Color.YELLOW);
+        }else if(talkingIndex<500){
+            graphics.setColor(Color.ORANGE);
+        }else if(talkingIndex<1000){
+            graphics.setColor(Color.RED);
+        }else {
+            graphics.setColor(Color.BLACK);
+        }
+        graphics.drawString("话唠指数："+talkingIndex,200,height*10/15-(normalFontSize+50)*2);
+        graphics.setColor(Color.BLACK);
+        graphics.drawString("@: " + nick, 120, height * 10 / 15 + normalFontSize + 50);
         graphics.setFont(nfs);
         graphics.setColor(Color.BLACK);
         graphics.drawString("当前等级: " + chatMemberDo.getLevel(), 150, height * 11 / 15 + normalFontSize + 50);
@@ -384,6 +402,7 @@ public class ImageUtil {
             BufferedImage read = ImageIO.read(userAvatar);
             read = setRadius(read);
             graphics.drawImage(read, 150, height * 5 / 15 - 500, 1000, 1000, (image, i, i1, i2, i3, i4) -> false);
+
         } catch (Exception e) {
             graphics.drawOval(150, height * 5 / 15 - 500, 1000, 1000);
         } finally {
@@ -391,9 +410,11 @@ public class ImageUtil {
             graphics.setColor(Color.gray);
             graphics.drawOval(150, height * 5 / 15 - 500, 1000, 1000);
         }
+        String imgUrl = "";
         try {
             String string = HttpUtil.createGet("https://www.dmoe.cc/random.php?return=json").setConnectionTimeout(5000).setReadTimeout(10000).execute().body();
             Object acgurl = JSONUtil.parseObj(string).get("imgurl");
+            imgUrl = String.valueOf(acgurl);
             InputStream inputStream = HttpUtil.createGet(String.valueOf(acgurl)).setConnectionTimeout(5000).setReadTimeout(10000).execute().bodyStream();
             FileUtil.writeFromStream(inputStream, new File("jpg/temp.png"));
             inputStream.close();
@@ -415,6 +436,7 @@ public class ImageUtil {
             }
         }
         StringBuilder stringBuilder = new StringBuilder("今日运势:");
+        incomeExp-=talkingIndex*100+eroIndex*500;
         if (incomeExp <= 100) {
             stringBuilder.append("★☆☆☆☆☆☆");
         } else if (incomeExp <= 500) {
@@ -438,6 +460,7 @@ public class ImageUtil {
 
         stringBuilder = new StringBuilder("今日骚气:");
         int sq = new Random().nextInt(100);
+        sq+=eroIndex;
         if (sq <= 10) {
             stringBuilder.append("★☆☆☆☆☆☆");
         } else if (sq <= 30) {
@@ -468,9 +491,9 @@ public class ImageUtil {
             InputStream inputStream = bufferedImageToInputStream(outImage);
             FileUtil.writeFromStream(inputStream, new File("jpg/temp_out.png"));
             ImgUtil.convert(new File("jpg/temp_out.png"), new File("jpg/temp_out.jpg"));
-            return FileUtil.getInputStream(new File("jpg/temp_out.jpg"));
+            return new Pair<>(FileUtil.getInputStream(new File("jpg/temp_out.jpg")),imgUrl);
         } catch (IOException e) {
-            return bufferedImageToInputStream(bufferedImage);
+            return new Pair<>(bufferedImageToInputStream(bufferedImage),imgUrl);
         }
     }
 

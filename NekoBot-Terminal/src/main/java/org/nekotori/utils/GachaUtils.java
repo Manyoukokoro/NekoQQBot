@@ -165,4 +165,59 @@ public class GachaUtils {
 
         return gachas;
     }
+    public static int gachaExp(int level){
+        int ur,ssr,sr,r,n;
+        switch (level){
+            case 0:{
+                ur=1;ssr=5;sr=94;r=200;n=700;
+                break;
+            }
+            case 1:{
+                ur=5;ssr=10;sr=100;r=400;n=485;
+                break;
+            }
+            case 2:{
+                ur=10;ssr=50;sr=200;r=600;n=140;
+                break;
+            }
+            case 3:{
+                ur=50;ssr=100;sr=500;r=300;n=50;
+                break;
+            }
+            case 4:{
+                ur=100;ssr=540;sr=300;r=50;n=10;
+                break;
+            }
+            case 5:{
+                ur=500;ssr=485;sr=10;r=5;n=0;
+                break;
+            }
+            default:{
+                ur=1000;ssr=0;sr=0;r=0;n=0;
+                break;
+            }
+        }
+        List<String> gacha = gacha(5, ur, ssr, sr, r, n);
+        System.out.println(gacha);
+        int sum = 0;
+        Random random = new Random();
+        for(String g:gacha){
+            if("N".equals(g)) {
+                sum += random.nextInt(100)+10;
+            }
+            if("R".equals(g)) {
+                sum += random.nextInt(500)+50;
+            }
+            if("SR".equals(g)) {
+                sum += random.nextInt(1000)+100;
+            }
+            if("SSR".equals(g)) {
+                sum += random.nextInt(5000)+500;
+            }
+            if("UR".equals(g)) {
+                sum += random.nextInt(10000)+1000;
+            }
+        }
+        return sum;
+    }
 }

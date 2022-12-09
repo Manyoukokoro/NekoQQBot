@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.nekotori.chain.ChainMessageSelector;
 import org.nekotori.handler.GlobalAtMeHandler;
 import org.nekotori.handler.GlobalCommandHandler;
+import org.nekotori.utils.ImageUtil;
 import org.nekotori.utils.LoginUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;

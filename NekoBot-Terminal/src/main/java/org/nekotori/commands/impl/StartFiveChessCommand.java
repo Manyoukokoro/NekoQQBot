@@ -12,7 +12,6 @@ import org.nekotori.annotations.IsCommand;
 import org.nekotori.chain.ChainMessageSelector;
 import org.nekotori.chain.channel.GroupCommandChannel;
 import org.nekotori.chain.channel.handler.impl.FiveChessHandler;
-import org.nekotori.commands.NoAuthGroupCommand;
 import org.nekotori.commands.PrivilegeGroupCommand;
 import org.nekotori.common.InnerConstants;
 import org.nekotori.entity.CommandAttr;
@@ -25,7 +24,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import static org.nekotori.common.InnerConstants.*;
+import static org.nekotori.common.InnerConstants.STRING0;
+import static org.nekotori.common.InnerConstants.STRING1;
+import static org.nekotori.common.InnerConstants.STRING2;
+import static org.nekotori.common.InnerConstants.STRING3;
+import static org.nekotori.common.InnerConstants.STRING4;
+import static org.nekotori.common.InnerConstants.STRING6;
+import static org.nekotori.common.InnerConstants.STRING7;
 
 /**
  * @author: JayDeng
