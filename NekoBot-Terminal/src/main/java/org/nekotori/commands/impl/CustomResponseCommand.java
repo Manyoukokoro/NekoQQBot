@@ -16,7 +16,6 @@ import org.nekotori.entity.ChatGroupDo;
 import org.nekotori.entity.CommandAttr;
 import org.nekotori.entity.CustomResponse;
 import org.nekotori.job.AsyncJob;
-import org.nekotori.utils.CommandUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -33,10 +32,9 @@ public class CustomResponseCommand extends NoAuthGroupCommand {
     private ChatGroupMapper chatGroupMapper;
 
     @Override
-    public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
+    public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
 
         String s = messageChain.contentToString().replace("\\n", "");
-        CommandAttr commandAttr = CommandUtils.resolveTextCommand(s);
         //查询回复
         if ("查询回复".equals(commandAttr.getCommand())) {
             ChatGroupDo group = chatGroupMapper.selectOne(Wrappers.<ChatGroupDo>lambdaQuery().eq(ChatGroupDo::getGroupId, subject.getId()));

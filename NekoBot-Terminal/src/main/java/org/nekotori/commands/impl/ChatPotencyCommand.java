@@ -11,7 +11,6 @@ import org.nekotori.commands.NoAuthGroupCommand;
 import org.nekotori.dao.ChatHistoryMapper;
 import org.nekotori.entity.ChatHistoryDo;
 import org.nekotori.entity.CommandAttr;
-import org.nekotori.utils.CommandUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -24,8 +23,7 @@ public class ChatPotencyCommand extends NoAuthGroupCommand {
     private ChatHistoryMapper mapper;
 
     @Override
-    public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
-        CommandAttr commandAttr = CommandUtils.resolveCommand(messageChain);
+    public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         List<String> param = commandAttr.getParam();
         subject.sendMessage("话题浓度查询中......");
         List<ChatHistoryDo> chatHistoryDos = mapper.selectList(Wrappers.<ChatHistoryDo>lambdaQuery().eq(ChatHistoryDo::getGroupId, subject.getId()));

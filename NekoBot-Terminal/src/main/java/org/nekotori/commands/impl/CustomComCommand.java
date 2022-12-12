@@ -4,6 +4,7 @@ import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.message.data.MessageChain;
 import org.nekotori.commands.ManagerGroupCommand;
+import org.nekotori.entity.CommandAttr;
 
 /**
  * @author: JayDeng
@@ -13,7 +14,7 @@ import org.nekotori.commands.ManagerGroupCommand;
  */
 public class CustomComCommand extends ManagerGroupCommand {
     @Override
-    public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
+    public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         return null;
     }
 }

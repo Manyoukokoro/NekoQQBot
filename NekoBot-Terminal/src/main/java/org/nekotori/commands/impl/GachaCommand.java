@@ -32,8 +32,7 @@ public class GachaCommand extends PrivilegeGroupCommand {
     private GroupGachaMapper groupGachaMapper;
 
     @Override
-    public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
-        CommandAttr commandAttr = CommandUtils.resolveTextCommand(messageChain.serializeToMiraiCode());
+    public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         if (commandAttr.getCommand().equals("建造")) {
             int type = 0;
             if (!CollectionUtil.isEmpty(commandAttr.getParam())) {

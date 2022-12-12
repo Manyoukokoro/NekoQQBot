@@ -4,6 +4,7 @@ import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.message.data.MessageChain;
+import org.nekotori.entity.CommandAttr;
 
 /**
  * @author: JayDeng
@@ -24,5 +25,5 @@ public interface Command {
     /**
      * 执行指令
      */
-    MessageChain execute(Member sender, MessageChain messageChain, Group subject);
+    MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain);
 }

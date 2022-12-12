@@ -31,16 +31,13 @@ public class SampleCommand extends PrivilegeGroupCommand {
      * 重写的execute方法，决定指令的输入输出
      *
      * @param sender       发起指令的人
-     * @param messageChain 带有指令的那条消息
      * @param subject      发指令人所在的群
+     * @param commandAttr
+     * @param messageChain 带有指令的那条消息
      * @return
      */
     @Override
-    public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
-        /**
-         * 标准方法，解析指令数据
-         */
-        final CommandAttr commandAttr = CommandUtils.resolveTextCommand(messageChain.serializeToMiraiCode());
+    public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         /**
          * 指令头：！ - #
          */

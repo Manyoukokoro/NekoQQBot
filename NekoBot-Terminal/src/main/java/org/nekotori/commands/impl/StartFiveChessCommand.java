@@ -15,7 +15,6 @@ import org.nekotori.chain.channel.handler.impl.FiveChessHandler;
 import org.nekotori.commands.PrivilegeGroupCommand;
 import org.nekotori.common.InnerConstants;
 import org.nekotori.entity.CommandAttr;
-import org.nekotori.utils.CommandUtils;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
@@ -49,7 +48,7 @@ public class StartFiveChessCommand extends PrivilegeGroupCommand {
 
 
     @Override
-    public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
+    public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         Map<String, GroupCommandChannel> channels = chainMessageSelector.getChannels();
         GroupCommandChannel groupCommandChannel =
                 channels.get(subject.getId() + "@" + FiveChessHandler.class.getAnnotation(HandlerId.class).value());
@@ -58,7 +57,6 @@ public class StartFiveChessCommand extends PrivilegeGroupCommand {
             chainMessageSelector.joinChannel(subject.getId(), fiveChessHandler, sender.getId());
             Set<Integer> fs = new HashSet<>();
             String s = messageChain.contentToString();
-            CommandAttr commandAttr = CommandUtils.resolveTextCommand(s);
             if (CollectionUtil.isNotEmpty(commandAttr.getParam())) {
                 commandAttr.getParam().forEach(ss -> {
                     if (ss.equals("T")) {

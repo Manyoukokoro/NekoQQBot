@@ -21,9 +21,8 @@ public class RegisterComCommand extends ManagerGroupCommand {
     GroupService groupService;
 
     @Override
-    public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
+    public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         String s = messageChain.serializeToMiraiCode();
-        CommandAttr commandAttr = CommandUtils.resolveTextCommand(s);
         List<String> param = commandAttr.getParam();
         for (String p : param) {
             String groupCommands = groupService.getGroupCommands(subject.getId());

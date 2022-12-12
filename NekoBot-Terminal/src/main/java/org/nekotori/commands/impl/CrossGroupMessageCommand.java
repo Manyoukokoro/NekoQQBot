@@ -11,7 +11,6 @@ import net.mamoe.mirai.message.data.SingleMessage;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.NoAuthGroupCommand;
 import org.nekotori.entity.CommandAttr;
-import org.nekotori.utils.CommandUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -24,8 +23,7 @@ import java.util.stream.Collectors;
 @IsCommand(name = { "k", "跨", "聊天列表"}, description = "跨群发送消息")
 public class CrossGroupMessageCommand extends NoAuthGroupCommand {
     @Override
-    public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
-        CommandAttr commandAttr = CommandUtils.resolveCommand(messageChain);
+    public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         if ("聊天列表".equals(commandAttr.getCommand())) {
 
             List<String> collect = subject.getBot()

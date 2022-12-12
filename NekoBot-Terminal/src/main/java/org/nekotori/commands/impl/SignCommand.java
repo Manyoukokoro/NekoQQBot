@@ -15,11 +15,11 @@ import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.PrivilegeGroupCommand;
-import org.nekotori.dao.ChatGroupMapper;
 import org.nekotori.dao.ChatHistoryMapper;
 import org.nekotori.dao.ChatMemberMapper;
 import org.nekotori.entity.ChatHistoryDo;
 import org.nekotori.entity.ChatMemberDo;
+import org.nekotori.entity.CommandAttr;
 import org.nekotori.utils.CommandUtils;
 import org.nekotori.utils.GachaUtils;
 import org.nekotori.utils.ImageUtil;
@@ -30,13 +30,11 @@ import javax.annotation.Resource;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
- /**
+/**
  * @author: JayDeng
  * @date: 31/08/2021 10:44
  * @description:
@@ -53,7 +51,7 @@ public class SignCommand extends PrivilegeGroupCommand {
     @Resource
     private ChatHistoryMapper chatHistoryMapper;
     @Override
-    public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
+    public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         if("签到图片".equals(CommandUtils.resolveCommand(messageChain).getCommand())){
             String signImg = getSignImg(sender.getId(), subject.getId());
             if(!StringUtils.hasLength(signImg)){

@@ -34,10 +34,9 @@ public class QueryLevelCommand extends NoAuthGroupCommand {
     private ChatMemberMapper chatMemberMapper;
 
     @Override
-    public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
+    public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         MessageChainBuilder singleMessages = new MessageChainBuilder();
         String s = messageChain.serializeToMiraiCode();
-        CommandAttr commandAttr = CommandUtils.resolveTextCommand(s);
         if ((sender.getPermission().equals(MemberPermission.ADMINISTRATOR) ||
                 sender.getPermission().equals(MemberPermission.OWNER))
                 && !CollectionUtils.isEmpty(commandAttr.getParam())

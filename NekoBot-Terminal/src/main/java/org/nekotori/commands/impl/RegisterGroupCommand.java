@@ -9,6 +9,7 @@ import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.ManagerGroupCommand;
+import org.nekotori.entity.CommandAttr;
 import org.nekotori.service.GroupService;
 
 import javax.annotation.Resource;
@@ -21,7 +22,7 @@ public class RegisterGroupCommand extends ManagerGroupCommand {
     private GroupService groupService;
 
     @Override
-    public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
+    public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         if (groupService.IsGroupRegistered(subject)) {
             return new MessageChainBuilder().append(new At(sender.getId())).append(new PlainText("\n本群已经注册")).build();
         }

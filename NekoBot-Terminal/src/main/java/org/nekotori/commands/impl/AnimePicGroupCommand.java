@@ -9,13 +9,16 @@ import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
-import net.mamoe.mirai.message.data.*;
+import net.mamoe.mirai.message.data.At;
+import net.mamoe.mirai.message.data.FlashImage;
+import net.mamoe.mirai.message.data.MessageChain;
+import net.mamoe.mirai.message.data.MessageChainBuilder;
+import net.mamoe.mirai.message.data.PlainText;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.PrivilegeGroupCommand;
 import org.nekotori.entity.CommandAttr;
 import org.nekotori.entity.LoliconApiResponse;
 import org.nekotori.entity.LoliconData;
-import org.nekotori.utils.CommandUtils;
 import org.nekotori.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
@@ -44,9 +47,8 @@ public class AnimePicGroupCommand extends PrivilegeGroupCommand {
     private String loliKey;
 
     @Override
-    public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
+    public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         String s = messageChain.serializeToMiraiCode();
-        CommandAttr commandAttr = CommandUtils.resolveTextCommand(s);
         String keyword = CollectionUtils.isEmpty(commandAttr.getParam()) ? "" : commandAttr.getParam().get(0);
         String imgUrl = "";
         String build = UrlBuilder.of(loliApi, StandardCharsets.UTF_8).addQuery("apikey", loliKey).addQuery("r18", "0").addQuery("keyword", keyword).addQuery("size1200", "true").build();

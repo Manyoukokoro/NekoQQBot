@@ -9,6 +9,7 @@ import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.Command;
 import org.nekotori.commands.ManagerGroupCommand;
 import org.nekotori.commands.NoAuthGroupCommand;
+import org.nekotori.entity.CommandAttr;
 import org.nekotori.service.GroupService;
 import org.nekotori.utils.CommandUtils;
 import org.nekotori.utils.SpringContextUtils;
@@ -26,7 +27,7 @@ public class HelpCommand extends NoAuthGroupCommand {
     private GroupService groupService;
 
     @Override
-    public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
+    public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         String groupCommands = groupService.getGroupCommands(subject.getId());
         List<String> strings = CommandUtils.resolveRegisteredCommand(groupCommands);
         String s = buildHelpDoc(strings);

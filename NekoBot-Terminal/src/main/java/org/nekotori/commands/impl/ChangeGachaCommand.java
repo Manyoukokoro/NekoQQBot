@@ -13,7 +13,6 @@ import org.nekotori.commands.ManagerGroupCommand;
 import org.nekotori.dao.GroupGachaMapper;
 import org.nekotori.entity.CommandAttr;
 import org.nekotori.entity.GroupGachaDo;
-import org.nekotori.utils.CommandUtils;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -34,8 +33,7 @@ public class ChangeGachaCommand extends ManagerGroupCommand {
     private GroupGachaMapper groupGachaMapper;
 
     @Override
-    public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
-        CommandAttr commandAttr = CommandUtils.resolveTextCommand(messageChain.serializeToMiraiCode());
+    public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         if ("查询卡池".equals(commandAttr.getCommand())) {
             List<GroupGachaDo> groupGacha = groupGachaMapper.selectList(new QueryWrapper<GroupGachaDo>().eq("group_id", subject.getId()));
             MessageChainBuilder singleMessages = new MessageChainBuilder();

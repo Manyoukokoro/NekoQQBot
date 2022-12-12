@@ -11,8 +11,11 @@ import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.NoAuthGroupCommand;
-import org.nekotori.entity.*;
-import org.nekotori.utils.CommandUtils;
+import org.nekotori.entity.CommandAttr;
+import org.nekotori.entity.WeatherDailyData;
+import org.nekotori.entity.WeatherLocationData;
+import org.nekotori.entity.WeatherLocationResponse;
+import org.nekotori.entity.WeatherResponse;
 import org.nekotori.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -40,9 +43,8 @@ public class WeatherGroupCommand extends NoAuthGroupCommand {
     private String key;
 
     @Override
-    public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
+    public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         String s = messageChain.serializeToMiraiCode();
-        final CommandAttr commandAttr = CommandUtils.resolveTextCommand(s);
         final List<String> param = commandAttr.getParam();
         MessageChainBuilder singleMessages = new MessageChainBuilder().append(new At(sender.getId()));
         for (String p : param) {

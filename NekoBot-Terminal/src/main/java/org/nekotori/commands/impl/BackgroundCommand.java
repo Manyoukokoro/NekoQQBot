@@ -16,7 +16,6 @@ import org.nekotori.commands.NoAuthGroupCommand;
 import org.nekotori.dao.ChatMemberMapper;
 import org.nekotori.entity.ChatMemberDo;
 import org.nekotori.entity.CommandAttr;
-import org.nekotori.utils.CommandUtils;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -30,8 +29,7 @@ public class BackgroundCommand extends NoAuthGroupCommand {
     private ChatMemberMapper memberMapper;
 
     @Override
-    public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
-        CommandAttr commandAttr = CommandUtils.resolveCommand(messageChain);
+    public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         List<String> param = commandAttr.getParam();
         MessageChain res = null;
         String imgUrl = null;

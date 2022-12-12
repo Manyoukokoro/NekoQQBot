@@ -7,6 +7,7 @@ import net.mamoe.mirai.message.data.MessageChain;
 import org.nekotori.commands.Command;
 import org.nekotori.dao.ChatMemberMapper;
 import org.nekotori.entity.ChatMemberDo;
+import org.nekotori.entity.CommandAttr;
 import org.nekotori.utils.CommandUtils;
 import org.nekotori.utils.SpringContextUtils;
 import org.springframework.stereotype.Component;
@@ -65,11 +66,12 @@ public class GlobalCommandHandler {
                             }
                             chatMemberDo.setLastCommand(groupMessageEvent.getMessage().serializeToMiraiCode());
                             chatMemberMapper.updateById(chatMemberDo);
-
+                            CommandAttr commandAttr = CommandUtils.resolveCommand(groupMessageEvent.getMessage());
                             MessageChain execute = command.execute(
                                     groupMessageEvent.getSender(),
-                                    groupMessageEvent.getMessage(),
-                                    groupMessageEvent.getGroup());
+                                    groupMessageEvent.getGroup(),
+                                    commandAttr,
+                                    groupMessageEvent.getMessage());
                             if (!ObjectUtils.isEmpty(execute)) {
                                 groupMessageEvent
                                         .getGroup()

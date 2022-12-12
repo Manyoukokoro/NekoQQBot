@@ -18,7 +18,6 @@ import org.nekotori.commands.PrivilegeGroupCommand;
 import org.nekotori.entity.CommandAttr;
 import org.nekotori.entity.YandereData;
 import org.nekotori.entity.YandereTag;
-import org.nekotori.utils.CommandUtils;
 import org.nekotori.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
@@ -43,8 +42,7 @@ public class YandereGroupCommand extends PrivilegeGroupCommand {
     private String yandereTag;
 
     @Override
-    public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
-        CommandAttr commandAttr = CommandUtils.resolveTextCommand(messageChain.serializeToMiraiCode());
+    public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         List<String> param = commandAttr.getParam();
         String build =
                 UrlBuilder.of(yanderePost, StandardCharsets.UTF_8)

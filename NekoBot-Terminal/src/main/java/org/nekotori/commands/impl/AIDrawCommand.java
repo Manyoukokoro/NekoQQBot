@@ -4,7 +4,6 @@ package org.nekotori.commands.impl;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONUtil;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
@@ -13,7 +12,6 @@ import net.mamoe.mirai.message.data.MessageChainBuilder;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.NoAuthGroupCommand;
 import org.nekotori.entity.CommandAttr;
-import org.nekotori.utils.CommandUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -23,8 +21,7 @@ import java.util.List;
 @Slf4j
 public class AIDrawCommand extends NoAuthGroupCommand {
     @Override
-    public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
-        CommandAttr commandAttr = CommandUtils.resolveCommand(messageChain);
+    public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         if(CollectionUtils.isEmpty(commandAttr.getParam())|| !StringUtils.hasLength(commandAttr.getParam().get(0))){
             return new MessageChainBuilder().append("没有参数哦").build();
         }

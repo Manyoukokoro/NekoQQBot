@@ -10,6 +10,7 @@ import net.mamoe.mirai.message.data.*;
 import org.nekotori.chain.ChainMessageSelector;
 import org.nekotori.chain.channel.handler.impl.SauceNaoChannelHandler;
 import org.nekotori.commands.PrivilegeGroupCommand;
+import org.nekotori.entity.CommandAttr;
 import org.nekotori.entity.SauceNaoData;
 import org.nekotori.utils.HibiApiUtils;
 import org.springframework.util.CollectionUtils;
@@ -34,7 +35,7 @@ public class SauceNaoCommand extends PrivilegeGroupCommand {
     private SauceNaoChannelHandler sauceNaoChannelHandler;
 
     @Override
-    public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
+    public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
 
         String imageUrl = "";
         for (SingleMessage s : messageChain) {
