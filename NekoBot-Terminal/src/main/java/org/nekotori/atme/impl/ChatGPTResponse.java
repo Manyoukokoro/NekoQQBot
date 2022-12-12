@@ -14,6 +14,7 @@ import org.nekotori.atme.NoAuthAtMeResponse;
 import org.nekotori.common.InnerConstants;
 import org.springframework.util.ObjectUtils;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +32,7 @@ public class ChatGPTResponse extends NoAuthAtMeResponse {
 
     @Override
     public MessageChain response(GroupMessageEvent groupMessageEvent) {
-        String chatGptConfS = FileUtil.readString("chat-gpt.conf", StandardCharsets.UTF_8);
+        String chatGptConfS = FileUtil.readString(new File("chat-gpt.conf"), StandardCharsets.UTF_8);
         String key = "";
         try {
             JSONObject chatGptConf = JSONUtil.parseObj(chatGptConfS);

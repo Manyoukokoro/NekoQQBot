@@ -8,6 +8,7 @@ import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.ContactList;
@@ -18,6 +19,8 @@ import org.nekotori.BotSimulator;
 import org.nekotori.atme.impl.ChatGPTResponse;
 import org.nekotori.chain.ChainMessageSelector;
 import org.nekotori.chain.channel.GroupCommandChannel;
+import org.nekotori.dao.ChatGroupMapper;
+import org.nekotori.entity.ChatGroupDo;
 import org.nekotori.utils.ImageUtil;
 import org.nekotori.utils.JsonUtils;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -28,6 +31,7 @@ import org.w3c.dom.NodeList;
 
 import javax.annotation.Resource;
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Objects;
@@ -37,6 +41,9 @@ public class ScheduledJob {
 
     @Resource
     private ChainMessageSelector chainMessageSelector;
+
+    @Resource
+    private ChatGroupMapper chatGroupMapper;
 
     @Scheduled(cron = "0 0 8 * * ?")
     public void moyuCalendar(){
@@ -53,15 +60,16 @@ public class ScheduledJob {
         String s = split[1];
         String[] trueUrl = s.split("</title>");
         String location = HttpUtil.createGet(trueUrl[0]).setConnectionTimeout(5000).setReadTimeout(10000).execute().header("location");
-        HttpUtil.downloadFile(location,"temp.png");
+        HttpUtil.downloadFile(location, new File("temp.png"));
         ContactList<Group> groups = bot.getGroups();
-        groups.forEach(group -> {
-            BufferedInputStream inputStream = FileUtil.getInputStream("temp.png");
+        chatGroupMapper.selectList(Wrappers.lambdaQuery()).stream().map(ChatGroupDo::getGroupId).map(bot::getGroup).filter(Objects::nonNull).forEach(group->{
+            BufferedInputStream inputStream = FileUtil.getInputStream(new File("temp.png"));
             group.sendMessage(new MessageChainBuilder().append(Contact.uploadImage(group,inputStream)).build());
+
         });
     }
 
-    @Scheduled(cron = "0 0 4 * * ?")
+    //@Scheduled(cron = "0 0 4 * * ?")
     public void deleteChatGPTCache(){
         ChatGPTResponse.deleteCache();
     }

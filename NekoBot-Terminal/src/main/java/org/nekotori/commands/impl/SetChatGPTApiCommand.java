@@ -10,6 +10,7 @@ import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.ManagerGroupCommand;
 import org.nekotori.entity.CommandAttr;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class SetChatGPTApiCommand extends ManagerGroupCommand {
         JSONObject set = jsonObject.set("api-key", key);
         String s = set.toString();
         try {
-            FileUtil.writeString(s,"chat-gpt.conf",StandardCharsets.UTF_8);
+            FileUtil.writeString(s,new File("chat-gpt.conf"),StandardCharsets.UTF_8);
         }catch (Exception e){
             return null;
         }
