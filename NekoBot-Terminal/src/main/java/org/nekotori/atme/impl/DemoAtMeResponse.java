@@ -14,7 +14,7 @@ import org.nekotori.atme.KeyWordsAtMeResponse;
  * @description:
  * @version: {@link }
  */
-@AtMe(description = {"hello", "喂", "你好", "在？"})
+//@AtMe(description = {"hello", "喂", "你好", "在？"})
 public class DemoAtMeResponse extends KeyWordsAtMeResponse {
 
     @Override
