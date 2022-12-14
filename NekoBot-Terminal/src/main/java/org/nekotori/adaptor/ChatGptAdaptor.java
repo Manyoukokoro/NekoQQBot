@@ -21,7 +21,15 @@ public class ChatGptAdaptor implements ChatBot {
     @Override
     public boolean refresh() {
         try {
-            this.chatbot = ChatGptBotFactory.NEW_INSTANCE(this.chatbot.getSessionToken());
+            String chatGptConfS = FileUtil.readString(new File("chat-gpt.conf"), StandardCharsets.UTF_8);
+            String key = "";
+            try {
+                JSONObject chatGptConf = JSONUtil.parseObj(chatGptConfS);
+                key = chatGptConf.getStr("api-key");
+            }catch (Exception e){
+                return null;
+            }
+            this.chatbot = ChatGptBotFactory.NEW_INSTANCE(key);
         }catch (Exception e){
             return false;
         }
