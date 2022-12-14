@@ -2,6 +2,12 @@ package org.nekotori.adaptor;
 
 
 import com.github.plexpt.chatgpt.Chatbot;
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+
+import java.io.File;
+import java.nio.charset.StandardCharsets;
 
 public class ChatGptAdaptor implements ChatBot {
 
@@ -27,7 +33,7 @@ public class ChatGptAdaptor implements ChatBot {
                 JSONObject chatGptConf = JSONUtil.parseObj(chatGptConfS);
                 key = chatGptConf.getStr("api-key");
             }catch (Exception e){
-                return null;
+                return false;
             }
             this.chatbot = ChatGptBotFactory.NEW_INSTANCE(key);
         }catch (Exception e){
