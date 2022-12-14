@@ -15,21 +15,21 @@
 1.
 控制台程序总入口为Springboot项目入口[NekoBotApplication](https://gitee.com/nekotori/neko-qqbot/blob/master/NekoBot-Terminal/src/main/java/org/nekotori/NekoBotApplication.java)
 2. Spring项目启动时，会同时按照配置文件创建bot登录QQ，并注册event包下的所有事件(net.mamoe.mirai.event),事件类实现SimpleListenerHost
-3. mirai事件可以监听不同的QQ动作，并触发相应的动作，比如Command
-4. 如何处理Command: 在command事件中，调用了GlobalCommandHandler对象，此对象中注册了所有实现了Command接口的类(需要实现类用@IsCommand注解被Spring容器管理)
+3. mirai事件可以监听不同的QQ动作（比如at机器人[@AtMe]()、指令[@IsCommand]()等），并触发相应的动作。
+5. 如何处理QQ动作:以Command为例， 在command事件中，调用了GlobalCommandHandler对象，此对象中注册了所有实现了Command接口的类(需要实现类用@IsCommand注解被Spring容器管理)
    ,command事件被触发后，会遍历注册的Command类测试是否有符合条件的Command需要被执行。
-5. 指令实现类示例:
+6. 当你需要新建一个指令的时候，需要继承一个PrivilegeGroupCommand、NoAuthGroupCommand或ManagerGroupCommand用于区分指令的权限，实现类示例:
 
 ```java
 /**
- * @author: JayDeng
+ * @author: Nekotori
  * @date: 04/08/2021 11:28
  * @description:
  * @version: {@link }
  */
 
 /**
- * @Command注解，打上此注解后，spring容器会自动管理此指令的实现
+ * @IsCommand注解，打上此注解后，spring容器会自动管理此指令的实现
  * name为指令名数组
  */
 @IsCommand(name={"测试命令","ping"},discription = "指令描述")
@@ -41,14 +41,11 @@ public class SampleCommand extends PrivilegeGroupCommand {
      * @param sender 发起指令的人
      * @param messageChain 带有指令的那条消息
      * @param subject 发指令人所在的群
-     * @return
+     * @param commandAttr 指令相关的信息
+     * @return 返回的消息
      */
     @Override
-    public MessageChain execute(Member sender, MessageChain messageChain, Group subject) {
-        /**
-         * 标准方法，解析指令数据
-         */
-        final CommandAttr commandAttr = CommandUtils.resolveCommand(messageChain.contentToString());
+    public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         /**
          * 指令头：！ - #
          */
