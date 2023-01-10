@@ -9,6 +9,7 @@ import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
+import net.mamoe.mirai.message.data.QuoteReply;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.NoAuthGroupCommand;
 import org.nekotori.entity.CommandAttr;
@@ -29,7 +30,7 @@ import java.util.Optional;
  * @description:
  * @version: {@link }
  */
-@IsCommand(name = {"查询天气", "天气"}, description = "查询天气，格式:(!/-/#)天气 [位置]")
+@IsCommand(name = {"查询天气", "天气"}, description = "查询天气\n格式:\n    (!/-/#)天气 [位置]")
 public class WeatherGroupCommand extends NoAuthGroupCommand {
 
 
@@ -46,7 +47,7 @@ public class WeatherGroupCommand extends NoAuthGroupCommand {
     public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         String s = messageChain.serializeToMiraiCode();
         final List<String> param = commandAttr.getParam();
-        MessageChainBuilder singleMessages = new MessageChainBuilder().append(new At(sender.getId()));
+        MessageChainBuilder singleMessages = new MessageChainBuilder().append(new QuoteReply(messageChain));
         for (String p : param) {
             try {
                 final String build =

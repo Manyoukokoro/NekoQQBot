@@ -14,7 +14,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.List;
 
 
-@IsCommand(name = {"d", "dice"}, description = "随机骰子，格式:(!/-/#)dice ...[数量]")
+@IsCommand(name = {"d", "dice"}, description = "随机骰子\n格式:\n    (!/-/#)dice ...[数量]")
 public class DiceCommand extends NoAuthGroupCommand {
     @Override
     public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {

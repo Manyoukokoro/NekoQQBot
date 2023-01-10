@@ -51,12 +51,12 @@ public class SauceNaoChannelHandler implements ChannelHandler {
             }
         }
         if (StringUtils.isEmpty(imageUrl)) {
-            group.sendMessage(new MessageChainBuilder().append(new At(sender.getId())).append(new PlainText(" 这看起来不是一张图片...")).build());
+            group.sendMessage(new MessageChainBuilder().append(new QuoteReply(message)).append(new PlainText(" 这看起来不是一张图片...")).build());
             return;
         }
         byte[] bytes = HttpRequest.get(imageUrl).execute().bodyBytes();
         List<SauceNaoData> sauceNaoDataList = hibiApiUtils.queryImage(bytes);
-        MessageChainBuilder append = new MessageChainBuilder().append(new At(sender.getId()));
+        MessageChainBuilder append = new MessageChainBuilder().append(new QuoteReply(message));
         if (CollectionUtils.isEmpty(sauceNaoDataList)) {
             group.sendMessage(append.append(new PlainText("\nNekoBot找不到关于此图片的信息")).build());
             return;

@@ -249,10 +249,7 @@ public class ImageUtil {
 
 
     public static void main(String[] args) {
-        ChatMemberDo chatMemberDo = new ChatMemberDo();
-        chatMemberDo.setLevel(1);
-        chatMemberDo.setExp(0L);
-        drawSignPic(null, chatMemberDo, 0,0,0);
+        System.out.println(getAcgurl());
     }
 
     private static long nextLevelExp(int level, long exp) {
@@ -335,6 +332,9 @@ public class ImageUtil {
         if(StringUtils.hasLength(chatMemberDo.getBackgroundUri())){
             try(InputStream inputStream = HttpUtil.createGet(chatMemberDo.getBackgroundUri()).execute().bodyStream()){
                 back = ImageIO.read(inputStream);
+                if (back == null){
+                    throw new Exception();
+                }
                 graphics.drawImage(back, 0, 0, width, height, null);
             }catch (Exception e){
                 graphics.fillRect(0, 0, width, height);
@@ -412,10 +412,8 @@ public class ImageUtil {
         }
         String imgUrl = "";
         try {
-            String string = HttpUtil.createGet("https://www.dmoe.cc/random.php?return=json").setConnectionTimeout(5000).setReadTimeout(10000).execute().body();
-            Object acgurl = JSONUtil.parseObj(string).get("imgurl");
-            imgUrl = String.valueOf(acgurl);
-            InputStream inputStream = HttpUtil.createGet(String.valueOf(acgurl)).setConnectionTimeout(5000).setReadTimeout(10000).execute().bodyStream();
+            imgUrl = getAcgurl();
+            InputStream inputStream = HttpUtil.createGet(imgUrl).setConnectionTimeout(2000).setReadTimeout(10000).execute().bodyStream();
             FileUtil.writeFromStream(inputStream, new File("jpg/temp.png"));
             inputStream.close();
             BufferedImage read = ImageIO.read(new File("jpg/temp.png"));
@@ -424,7 +422,7 @@ public class ImageUtil {
         } catch (Exception e) {
             e.printStackTrace();
             try {
-                File[] files = FileUtil.ls( "pics/");
+                File[] files = FileUtil.ls( "pics");
                 if (files != null && files.length > 0) {
                     int index = new Random().nextInt(files.length);
                     BufferedImage read = ImageIO.read(files[index]);
@@ -495,6 +493,10 @@ public class ImageUtil {
         } catch (IOException e) {
             return new Pair<>(bufferedImageToInputStream(bufferedImage),imgUrl);
         }
+    }
+
+    private static String getAcgurl() {
+        return HttpUtil.createGet("https://api.yimian.xyz/img/").form("type","moe").form("size","1920x1080").setConnectionTimeout(5000).setReadTimeout(10000).execute().header("Location");
     }
 
     /**

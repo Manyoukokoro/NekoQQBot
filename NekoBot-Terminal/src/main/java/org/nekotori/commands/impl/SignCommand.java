@@ -13,6 +13,7 @@ import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
+import net.mamoe.mirai.message.data.QuoteReply;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.PrivilegeGroupCommand;
 import org.nekotori.dao.ChatHistoryMapper;
@@ -40,7 +41,7 @@ import java.util.Map;
  * @description:
  * @version: {@link }
  */
-@IsCommand(name = {"签到", "sign","签到图片"}, description = "签到")
+@IsCommand(name = {"签到","签到图片"}, description = "签到和获取当前签到图片\n格式:\n    (!/-/#)签到/签到图片")
 public class SignCommand extends PrivilegeGroupCommand {
     private static final Map<String,String> imgCache = new HashMap<>();
     public static String getSignImg(Long senderId,Long groupId){
@@ -57,14 +58,14 @@ public class SignCommand extends PrivilegeGroupCommand {
             if(!StringUtils.hasLength(signImg)){
                 signImg = "找不到对象";
             }
-            return new MessageChainBuilder().append(new At(sender.getId())).append("\n").append(signImg)
+            return new MessageChainBuilder().append(new QuoteReply(messageChain)).append("\n").append(signImg)
                     .build();
         }
         final long member = sender.getId();
         final long group = subject.getId();
         ChatMemberDo chatMemberDo = chatMemberMapper.selectOne(new QueryWrapper<ChatMemberDo>().eq("group_id", group).eq("member_id", member));
         if (!ObjectUtils.isEmpty(chatMemberDo) && chatMemberDo.checkTodaySign()) {
-            return new MessageChainBuilder().append(new At(sender.getId()))
+            return new MessageChainBuilder().append(new QuoteReply(messageChain))
                     .append(" ")
                     .append(new PlainText("老板今天已经签到过了哦"))
                     .build();
@@ -122,7 +123,7 @@ public class SignCommand extends PrivilegeGroupCommand {
         }
         Pair<InputStream, String> inputStreamStringPair = ImageUtil.drawSignPic(sender, chatMemberDo, incomeExp,msgCount.intValue(),imgCount.intValue());
         imgCache.put(subject.getId()+":"+sender.getId(),inputStreamStringPair.getValue());
-        return new MessageChainBuilder().append(new At(sender.getId()))
+        return new MessageChainBuilder().append(new QuoteReply(messageChain))
                 .append(Contact.uploadImage(subject, inputStreamStringPair.getKey()))
                 .build();
     }

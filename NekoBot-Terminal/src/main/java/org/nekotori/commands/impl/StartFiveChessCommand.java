@@ -38,7 +38,7 @@ import static org.nekotori.common.InnerConstants.STRING7;
  * @version: {@link }
  */
 
-@IsCommand(name = {"五子棋"}, description = "")
+@IsCommand(name = {"五子棋"}, description = "开始一句五子棋游戏\n格式:\n    (!/-/#)五子棋")
 public class StartFiveChessCommand extends PrivilegeGroupCommand {
     @Resource
     private ChainMessageSelector chainMessageSelector;

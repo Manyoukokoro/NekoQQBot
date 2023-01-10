@@ -20,7 +20,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 
-@IsCommand(name = { "k", "跨", "聊天列表"}, description = "跨群发送消息")
+@IsCommand(name = { "k", "聊天列表"}, description = "跨群发送消息\n格式:\n    (!/-/#)k <目标群id> <消息内容>\n\n查询所有可以发送消息的聊天列表\n格式:\n    (!/-/#)聊天列表")
 public class CrossGroupMessageCommand extends NoAuthGroupCommand {
     @Override
     public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {

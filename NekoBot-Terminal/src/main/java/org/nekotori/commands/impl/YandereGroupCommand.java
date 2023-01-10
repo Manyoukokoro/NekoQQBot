@@ -13,6 +13,7 @@ import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
+import net.mamoe.mirai.message.data.QuoteReply;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.PrivilegeGroupCommand;
 import org.nekotori.entity.CommandAttr;
@@ -31,7 +32,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-@IsCommand(name = {"AniS","anis"},description = "使用yandere进行图片检索,此指令参数格式比较复杂，有兴趣可以参阅yandere的api文档，格式:(!/-/#)anis ...[参数]")
+@IsCommand(name = {"AniS","anis"},description = "使用yandere进行图片检索,此指令参数格式比较复杂，有兴趣可以参阅yandere的api文档\n格式:\n    (!/-/#)anis ...[参数]")
 @Slf4j
 public class YandereGroupCommand extends PrivilegeGroupCommand {
 
@@ -51,7 +52,7 @@ public class YandereGroupCommand extends PrivilegeGroupCommand {
                         .build();
         MessageChainBuilder singleMessages = new MessageChainBuilder();
         Proxy proxy = new Proxy(Proxy.Type.HTTP,new InetSocketAddress("127.0.0.1", 7890));
-        singleMessages.append(new At(sender.getId()));
+        singleMessages.append(new QuoteReply(messageChain));
         try {
             String body = HttpUtil.createGet(build).setProxy(proxy).setReadTimeout(5 * 1000).setConnectionTimeout(5 * 1000).executeAsync().body();
             List<YandereData> yandereData =

@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-@IsCommand(name = {"修改概率", "加载卡池", "查询卡池", "gachap"}, description = "修改抽卡概率，格式:(!/-/#)修改概率；加载卡池：格式:(!/-/#)加载卡池 卡池名")
+@IsCommand(name = {"修改概率", "加载卡池", "查询卡池"}, description = "修改抽卡概率\n格式:\n    (!/-/#)修改概率\n\n加载卡池\n格式:\n    (!/-/#)加载卡池 <卡池名>\n\n 查询当前所有卡池\n格式:\n    (!/-/#)查询卡池")
 public class ChangeGachaCommand extends ManagerGroupCommand {
 
     @Resource

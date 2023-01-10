@@ -5,6 +5,7 @@ import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
+import net.mamoe.mirai.message.data.QuoteReply;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.Command;
 import org.nekotori.commands.ManagerGroupCommand;
@@ -13,6 +14,8 @@ import org.nekotori.entity.CommandAttr;
 import org.nekotori.service.GroupService;
 import org.nekotori.utils.CommandUtils;
 import org.nekotori.utils.SpringContextUtils;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -20,7 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-@IsCommand(name = {"h", "help","帮助"}, description = "帮助文档，格式:(!/-/#)help")
+@IsCommand(name = {"help"}, description = "显示帮助文档\n格式:\n    (!/-/#)help [指令名称]")
 public class HelpCommand extends NoAuthGroupCommand {
 
     @Resource
@@ -28,10 +31,26 @@ public class HelpCommand extends NoAuthGroupCommand {
 
     @Override
     public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
+        if(!CollectionUtils.isEmpty(commandAttr.getParam())){
+            String singleHelpDoc = getSingleHelpDoc(commandAttr.getParam().get(0));
+            return StringUtils.hasLength(singleHelpDoc)?new MessageChainBuilder().append(new QuoteReply(messageChain)).append(singleHelpDoc).build():null;
+        }
         String groupCommands = groupService.getGroupCommands(subject.getId());
         List<String> strings = CommandUtils.resolveRegisteredCommand(groupCommands);
         String s = buildHelpDoc(strings);
-        return new MessageChainBuilder().append(new At(sender.getId())).append(s).build();
+        return new MessageChainBuilder().append(new QuoteReply(messageChain)).append(s).build();
+    }
+
+    private String getSingleHelpDoc(String name){
+        Map<String, Command> beansOfType = SpringContextUtils.getContext().getBeansOfType(org.nekotori.commands.Command.class);
+        List<Command> collect = new ArrayList<>(beansOfType.values());
+        for (Command command : collect) {
+            IsCommand annotation = command.getClass().getAnnotation(IsCommand.class);
+            if(List.of(annotation.name()).contains(name)){
+                return annotation.description();
+            }
+        }
+        return null;
     }
 
     private String buildHelpDoc(List<String> commands) {

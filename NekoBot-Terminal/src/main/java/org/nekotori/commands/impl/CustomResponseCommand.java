@@ -9,6 +9,7 @@ import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
+import net.mamoe.mirai.message.data.QuoteReply;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.NoAuthGroupCommand;
 import org.nekotori.dao.ChatGroupMapper;
@@ -25,7 +26,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
-@IsCommand(name = {"回复", "撤销回复", "查询回复", "response"}, description = "自定义回复，格式:(!/-/#)回复 触发方式 触发文 回复文")
+@IsCommand(name = {"回复", "撤销回复", "查询回复"}, description = "自定义回复\n格式:\n    (!/-/#)回复 <触发方式> <触发文> [回复文]\n详情:\n支持以下触发方式：\n    全文(当群消息完全匹配触发文的时候，回复回复文)\n    开头(当群消息以触发文开头的时候，回复回复文)\n    结尾(当群消息以触发文结尾的时候，回复回复文)\n    包含(当群消息包含触发文的时候，回复回复文)\n    正则(当群消息满足触发文正则的时候，回复回复文)\n    格式化(当群消息匹配触发文的格式的时候，回复回复文，并且可以在回复文中引用触发文中捕获的占位符)\n示例:\n 回复 格式化 可可是{adj} 我最喜欢{adj}了\n 当群消息有人发送“可可是猫娘”时，bot会回复“我最喜欢猫娘了”")
 public class CustomResponseCommand extends NoAuthGroupCommand {
 
     @Resource
@@ -41,9 +42,9 @@ public class CustomResponseCommand extends NoAuthGroupCommand {
             List<CustomResponse> customResponses = getCustomResponses(group);
             StringBuilder stringBuilder = new StringBuilder();
             for (CustomResponse c : customResponses) {
-                stringBuilder.append(c.getWay()).append(":").append(c.getKeyWord()).append(":").append(c.getResponse()).append("\n");
+                stringBuilder.append("[").append(c.getWay()).append("]:<<").append(c.getKeyWord()).append(">>: >>").append(c.getResponse()).append("\n");
             }
-            return new MessageChainBuilder().append(new At(sender.getId())).append("查询到本群自定义回复如下：\n").append(stringBuilder.toString()).build();
+            return new MessageChainBuilder().append(new QuoteReply(messageChain)).append("查询到本群自定义回复如下：\n").append(stringBuilder.toString()).build();
         }
         List<String> param = commandAttr.getParam();
 

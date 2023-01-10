@@ -1,4 +1,4 @@
-package org.nekotori.adaptor;
+package org.nekotori.chatbot;
 
 
 import com.github.plexpt.chatgpt.Chatbot;

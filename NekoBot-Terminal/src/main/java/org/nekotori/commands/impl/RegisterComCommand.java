@@ -14,7 +14,7 @@ import org.nekotori.utils.CommandUtils;
 import javax.annotation.Resource;
 import java.util.List;
 
-@IsCommand(name = {"指令", "注册指令", "com"}, description = "注册指令，格式:(!/-/#)com ...[指令名]")
+@IsCommand(name = {"指令"}, description = "注册指令，管理员可以采用此命令注册需要授权的指令\n格式:\n    (!/-/#)指令 ...[指令名]")
 public class RegisterComCommand extends ManagerGroupCommand {
 
     @Resource

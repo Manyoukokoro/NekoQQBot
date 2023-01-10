@@ -55,7 +55,7 @@ public class SauceNaoCommand extends PrivilegeGroupCommand {
         }
         byte[] bytes = HttpRequest.get(imageUrl).execute().bodyBytes();
         List<SauceNaoData> sauceNaoDataList = hibiApiUtils.queryImage(bytes);
-        MessageChainBuilder append = new MessageChainBuilder().append(new At(sender.getId()));
+        MessageChainBuilder append = new MessageChainBuilder().append(new QuoteReply(messageChain));
         if (CollectionUtils.isEmpty(sauceNaoDataList))
             return append.append(new PlainText("\nNekoBot找不到关于此图片的信息")).build();
         append.append(new PlainText("\nNekoBot找到以下信息:\n"));

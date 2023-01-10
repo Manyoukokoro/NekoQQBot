@@ -6,6 +6,7 @@ import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
+import net.mamoe.mirai.message.data.QuoteReply;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.PrivilegeGroupCommand;
 import org.nekotori.entity.CommandAttr;
@@ -23,7 +24,7 @@ import java.util.List;
 /**
  * @Command注解，打上此注解后，spring容器会自动管理此指令的实现 value为指令名数组
  */
-@IsCommand(name = {"测试命令", "ping"}, description = "测试命令，格式:(!/-/#)ping")
+@IsCommand(name = {"测试命令", "ping"}, description = "测试命令\n格式:\n    (!/-/#)ping")
 public class SampleCommand extends PrivilegeGroupCommand {
 
 
@@ -58,7 +59,7 @@ public class SampleCommand extends PrivilegeGroupCommand {
         MessageChainBuilder singleMessages = new MessageChainBuilder();
         //2.向消息构建器中加入消息（顺序）
         singleMessages.append(new PlainText("demo"));
-        singleMessages.append(new At(sender.getId()));
+        singleMessages.append(new QuoteReply(messageChain));
         //3.构建消息
         final MessageChain build = singleMessages.build();
         /**

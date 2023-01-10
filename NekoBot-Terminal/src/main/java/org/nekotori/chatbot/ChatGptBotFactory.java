@@ -1,4 +1,4 @@
-package org.nekotori.adaptor;
+package org.nekotori.chatbot;
 
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;

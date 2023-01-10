@@ -14,6 +14,7 @@ import net.mamoe.mirai.message.data.FlashImage;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
+import net.mamoe.mirai.message.data.QuoteReply;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.PrivilegeGroupCommand;
 import org.nekotori.entity.CommandAttr;
@@ -36,7 +37,7 @@ import java.util.Optional;
  * @description:
  * @version: {@link }
  */
-@IsCommand(name = {"色图", "setu"}, description = "使用loliApi检索插画图片，格式:(!/-/#)setu ...[参数]")
+@IsCommand(name = {"色图", "setu"}, description = "使用loliApi检索插画图片\n格式:\n    (!/-/#)setu ...[参数]")
 @Slf4j
 public class AnimePicGroupCommand extends PrivilegeGroupCommand {
 
@@ -66,7 +67,7 @@ public class AnimePicGroupCommand extends PrivilegeGroupCommand {
                 loliconData = loliconApiResponse.getData();
             }
             if (ObjectUtil.isNull(loliconData) || loliconData.isEmpty())
-                return new MessageChainBuilder().append(new At(sender.getId()).plus(new PlainText("您找不到对象"))).build();
+                return new MessageChainBuilder().append(new QuoteReply(messageChain).plus(new PlainText("您找不到对象"))).build();
             Collection<Object> values = loliconData.get(0).getUrls().values();
             Optional<Object> firstUrl = values.stream().findFirst();
             imgUrl = firstUrl.orElseGet(String::new).toString();
@@ -75,7 +76,7 @@ public class AnimePicGroupCommand extends PrivilegeGroupCommand {
             echo = new MessageChainBuilder().append(FlashImage.from(Contact.uploadImage(subject, inputStream))).build();
         } catch (IORuntimeException e) {
             log.error(e.getMessage(), e);
-            echo = new MessageChainBuilder().append(new At(sender.getId())).append(new PlainText("\n来到了电波到达不到的地方，请问是异次元吗")).build();
+            echo = new MessageChainBuilder().append(new QuoteReply(messageChain)).append(new PlainText("\n来到了电波到达不到的地方，请问是异次元吗")).build();
         }
         return echo;
     }

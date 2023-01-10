@@ -14,7 +14,7 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-@IsCommand(name = "set-chat-gpt-key",description = "设置chatGpt的Token")
+@IsCommand(name = "set-chat-gpt-key",description = "设置chatGpt的Token\n格式:\n    (!/-/#)set-chat-gpt-key <key>")
 public class SetChatGPTApiCommand extends ManagerGroupCommand {
     @Override
     public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {

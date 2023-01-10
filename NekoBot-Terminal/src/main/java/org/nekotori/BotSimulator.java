@@ -15,6 +15,9 @@ import net.mamoe.mirai.utils.BotConfiguration;
 import org.nekotori.annotations.Event;
 import org.nekotori.common.SpringStyleBotLogger;
 import org.nekotori.utils.SpringContextUtils;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.io.File;
 import java.util.List;
@@ -78,6 +81,14 @@ public class BotSimulator {
 
     public static Bot getBot() {
         return nekoBot;
+    }
+
+    public static void main(String[] args) {
+        System.getProperties().setProperty("webdriver.chrome.driver", "chromedriver");
+        ChromeOptions chromeOptions = new ChromeOptions();
+        ChromeDriver chromeDriver = new ChromeDriver(chromeOptions);
+        chromeDriver.get("https://www.baidu.com");
+        byte[] screenshotAs = chromeDriver.getScreenshotAs(OutputType.BYTES);
     }
 
 

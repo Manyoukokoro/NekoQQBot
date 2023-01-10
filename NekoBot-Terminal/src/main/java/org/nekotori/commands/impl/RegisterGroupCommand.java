@@ -7,6 +7,7 @@ import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
+import net.mamoe.mirai.message.data.QuoteReply;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.ManagerGroupCommand;
 import org.nekotori.entity.CommandAttr;
@@ -24,14 +25,14 @@ public class RegisterGroupCommand extends ManagerGroupCommand {
     @Override
     public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         if (groupService.IsGroupRegistered(subject)) {
-            return new MessageChainBuilder().append(new At(sender.getId())).append(new PlainText("\n本群已经注册")).build();
+            return new MessageChainBuilder().append(new QuoteReply(messageChain)).append(new PlainText("\n本群已经注册")).build();
         }
         try {
             groupService.registerGroup(subject);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            return new MessageChainBuilder().append(new At(sender.getId())).append(new PlainText("\n注册失败，请前往艾泽拉斯联系管理员")).build();
+            return new MessageChainBuilder().append(new QuoteReply(messageChain)).append(new PlainText("\n注册失败，请前往艾泽拉斯联系管理员")).build();
         }
-        return new MessageChainBuilder().append(new At(sender.getId())).append(new PlainText("\n注册成功")).build();
+        return new MessageChainBuilder().append(new QuoteReply(messageChain)).append(new PlainText("\n注册成功")).build();
     }
 }

@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 
-@IsCommand(name = {"取消指令", "取消", "ucom"}, description = "取消指令注册，格式:(!/-/#)ucom ...[指令名]")
+@IsCommand(name = {"取消指令", "取消"}, description = "取消指令注册\n格式:\n    (!/-/#)取消 ...[指令名]")
 public class UnRegisterComCommand extends ManagerGroupCommand {
     @Resource
     GroupService groupService;

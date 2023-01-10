@@ -6,6 +6,7 @@ import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
+import net.mamoe.mirai.message.data.QuoteReply;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.NoAuthGroupCommand;
 import org.nekotori.dao.ChatHistoryMapper;
@@ -16,7 +17,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 
-@IsCommand(name = {"浓度"},description = "用户聊天话题浓度查询")
+@IsCommand(name = {"浓度"},description = "用户聊天话题浓度查询\n格式:\n    (!/-/#)浓度 <关键词>")
 public class ChatPotencyCommand extends NoAuthGroupCommand {
 
     @Resource
@@ -36,7 +37,7 @@ public class ChatPotencyCommand extends NoAuthGroupCommand {
             }
             return false;
         }).count();
-        return new MessageChainBuilder().append(new At(sender.getId()))
+        return new MessageChainBuilder().append(new QuoteReply(messageChain))
                 .append(" ")
                 .append("本群关于关键词")
                 .append(String.join("/", param))

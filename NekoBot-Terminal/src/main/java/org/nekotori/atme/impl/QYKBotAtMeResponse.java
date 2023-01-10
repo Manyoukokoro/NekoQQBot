@@ -12,7 +12,7 @@ import org.nekotori.atme.NoAuthAtMeResponse;
 
 import java.nio.charset.Charset;
 
-//@AtMe
+@AtMe
 public class QYKBotAtMeResponse extends NoAuthAtMeResponse {
 
     @Override

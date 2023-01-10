@@ -25,7 +25,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 
-@IsCommand(name = {"抽卡", "gacha", "建造"}, description = "模拟抽卡，测试人品，格式:(!/-/#)gacha 数量")
+@IsCommand(name = {"抽卡", "建造"}, description = "模拟抽卡，测试人品\n格式:\n    (!/-/#)抽卡 [数量]")
 public class GachaCommand extends PrivilegeGroupCommand {
 
     @Resource

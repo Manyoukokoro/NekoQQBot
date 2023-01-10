@@ -5,6 +5,7 @@ import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
+import net.mamoe.mirai.message.data.QuoteReply;
 import org.nekotori.annotations.AtMe;
 import org.nekotori.atme.KeyWordsAtMeResponse;
 
@@ -19,7 +20,7 @@ public class DemoAtMeResponse extends KeyWordsAtMeResponse {
 
     @Override
     public MessageChain response(GroupMessageEvent groupMessageEvent) {
-        return new MessageChainBuilder().append(new At(groupMessageEvent.getSender().getId())).append(new PlainText(" 呼んだ？")).build();
+        return new MessageChainBuilder().append(new QuoteReply(groupMessageEvent.getMessage())).append(new PlainText(" 呼んだ？")).build();
     }
 }
     

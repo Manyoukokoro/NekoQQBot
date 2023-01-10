@@ -62,10 +62,9 @@ public class ScheduledJob {
         String location = HttpUtil.createGet(trueUrl[0]).setConnectionTimeout(5000).setReadTimeout(10000).execute().header("location");
         HttpUtil.downloadFile(location, new File("temp.png"));
         ContactList<Group> groups = bot.getGroups();
-        chatGroupMapper.selectList(Wrappers.lambdaQuery()).stream().map(ChatGroupDo::getGroupId).map(bot::getGroup).filter(Objects::nonNull).forEach(group->{
+        groups.parallelStream().forEach(group->{
             BufferedInputStream inputStream = FileUtil.getInputStream(new File("temp.png"));
             group.sendMessage(new MessageChainBuilder().append(Contact.uploadImage(group,inputStream)).build());
-
         });
     }
 
@@ -91,5 +90,10 @@ public class ScheduledJob {
                 chainMessageSelector.removeChannel(key);
             }
         });
+    }
+
+    @Scheduled(cron = "0/10 * * * * ?")
+    public void reminder() {
+
     }
 }

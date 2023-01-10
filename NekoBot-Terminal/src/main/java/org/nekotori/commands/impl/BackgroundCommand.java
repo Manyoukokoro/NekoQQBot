@@ -10,6 +10,7 @@ import net.mamoe.mirai.message.data.Image;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
+import net.mamoe.mirai.message.data.QuoteReply;
 import net.mamoe.mirai.message.data.SingleMessage;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.NoAuthGroupCommand;
@@ -22,7 +23,7 @@ import javax.annotation.Resource;
 import java.io.InputStream;
 import java.util.List;
 
-@IsCommand(name = {"背景","BG"},description = "设置用户签到卡片背景")
+@IsCommand(name = {"背景"},description = "设置用户签到卡片背景\n格式:\n    (!/-/#)背景 <ImgUrl/图片>")
 public class BackgroundCommand extends NoAuthGroupCommand {
 
     @Resource
@@ -42,7 +43,7 @@ public class BackgroundCommand extends NoAuthGroupCommand {
         }
         if(imgUrl == null){
             return new MessageChainBuilder()
-                    .append(new At(sender.getId()))
+                    .append(new QuoteReply(messageChain))
                     .append(new PlainText("请输入图片url或直接发送图片"))
                     .build();
         }
@@ -59,13 +60,13 @@ public class BackgroundCommand extends NoAuthGroupCommand {
             chatMemberDo.setBackgroundUri(imgUrl);
             memberMapper.updateById(chatMemberDo);
             return new MessageChainBuilder()
-                    .append(new At(sender.getId()))
+                    .append(new QuoteReply(messageChain))
                     .append(new PlainText("背景设置成功"))
                     .append(Contact.uploadImage(subject, inputStream))
                     .build();
         } catch (Exception e) {
             return new MessageChainBuilder()
-                    .append(new At(sender.getId()))
+                    .append(new QuoteReply(messageChain))
                     .append(new PlainText("背景设置失败"))
                     .build();
         }

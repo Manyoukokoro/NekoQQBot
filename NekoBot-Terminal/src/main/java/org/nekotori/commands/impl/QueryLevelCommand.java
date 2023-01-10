@@ -27,7 +27,7 @@ import java.util.List;
  * @version: {@link }
  */
 
-@IsCommand(name = {"查询等级", "level"}, description = "查询群友等级，格式:(!/-/#)查询等级")
+@IsCommand(name = {"查询等级", "level"}, description = "查询当前群友等级\n格式:\n    (!/-/#)查询等级 [all(管理员)]")
 public class QueryLevelCommand extends NoAuthGroupCommand {
 
     @Resource
