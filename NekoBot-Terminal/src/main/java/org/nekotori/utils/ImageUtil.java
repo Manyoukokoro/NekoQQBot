@@ -6,8 +6,11 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Pair;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import net.dreamlu.mica.core.utils.BeanUtil;
 import net.mamoe.mirai.contact.Member;
+import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -248,8 +251,20 @@ public class ImageUtil {
     }
 
 
-    public static void main(String[] args) {
-        System.out.println(getAcgurl());
+    public static void main(String[] args) throws IOException {
+        ArrayList<CardAttr> cardAttrs = new ArrayList<>();
+        cardAttrs.add(new CardAttr("Soldier FA",0));
+        cardAttrs.add(new CardAttr("Soldier FA",0));
+        cardAttrs.add(new CardAttr("Soldier FA",0));
+        cardAttrs.add(new CardAttr("Soldier FA",1));
+        cardAttrs.add(new CardAttr("Soldier FA",1));
+        cardAttrs.add(new CardAttr("Soldier FA",2));
+        cardAttrs.add(new CardAttr("Soldier FA",2));
+        cardAttrs.add(new CardAttr("Soldier FA",1));
+        cardAttrs.add(new CardAttr("Soldier FA",2));
+        cardAttrs.add(new CardAttr("Soldier FA",2));
+        InputStream dasdsadas = getNikkeGachaImageStream(cardAttrs);
+        FileUtil.writeFromStream(dasdsadas,new File("jpg/test.png"));
     }
 
     private static long nextLevelExp(int level, long exp) {
@@ -417,12 +432,13 @@ public class ImageUtil {
             FileUtil.writeFromStream(inputStream, new File("jpg/temp.png"));
             inputStream.close();
             BufferedImage read = ImageIO.read(new File("jpg/temp.png"));
+            FileUtil.writeFromStream(bufferedImageToInputStream(read),new File("pics/"+ UUID.randomUUID() +".png"));
             int height1 = read.getHeight() * 2400 / read.getWidth();
             graphics.drawImage(read, width * 21 / 40 + 350 - 1200, ((height * 10 / 15)+225)/2-(height1/2), 2400, height1, (image, i, i1, i2, i3, i4) -> false);
         } catch (Exception e) {
             e.printStackTrace();
             try {
-                File[] files = FileUtil.ls( "pics");
+                File[] files = FileUtil.ls( "/root/pics");
                 if (files != null && files.length > 0) {
                     int index = new Random().nextInt(files.length);
                     BufferedImage read = ImageIO.read(files[index]);
@@ -587,5 +603,124 @@ public class ImageUtil {
         public float getSize2D() {
             return this.size;
         }
+    }
+
+
+    //nikke gacha
+    public static InputStream getNikkeGachaImageStream(List<CardAttr> cardNamesAttrs){
+        if(cardNamesAttrs.size()!=10){
+            return null;
+        }
+        try {
+            int cardWidth = 148;
+            int cardHeight = 417;
+            BufferedImage read = ImageIO.read(new File("nikke/images/bg.png"));
+            int height = read.getHeight();
+            int width = read.getWidth();
+            int startWidth = width/2 - cardWidth/2 -20 -2*cardWidth;
+            int startHeightUp = height/2 - cardHeight;
+            int startHeightDown = height/2 +20;
+            Graphics2D graphics = read.createGraphics();
+            int w = startWidth;
+            int h = startHeightUp;
+            for (int i = 0; i < 5; i++) {
+                CardAttr cardAttr = cardNamesAttrs.get(i);
+                graphics.drawImage(drawSingleChara(cardAttr.name,cardAttr.level),w,h,(image, j, i1, i2, i3, i4) -> false);
+                w+=cardWidth+10;
+                h-=15;
+            }
+            w = startWidth;
+            h = startHeightDown;
+            for (int i = 0; i < 5; i++) {
+                CardAttr cardAttr = cardNamesAttrs.get(i+5);
+                graphics.drawImage(drawSingleChara(cardAttr.name,cardAttr.level),w,h,(image, j, i1, i2, i3, i4) -> false);
+                w+=cardWidth+10;
+                h-=15;
+            }
+            graphics.dispose();
+            InputStream inputStream = bufferedImageToInputStream(read);
+            return zipToJpg(height, width, inputStream);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @NotNull
+    private static InputStream zipToJpg(int height, int width, InputStream inputStream) throws IOException {
+        // 把图片读入到内存中
+        BufferedImage bufImg = ImageIO.read(inputStream);
+        // 压缩代码
+        // 存储图片文件byte数组
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        //防止图片变红
+        BufferedImage newBufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        newBufferedImage.createGraphics().drawImage(bufImg, 0, 0, width, height, Color.WHITE, null);
+        //先转成jpg格式来压缩,然后在通过OSS来修改成源 文件本来的后缀格式
+        ImageIO.write(newBufferedImage, "jpg", bos);
+        //获取输出流
+        inputStream = new ByteArrayInputStream(bos.toByteArray());
+        return inputStream;
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class CardAttr{
+        private String name;
+
+        private int level;
+    }
+
+
+    private static BufferedImage drawSingleChara(String cardName,int level) throws IOException{
+        int width = 148;
+        int topHeight = 171;
+        int bgHeight = 236;
+        int bottomHeight = 89;
+        BufferedImage top,bottom;
+        switch (level){
+            case 0:{
+                top = ImageIO.read(new File("nikke/images/R_top.png"));
+                bottom = ImageIO.read(new File("nikke/images/R_bottom.png"));
+                break;
+            }
+            case 1:{
+                top = ImageIO.read(new File("nikke/images/SR_top.png"));
+                bottom = ImageIO.read(new File("nikke/images/SR_bottom.png"));
+                break;
+            }
+            case 2:{
+                top = ImageIO.read(new File("nikke/images/SSR_top.png"));
+                bottom = ImageIO.read(new File("nikke/images/SSR_bottom.png"));
+                break;
+            }
+            default:{
+                top = ImageIO.read(new File("nikke/images/R_top.png"));
+                bottom = ImageIO.read(new File("nikke/images/R_bottom.png"));
+                break;
+            }
+        }
+        try {
+            BufferedImage bufferedImage = new BufferedImage(width, topHeight+bgHeight+bottomHeight/2, BufferedImage.TYPE_INT_BGR);
+            BufferedImage bg = ImageIO.read(new File("nikke/images/white.png"));
+            BufferedImage card = ImageIO.read(new File("nikke/images/" + cardName + ".png"));
+            Graphics2D graphics0 = bufferedImage.createGraphics();
+            bufferedImage = graphics0.getDeviceConfiguration().createCompatibleImage(width, topHeight+bgHeight+bottomHeight, Transparency.TRANSLUCENT);
+            Graphics2D graphics = bufferedImage.createGraphics();
+            if(level==0) {
+                graphics.drawImage(top, 0, 35, (image, i, i1, i2, i3, i4) -> false);
+
+            }else {
+                graphics.drawImage(top, 0, 0, (image, i, i1, i2, i3, i4) -> false);
+            }
+            graphics.drawImage(bg,0,topHeight,(image, i, i1, i2, i3, i4) -> false);
+            graphics.drawImage(card,0,topHeight,(image, i, i1, i2, i3, i4) -> false);
+            graphics.drawImage(bottom,0,topHeight+bgHeight-bottomHeight/2,(image, i, i1, i2, i3, i4) -> false);
+            graphics.dispose();
+            return bufferedImage;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }

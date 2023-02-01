@@ -121,6 +121,7 @@ public class SignCommand extends PrivilegeGroupCommand {
             chatMemberDoNew.setTotalSign(chatMemberDoNew.getTotalSign() + 1);
             chatMemberMapper.updateById(chatMemberDoNew);
         }
+        subject.sendMessage(new MessageChainBuilder().append(new QuoteReply(messageChain)).append("签到成功，获得").append(String.valueOf(incomeExp)).append("经验").build());
         Pair<InputStream, String> inputStreamStringPair = ImageUtil.drawSignPic(sender, chatMemberDo, incomeExp,msgCount.intValue(),imgCount.intValue());
         imgCache.put(subject.getId()+":"+sender.getId(),inputStreamStringPair.getValue());
         return new MessageChainBuilder().append(new QuoteReply(messageChain))
@@ -128,13 +129,13 @@ public class SignCommand extends PrivilegeGroupCommand {
                 .build();
     }
     private static ChatMemberDo calLevel(ChatMemberDo chatMemberDo, long incomeExp) {
-        if (chatMemberDo.getLevel() < 100 && incomeExp >= (Math.pow(2d, (int) ((double) chatMemberDo.getLevel() / 10)) * 10)) {
+//        if (chatMemberDo.getLevel() < 20 && incomeExp >= (Math.pow(2d, (int) ((double) chatMemberDo.getLevel() / 10)) * 10)) {
+//            chatMemberDo.setLevel(chatMemberDo.getLevel() + 1);
+//            return calLevel(chatMemberDo, incomeExp - (long) (Math.pow(2d, (int) ((double) chatMemberDo.getLevel() / 10)) * 10));
+//        }
+        if (incomeExp >= 1024) {
             chatMemberDo.setLevel(chatMemberDo.getLevel() + 1);
-            return calLevel(chatMemberDo, incomeExp - (long) (Math.pow(2d, (int) ((double) chatMemberDo.getLevel() / 10)) * 10));
-        }
-        if (chatMemberDo.getLevel() >= 100 && incomeExp >= 10240) {
-            chatMemberDo.setLevel(chatMemberDo.getLevel() + 1);
-            return calLevel(chatMemberDo, incomeExp - 10240);
+            return calLevel(chatMemberDo, incomeExp - 1024);
         }
         chatMemberDo.setExp(incomeExp);
         return chatMemberDo;

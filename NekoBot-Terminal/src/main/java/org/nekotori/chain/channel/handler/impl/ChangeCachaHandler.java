@@ -49,6 +49,7 @@ public class ChangeCachaHandler implements ChannelHandler {
             groupGachaDo.setGroupId(groupMessageEvent.getGroup().getId());
             groupGachaDo.setCreateTime(new Date());
             Deque<GroupMessageEvent> messageHisQueue = channel.getMessageHisQueue();
+            messageHisQueue.removeLast();
             try {
                 Integer.parseInt(groupMessageEvent.getMessage().serializeToMiraiCode());
             } catch (NumberFormatException e) {

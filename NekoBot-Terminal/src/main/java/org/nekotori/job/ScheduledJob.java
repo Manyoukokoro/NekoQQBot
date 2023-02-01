@@ -2,39 +2,34 @@ package org.nekotori.job;
 
 
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.util.XmlUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.ContactList;
 import net.mamoe.mirai.contact.Group;
-import net.mamoe.mirai.message.data.Image;
+import net.mamoe.mirai.message.data.At;
+import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import org.nekotori.BotSimulator;
 import org.nekotori.atme.impl.ChatGPTResponse;
 import org.nekotori.chain.ChainMessageSelector;
 import org.nekotori.chain.channel.GroupCommandChannel;
 import org.nekotori.dao.ChatGroupMapper;
-import org.nekotori.entity.ChatGroupDo;
-import org.nekotori.utils.ImageUtil;
-import org.nekotori.utils.JsonUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
 import javax.annotation.Resource;
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Component
 public class ScheduledJob {
@@ -44,6 +39,39 @@ public class ScheduledJob {
 
     @Resource
     private ChatGroupMapper chatGroupMapper;
+
+    @Scheduled(cron = "0 0 * * * ?")
+    public void urlMonitor(){
+        List<String> urls = FileUtil.readLines(new File("monitor.info"), StandardCharsets.UTF_8);
+        if(CollectionUtils.isEmpty(urls)){
+            return;
+        }
+        urls.parallelStream().forEach(url->{
+            String[] split = url.split("#sp#");
+            Group group = BotSimulator.getBot().getGroup(Long.parseLong(split[0]));
+            if(group == null){
+                return;
+            }
+            String body;
+            try {
+                 body= HttpUtil.createGet(split[2]).setConnectionTimeout(2000).setReadTimeout(2000).execute().body();
+            }catch (Exception e){
+                group.sendMessage(new MessageChainBuilder().append(new At(Long.parseLong(split[1]))).append("检测到地址").append(split[2]).append("无响应").build());
+                return;
+            }
+            try{
+                JSONObject jsonObject = JSONUtil.parseObj(body);
+                Integer code = jsonObject.getInt("code");
+                String message = jsonObject.getStr("message");
+                Boolean display = jsonObject.getBool("display");
+                if(display){
+                    MessageChain build = new MessageChainBuilder().append(new At(Long.parseLong(split[1]))).append("\n来自").append(split[2]).append("的服务器告警:").append("\n状态码: ").append("").append(String.valueOf(code)).append("\n消息: ").append(message).build();
+                    group.sendMessage(build);
+                }
+            }catch (Exception ignore){
+            }
+        });
+    }
 
     @Scheduled(cron = "0 0 8 * * ?")
     public void moyuCalendar(){

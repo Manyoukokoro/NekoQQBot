@@ -33,8 +33,8 @@ public class GroupCommandChannel {
     private ChannelHandler channelHandler;
 
     public void handleIncomeMessage(GroupMessageEvent groupMessageEvent) {
+        messageHisQueue.addLast(groupMessageEvent);
         this.channelHandler.handleMessage(this, groupMessageEvent);
-        messageHisQueue.add(groupMessageEvent);
     }
 
     public boolean checkMember(Long memberId) {

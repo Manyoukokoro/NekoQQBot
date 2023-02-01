@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-@IsCommand(name = {"AniS","anis"},description = "使用yandere进行图片检索,此指令参数格式比较复杂，有兴趣可以参阅yandere的api文档\n格式:\n    (!/-/#)anis ...[参数]")
+//@IsCommand(name = {"AniS","anis"},description = "使用yandere进行图片检索,此指令参数格式比较复杂，有兴趣可以参阅yandere的api文档\n格式:\n    (!/-/#)anis ...[参数]")
 @Slf4j
 public class YandereGroupCommand extends PrivilegeGroupCommand {
 
