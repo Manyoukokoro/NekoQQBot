@@ -37,7 +37,7 @@ import java.util.Optional;
  * @description:
  * @version: {@link }
  */
-//@IsCommand(name = {"色图", "setu"}, description = "使用loliApi检索插画图片\n格式:\n    (!/-/#)setu ...[参数]")
+@IsCommand(name = {"色图", "setu"}, description = "使用loliApi检索插画图片\n格式:\n    (!/-/#)setu ...[参数]")
 @Slf4j
 public class AnimePicGroupCommand extends PrivilegeGroupCommand {
 
@@ -60,10 +60,10 @@ public class AnimePicGroupCommand extends PrivilegeGroupCommand {
             });
             List<LoliconData> loliconData = new ArrayList<>();
             if (ObjectUtil.isNotNull(loliconApiResponse)) {
-//        if (loliconApiResponse.getError().equals(429))
-//          return new MessageChainBuilder()
-//                  .append(new At(sender.getId()).plus(new PlainText("我的身体已经菠萝菠萝哒")))
-//                  .build();
+               if (loliconApiResponse.getError().equals(429))
+                 return new MessageChainBuilder()
+                         .append(new At(sender.getId()).plus(new PlainText("我的身体已经菠萝菠萝哒")))
+                         .build();
                 loliconData = loliconApiResponse.getData();
             }
             if (ObjectUtil.isNull(loliconData) || loliconData.isEmpty())
