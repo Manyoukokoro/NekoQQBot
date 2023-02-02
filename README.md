@@ -12,13 +12,12 @@
 
 #### 引导
 
-1.
-控制台程序总入口为Springboot项目入口[NekoBotApplication](https://gitee.com/nekotori/neko-qqbot/blob/master/NekoBot-Terminal/src/main/java/org/nekotori/NekoBotApplication.java)
-2. Spring项目启动时，会同时按照配置文件创建bot登录QQ，并注册event包下的所有事件(net.mamoe.mirai.event),事件类实现SimpleListenerHost
-3. mirai事件可以监听不同的QQ动作（比如at机器人[@AtMe]()、指令[@IsCommand]()等），并触发相应的动作。
-5. 如何处理QQ动作:以Command为例， 在command事件中，调用了GlobalCommandHandler对象，此对象中注册了所有实现了Command接口的类(需要实现类用@IsCommand注解被Spring容器管理)
-   ,command事件被触发后，会遍历注册的Command类测试是否有符合条件的Command需要被执行。
-6. 当你需要新建一个指令的时候，需要继承一个PrivilegeGroupCommand、NoAuthGroupCommand或ManagerGroupCommand用于区分指令的权限，实现类示例:
+1.控制台程序总入口为Springboot项目入口[NekoBotApplication](https://gitee.com/nekotori/neko-qqbot/blob/master/NekoBot-Terminal/src/main/java/org/nekotori/NekoBotApplication.java)  
+2. Spring项目启动时，会同时按照配置文件创建bot登录QQ，并注册event包下的所有事件(net.mamoe.mirai.event),事件类实现SimpleListenerHost  
+3. mirai事件可以监听不同的QQ动作（比如at机器人[@AtMe]()、指令[@IsCommand]()等），并触发相应的动作。  
+5. 如何处理QQ动作:以Command为例， 在command事件中，调用了GlobalCommandHandler对象，此对象中注册了所有实现了Command接口的类(需要实现类用@IsCommand注解被Spring容器管理)  
+   ,command事件被触发后，会遍历注册的Command类测试是否有符合条件的Command需要被执行。  
+6. 当你需要新建一个指令的时候，需要继承一个PrivilegeGroupCommand、NoAuthGroupCommand或ManagerGroupCommand用于区分指令的权限，实现类示例:  
 
 ```java
 /**
