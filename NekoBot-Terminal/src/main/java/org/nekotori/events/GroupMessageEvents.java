@@ -8,21 +8,38 @@ import net.mamoe.mirai.event.events.GroupMessageEvent;
 import org.jetbrains.annotations.NotNull;
 import org.nekotori.annotations.Event;
 import org.nekotori.job.AsyncJob;
+import org.springframework.context.annotation.Lazy;
 
 import javax.annotation.Resource;
 
+/**
+ * @author: JayDeng
+ * @date: 02/08/2021 14:08
+ * @description:
+ * @version: {@link }
+ */
 
 @Event
-public class GroupChainCommandEvents extends SimpleListenerHost {
+public class GroupMessageEvents extends SimpleListenerHost {
 
     @Resource
+    @Lazy
     private AsyncJob asyncJob;
+
 
     @NotNull
     @EventHandler(priority = EventPriority.HIGH)
     public ListeningStatus onMessage(@NotNull GroupMessageEvent groupMessageEvent) {
+        asyncJob.handleCommand(groupMessageEvent);
+        asyncJob.doRecord(groupMessageEvent);
+        asyncJob.handleCustomResponse(groupMessageEvent);
+        asyncJob.cal(groupMessageEvent);
+        asyncJob.urlScreenshot(groupMessageEvent);
+        asyncJob.dispatchMessage(groupMessageEvent);
+        asyncJob.syncMessage(groupMessageEvent);
         asyncJob.messageSelect(groupMessageEvent);
         return ListeningStatus.LISTENING;
     }
+
 
 }

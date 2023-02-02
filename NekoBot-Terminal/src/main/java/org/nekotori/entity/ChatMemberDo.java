@@ -50,6 +50,8 @@ public class ChatMemberDo {
 
     private String backgroundUri;
 
+    private Integer gold;
+
     public boolean checkTodaySign() {
         LocalDate localDate = DateUtil.date2LocalDate(lastSign);
         return LocalDate.now().equals(localDate);

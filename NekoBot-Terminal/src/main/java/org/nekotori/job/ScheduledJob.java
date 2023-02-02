@@ -73,7 +73,7 @@ public class ScheduledJob {
         });
     }
 
-    @Scheduled(cron = "0 0 8 * * ?")
+    //@Scheduled(cron = "0 0 8 * * ?")
     public void moyuCalendar(){
         Bot bot = BotSimulator.getBot();
         HttpRequest get = HttpUtil.createGet("https://api.j4u.ink/v1/store/other/proxy/remote/moyu.json");

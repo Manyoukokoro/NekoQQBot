@@ -8,20 +8,25 @@ import cn.hutool.json.JSONUtil;
 import net.mamoe.mirai.contact.ContactList;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
+import net.mamoe.mirai.contact.MemberPermission;
 import net.mamoe.mirai.contact.NormalMember;
 import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.QuoteReply;
 import net.mamoe.mirai.message.data.SingleMessage;
+import net.mamoe.mirai.utils.ExternalResource;
 import org.jetbrains.annotations.NotNull;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.NoAuthGroupCommand;
+import org.nekotori.common.InnerConstants;
 import org.nekotori.entity.CommandAttr;
+import org.nekotori.utils.ExcelUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -32,12 +37,15 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @IsCommand(name = {"报刀",
+        "出刀",
         "申请出刀",
         "申请合刀",
         "撤回上刀",
         "撤回出刀",
         "撤回",
         "撤回申请",
+        "查看历史",
+        "出刀历史",
         "初始化",
         "查看",
         "查看血量",
@@ -48,7 +56,7 @@ import java.util.stream.Collectors;
         "预约"}, description = "世界Boss报刀\nnikke工会战指令说明（[]中为必需参数，<>为可选参数）\n" +
         "报刀流程：\n" +
         "1.【申请出刀/申请合刀】，【申请出刀】将占用当前工会的出刀名额，其他人无法再进行申请。如果当前有人申请出刀，需要使用【申请合刀】指令才能完成报刀，申请指令可以被【撤销申请】取消。\n" +
-        "2.【报刀】，指令格式：报刀 [伤害量] <艾特成员>，报刀之前必须先【申请出刀】或者【申请合刀】，避免盲目出刀。如果后面带了艾特成员的参数，将视为代替成员报刀。\n" +
+        "2.【报刀】，指令格式：报刀 [伤害量] <艾特成员|QQ以外成员名字>，报刀之前必须先【申请出刀】或者【申请合刀】，避免盲目出刀。如果后面带了艾特成员的参数，将视为代替成员报刀。\n" +
         "3.【撤回上刀/撤回出刀】，该指令会撤回上一次有效的报刀操作，并返还出刀次数。包括【报刀】和【重置】指令。\n" +
         "预约：\n" +
         "1.【预约出刀】，参数为预约Boss轮次的绝对索引，如：每轮有5个Boss，那么第一轮第二个Boss的索引为2，第二轮第三个Boss的索引为5+3=8。使用 预约出刀 [索引值] 进行预约后，机器人会在到达该Boss时自动艾特发起预约的成员。\n" +
@@ -68,6 +76,17 @@ public class ReportDamageCommand extends NoAuthGroupCommand {
         JSONArray stageNames = jsonObject.getJSONArray("stageNames");
         Integer chancePerUser = jsonObject.getInt("chancePerUser");
         JSONArray order = jsonObject.getJSONArray("order");
+        String name = jsonObject.getStr("name");
+        if("查看历史".equals(commandAttr.getCommand()) ||"出刀历史".equals(commandAttr.getCommand())){
+            if(sender.getPermission().equals(MemberPermission.ADMINISTRATOR) ||
+                    sender.getPermission().equals(MemberPermission.OWNER) ||
+                        sender.getId()== InnerConstants.admin){
+                uploadHistory(subject, history, stageNames, name);
+                return new MessageChainBuilder().append(new QuoteReply(messageChain)).append("出刀情况详见Excel文件").build();
+            }
+            return null;
+        }
+
         if("预约出刀".equals(commandAttr.getCommand())||"预约".equals(commandAttr.getCommand())){
             if(!CollectionUtils.isEmpty(commandAttr.getParam())){
                 JSONObject jsonObject1 = new JSONObject();
@@ -146,8 +165,6 @@ public class ReportDamageCommand extends NoAuthGroupCommand {
                     .build();
         }
         jsonObject.replace("currentUser",collect);
-
-        String name = jsonObject.getStr("name");
         int nowStage = 0;
         long totalDamage = 0;
         if(history.size()>0) {
@@ -162,14 +179,16 @@ public class ReportDamageCommand extends NoAuthGroupCommand {
             }
             String newest = history.getStr(history.size() - 1);
             JSONObject before = JSONUtil.parseObj(newest);
-            nowStage = before.getInt("nowStage");
+            nowStage = before.getInt("nextStage");
             totalDamage = before.getLong("totalDamage");
         }
         int totalBossNum = hps.size();
         List<String> param = commandAttr.getParam();
-        long sum = param.stream().mapToLong(Long::parseLong).sum();
+        long sum = Long.parseLong(param.get(0));
         totalDamage+=sum;
+        boolean isOverStage = false;
         if(totalDamage>=Long.parseLong(hps.getStr(nowStage))){
+            isOverStage = true;
             nowStage++;
             totalDamage=0;
             //call order
@@ -192,42 +211,60 @@ public class ReportDamageCommand extends NoAuthGroupCommand {
             }
         }
 
+        String otherReporter = "";
+        if(!CollectionUtils.isEmpty(commandAttr.getParam())&&commandAttr.getParam().size()>=2){
+            otherReporter = commandAttr.getParam().get(1);
+        }
         JSONObject income = new JSONObject();
-        income.putOnce("nowStage",nowStage);
+        income.putOnce("nowStage",isOverStage?nowStage-1:nowStage);
+        income.putOnce("nextStage",nowStage);
         income.putOnce("totalDamage",totalDamage);
         income.putOnce("timestamp",System.currentTimeMillis());
         income.putOnce("time",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-        income.putOnce("reporterId",sender.getId());
-        income.putOnce("reporter", StringUtils.hasLength(reportMember.getNameCard())?reportMember.getNameCard():reportMember.getNick());
+        income.putOnce("reporterId",StringUtils.hasLength(otherReporter)?-1L:sender.getId());
+        income.putOnce("reporter",StringUtils.hasLength(otherReporter)?otherReporter:StringUtils.hasLength(reportMember.getNameCard())?reportMember.getNameCard():reportMember.getNick());
         income.putOnce("thisDamage",sum);
         history.add(income);
         jsonObject.replace("history",history);
        if(nowStage>totalBossNum-1){
             MessageChainBuilder singleMessages = new MessageChainBuilder();
-            singleMessages.append("本次").append(name).append("工会战结束,出刀情况如下：");
-            for (Object o : history) {
-                JSONObject jsonObject1 = JSONUtil.parseObj(o.toString());
-                if(Long.parseLong(jsonObject1.getStr("thisDamage"))<=0){
-                    continue;
-                }
-                singleMessages
-                        .append("\n阶段：").append(String.valueOf(Integer.parseInt(jsonObject1.getStr("nowStage"))+1))
-                        .append("\n  时间:").append(jsonObject1.getStr("time"))
-                        .append("\n  出刀:").append(jsonObject1.getStr("reporter"))
-                        .append("\n  伤害:").append(jsonObject1.getStr("thisDamage"));
-            }
-            jsonObject.replace("history",new JSONArray());
+            singleMessages.append("本次").append(name).append("工会战结束,出刀情况详见Excel文件");
+//            for (Object o : history) {
+//                JSONObject jsonObject1 = JSONUtil.parseObj(o.toString());
+//                if(Long.parseLong(jsonObject1.getStr("thisDamage"))<=0){
+//                    continue;
+//                }
+//                singleMessages
+//                        .append("\n阶段：").append(stageNames.size()>nowStage?stageNames.get(nowStage).toString():String.valueOf(nowStage+1))
+//                        .append("\n  时间:").append(jsonObject1.getStr("time"))
+//                        .append("\n  出刀:").append(jsonObject1.getStr("reporter"))
+//                        .append("\n  伤害:").append(jsonObject1.getStr("thisDamage"));
+//            }
+           uploadHistory(subject, history, stageNames, name);
+           jsonObject.replace("history",new JSONArray());
            saveFile(subject, jsonObject);
            return singleMessages.build();
         }
         saveFile(subject, jsonObject);
         long remain = hps.getLong(nowStage)-totalDamage;
-        return new MessageChainBuilder()
-                .append("阶段: ").append(stageNames.size()>nowStage?stageNames.get(nowStage).toString():String.valueOf(nowStage+1))
+        MessageChainBuilder singleMessages = new MessageChainBuilder();
+        if(isOverStage){
+            singleMessages.append("阶段Boss已被击败\n");
+        }
+        return singleMessages
                 .append("\n时间: ").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()))
-                .append("\n出刀: ").append(StringUtils.hasLength(reportMember.getNameCard())?reportMember.getNameCard():reportMember.getNick())
+                .append("\n出刀: ").append(StringUtils.hasLength(otherReporter)?otherReporter:StringUtils.hasLength(reportMember.getNameCard())?reportMember.getNameCard():reportMember.getNick())
                 .append("\n伤害: ").append(String.valueOf(sum))
+                .append("\n目前阶段: ").append(stageNames.size()>nowStage?stageNames.get(nowStage).toString():String.valueOf(nowStage+1))
                 .append("\nBoss剩余血量: ").append(String.valueOf(remain)).append("/").append(String.valueOf(hps.getLong(nowStage))).build();
+    }
+
+    private void uploadHistory(Group subject, JSONArray history, JSONArray stageNames, String name) {
+        InputStream inputStream = saveToExcel(name, history, stageNames);
+        try {
+            subject.getFiles().uploadNewFile(name +"统计.xlsx", ExternalResource.create(inputStream));
+        }catch (Exception ignore){
+        }
     }
 
     @NotNull
@@ -242,6 +279,7 @@ public class ReportDamageCommand extends NoAuthGroupCommand {
         }
         JSONObject income = new JSONObject();
         income.putOnce("nowStage",nowStage);
+        income.putOnce("nextStage",nowStage);
         income.putOnce("totalDamage",0L);
         income.putOnce("timestamp",System.currentTimeMillis());
         income.putOnce("time",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
@@ -382,7 +420,7 @@ public class ReportDamageCommand extends NoAuthGroupCommand {
         if(history.size()>0) {
             String newest = history.getStr(history.size() - 1);
             JSONObject before = JSONUtil.parseObj(newest);
-            nowStage = before.getInt("nowStage");
+            nowStage = before.getInt("nextStage");
             totalDamage = before.getLong("totalDamage");
         }
         long remain = hps.getLong(nowStage)-totalDamage;
@@ -391,4 +429,16 @@ public class ReportDamageCommand extends NoAuthGroupCommand {
                 .append("阶段: ").append(stageNames.size() > nowStage ? stageNames.get(nowStage).toString() : String.valueOf(nowStage + 1))
                 .append("\nBoss剩余血量: ").append(String.valueOf(remain)).append("/").append(String.valueOf(hps.getLong(nowStage))).build();
     }
+
+    private InputStream saveToExcel(String name,JSONArray his,JSONArray stageNames){
+        List<JSONObject> collect = his.stream().map(o -> {
+            JSONObject jsonObject = JSONUtil.parseObj(o.toString());
+            Integer nowStage = jsonObject.getInt("nowStage");
+            jsonObject.putOnce("nowStageName", stageNames.size() > nowStage ? stageNames.get(nowStage).toString() : String.valueOf(nowStage + 1));
+            return jsonObject;
+        }).collect(Collectors.toList());
+        return ExcelUtils.generateWBExcel(name, collect);
+    }
+
+
 }

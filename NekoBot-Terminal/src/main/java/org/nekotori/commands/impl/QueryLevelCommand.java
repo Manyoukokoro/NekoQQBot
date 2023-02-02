@@ -27,7 +27,7 @@ import java.util.List;
  * @version: {@link }
  */
 
-@IsCommand(name = {"查询等级", "level"}, description = "查询当前群友等级\n格式:\n    (!/-/#)查询等级 [all(管理员)]")
+@IsCommand(name = {"查询等级", "level","等级"}, description = "查询当前群友等级\n格式:\n    (!/-/#)查询等级 [all(管理员)]")
 public class QueryLevelCommand extends NoAuthGroupCommand {
 
     @Resource
@@ -52,8 +52,14 @@ public class QueryLevelCommand extends NoAuthGroupCommand {
             if (ObjectUtils.isEmpty(chatMemberDo)) {
                 singleMessages.append(new PlainText("您还没有签到过哦"));
             } else {
-                singleMessages.append(new PlainText("您现在为：" + chatMemberDo.getLevel() + "级,累计签到:" + chatMemberDo.getTotalSign() +
-                        "天"));
+                singleMessages.append(new PlainText("您现在为："
+                        + chatMemberDo.getLevel()
+                        + "级,累计签到:"
+                        + chatMemberDo.getTotalSign()
+                        + "天")
+                        +"\n持有金币："
+                        +(chatMemberDo.getGold()==null?0:chatMemberDo.getGold())
+                        +"枚");
             }
         }
         return singleMessages.build();

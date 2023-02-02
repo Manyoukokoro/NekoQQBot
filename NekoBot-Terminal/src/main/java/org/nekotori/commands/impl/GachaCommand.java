@@ -90,13 +90,22 @@ public class GachaCommand extends PrivilegeGroupCommand {
 
 
             ChatMemberDo chatMemberDo = chatMemberMapper.selectOne(Wrappers.<ChatMemberDo>lambdaQuery().eq(ChatMemberDo::getMemberId, sender.getId()).eq(ChatMemberDo::getGroupId, subject.getId()));
-            Integer level = chatMemberDo.getLevel();
-            if(level<3){
-                return new MessageChainBuilder().append(new QuoteReply(messageChain)).append("等级不足，请签到提升等级").build();
+            Integer gold = chatMemberDo.getGold();
+            if(gold<10){
+                return new MessageChainBuilder().append(new QuoteReply(messageChain)).append("金币不足，请签到获取金币").build();
             }
-            chatMemberDo.setLevel(level-3);
-            chatMemberMapper.updateById(chatMemberDo);
             List<String> gacha = GachaUtils.gacha(10, 0, 4, 43, 53, 0);
+            int getGold = gacha.stream().map(s -> {
+                if ("SSR".equals(s)) {
+                    return 5;
+                }
+                if ("SR".equals(s)) {
+                    return 1;
+                }
+                return 0;
+            }).mapToInt(Integer::intValue).sum();
+            chatMemberDo.setGold(gold-10+getGold);
+            chatMemberMapper.updateById(chatMemberDo);
             List<NikkeCharacters> nikkeCharacters = nikkeCharactersMapper.selectList(Wrappers.lambdaQuery());
             Map<String, List<NikkeCharacters>> collect = nikkeCharacters.stream().collect(Collectors.groupingBy(NikkeCharacters::getRarity));
             List<ImageUtil.CardAttr> cardAttrs = new ArrayList<>();
@@ -107,7 +116,7 @@ public class GachaCommand extends PrivilegeGroupCommand {
             }
             InputStream nikkeGachaImageStream = ImageUtil.getNikkeGachaImageStream(cardAttrs);
             assert nikkeGachaImageStream != null;
-            return new MessageChainBuilder().append(new QuoteReply(messageChain)).append("消耗3级经验进行招募\n").append(Contact.uploadImage(subject,nikkeGachaImageStream)).build();
+            return new MessageChainBuilder().append(new QuoteReply(messageChain)).append("消耗10枚金币进行招募\n返还"+getGold+"枚金币\n").append(Contact.uploadImage(subject,nikkeGachaImageStream)).build();
         }
 
 

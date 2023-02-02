@@ -4,8 +4,11 @@ import cn.hutool.core.img.FontUtil;
 import cn.hutool.core.img.ImgUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Pair;
+import cn.hutool.core.lang.func.VoidFunc0;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
+import com.freewayso.image.combiner.ImageCombiner;
+import com.freewayso.image.combiner.enums.OutputFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.dreamlu.mica.core.utils.BeanUtil;
@@ -613,7 +616,7 @@ public class ImageUtil {
         }
         try {
             int cardWidth = 148;
-            int cardHeight = 417;
+            int cardHeight = 367;
             BufferedImage read = ImageIO.read(new File("nikke/images/bg.png"));
             int height = read.getHeight();
             int width = read.getWidth();
@@ -674,7 +677,9 @@ public class ImageUtil {
 
     private static BufferedImage drawSingleChara(String cardName,int level) throws IOException{
         int width = 148;
-        int topHeight = 171;
+        int topHeight = 175;
+        int topHeightSR = 171;
+        int topHeightR = 136;
         int bgHeight = 236;
         int bottomHeight = 89;
         BufferedImage top,bottom;
@@ -701,26 +706,112 @@ public class ImageUtil {
             }
         }
         try {
-            BufferedImage bufferedImage = new BufferedImage(width, topHeight+bgHeight+bottomHeight/2, BufferedImage.TYPE_INT_BGR);
             BufferedImage bg = ImageIO.read(new File("nikke/images/white.png"));
             BufferedImage card = ImageIO.read(new File("nikke/images/" + cardName + ".png"));
+            //生成透明背景
+            BufferedImage bufferedImage = new BufferedImage(width, topHeight+bgHeight+bottomHeight/2-50, BufferedImage.TYPE_INT_BGR);
             Graphics2D graphics0 = bufferedImage.createGraphics();
             bufferedImage = graphics0.getDeviceConfiguration().createCompatibleImage(width, topHeight+bgHeight+bottomHeight, Transparency.TRANSLUCENT);
-            Graphics2D graphics = bufferedImage.createGraphics();
-            if(level==0) {
-                graphics.drawImage(top, 0, 35, (image, i, i1, i2, i3, i4) -> false);
 
-            }else {
-                graphics.drawImage(top, 0, 0, (image, i, i1, i2, i3, i4) -> false);
-            }
-            graphics.drawImage(bg,0,topHeight,(image, i, i1, i2, i3, i4) -> false);
-            graphics.drawImage(card,0,topHeight,(image, i, i1, i2, i3, i4) -> false);
-            graphics.drawImage(bottom,0,topHeight+bgHeight-bottomHeight/2,(image, i, i1, i2, i3, i4) -> false);
-            graphics.dispose();
-            return bufferedImage;
+            ImageCombiner imageCombiner = new ImageCombiner(bufferedImage, OutputFormat.PNG);
+            imageCombiner.addImageElement(bg,0,topHeight-50);
+            imageCombiner.addImageElement(top,0,level==0?topHeight-topHeightR:level==1?topHeight-topHeightSR:0 );
+            imageCombiner.addImageElement(setBorderAlpha(card,0,0,30,0),0,topHeight-50);
+            imageCombiner.addImageElement(bottom,0,topHeight+bgHeight-bottomHeight/2-50);
+            return imageCombiner.combine();
+//            Graphics2D graphics = bufferedImage.createGraphics();
+//            if(level==0) {
+//                graphics.drawImage(top, 0, 35, (image, i, i1, i2, i3, i4) -> false);
+//
+//            }else {
+//                graphics.drawImage(top, 0, 0, (image, i, i1, i2, i3, i4) -> false);
+//            }
+//            graphics.drawImage(bg,0,topHeight,(image, i, i1, i2, i3, i4) -> false);
+//            graphics.drawImage(card,0,topHeight,(image, i, i1, i2, i3, i4) -> false);
+//            graphics.drawImage(bottom,0,topHeight+bgHeight-bottomHeight/2,(image, i, i1, i2, i3, i4) -> false);
+//            graphics.dispose();
+//            return bufferedImage;
         }catch (Exception e){
             e.printStackTrace();
         }
         return null;
+    }
+
+    private static BufferedImage setBorderAlpha(BufferedImage image,int leftBorderSize,int rightBorderSize,int topBorderSize,int bottomBorderSize){
+        BufferedImage back=new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        int width = image.getWidth();
+        int height = image.getHeight();
+        if(topBorderSize>height/2){
+            topBorderSize = height/2;
+        }
+        if(bottomBorderSize>height/2){
+            bottomBorderSize = height/2;
+        }
+        if(leftBorderSize>width/2){
+            leftBorderSize = width/2;
+        }
+        if(rightBorderSize>width/2){
+            rightBorderSize = width/2;
+        }
+        for(int i=0;i<height;i++){
+            for(int j=0;j<width;j++){
+                back.setRGB(j,i,image.getRGB(j,i));
+            }
+        }
+        //top
+        for(int i=0;i<topBorderSize;i++){
+            for(int j=0;j<width;j++){
+                if(getAlpha(image.getRGB(j, i))<i * (255 / topBorderSize)){
+                    continue;
+                }
+                int rgb = image.getRGB(j, i);
+                Color color = new Color(rgb);
+                Color newColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), i * (255 / topBorderSize));
+                back.setRGB(j,i,newColor.getRGB());
+            }
+        }
+        //bottom
+        for(int i=0;i<bottomBorderSize;i++){
+            for(int j=0;j<width;j++){
+                if(getAlpha(image.getRGB(j,height-1-i))<i * (255 / bottomBorderSize)){
+                    continue;
+                }
+                int rgb = image.getRGB(j,height-1-i);
+                Color color = new Color(rgb);
+                Color newColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), i * (255 / bottomBorderSize));
+                back.setRGB(j,height-1-i,newColor.getRGB());
+            }
+        }
+
+        //left
+        for(int i=0;i<height;i++){
+            for(int j=0;j<rightBorderSize;j++){
+                if(getAlpha(image.getRGB(j, i))<i * (255 / leftBorderSize)){
+                    continue;
+                }
+                int rgb = image.getRGB(j,i);
+                Color color = new Color(rgb);
+                Color newColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), i * (255 / leftBorderSize));
+                back.setRGB(j,i,newColor.getRGB());
+            }
+        }
+
+        //right
+        for(int i=0;i<height;i++){
+            for(int j=0;j<leftBorderSize;j++){
+                if(getAlpha(image.getRGB(width-1-j,i))<i * (255 / rightBorderSize)){
+                    continue;
+                }
+                int rgb = image.getRGB(width-1-j,i);
+                Color color = new Color(rgb);
+                Color newColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), i * (255 / rightBorderSize));
+                back.setRGB(width-1-j,i,newColor.getRGB());
+            }
+        }
+        return back;
+    }
+
+    private static int getAlpha(int rgb){
+        return (rgb >> 24) & 0xFF;
     }
 }
