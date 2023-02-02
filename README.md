@@ -1,24 +1,21 @@
 # NekoQQBot
 
-#### 描述
+#### Description
 
-一个基于Springboot和Mirai框架的QQbot
+A Mirai based chat bot for IM software Tencent QQ.
 
-#### 软件架构
+#### architecture
 
 1. SpringBoot
 2. Mirai-Core-Jvm
-3. Mybatis-Plus+Sqlite
+3. Mybatis-Plus + Sqlite
 
-#### 引导
+#### Introduction
 
-1.控制台程序总入口为Springboot项目入口[NekoBotApplication](https://gitee.com/nekotori/neko-qqbot/blob/master/NekoBot-Terminal/src/main/java/org/nekotori/NekoBotApplication.java)  
-2. Spring项目启动时，会同时按照配置文件创建bot登录QQ，并注册event包下的所有事件(net.mamoe.mirai.event),事件类实现SimpleListenerHost  
-3. mirai事件可以监听不同的QQ动作（比如at机器人[@AtMe]()、指令[@IsCommand]()等），并触发相应的动作。  
-5. 如何处理QQ动作:以Command为例， 在command事件中，调用了GlobalCommandHandler对象，此对象中注册了所有实现了Command接口的类(需要实现类用@IsCommand注解被Spring容器管理)  
-   ,command事件被触发后，会遍历注册的Command类测试是否有符合条件的Command需要被执行。  
-6. 当你需要新建一个指令的时候，需要继承一个PrivilegeGroupCommand、NoAuthGroupCommand或ManagerGroupCommand用于区分指令的权限，实现类示例:  
-
+1.The entry point of this project is same as normal Springboot program [NekoBotApplication](https://github.com/Manyoukokoro/NekoQQBot/blob/dev-1.0.5/NekoBot-Terminal/src/main/java/org/nekotori/NekoBotApplication.java)  
+2. When the Spring process start, the botRunner which implements ApplicationRunner will run a BotSimulator at the same time. All configurations of this bot will be completed when the botSimulator is running, including eventListenner registry and bot account login. While the bot is running, eventListener intercept all of the chat messages and dispatch them to the relevant handlers(chainMessageHandler,commandHandler,etc.).  
+3. How to implement a QQ bot commmandHandler:  first of all, a annotation named @IsCommand wich extend the basic commponent annotation of Springboot is defined, so that all classes marked by this annotation will be managed in the spring container as instances, which means you do not need to maintain commands manually. Otherwise, all commands should extends three kinds of abstract commands (PrivilegeGroupCommand, ManagerGroupCommand,NoAuthGroupCommand) in which the accessibility of Commmand id predefined. PrivilegeGroupCommand means group members can use it only if it's active by the command management command; ManagerGroupCommand means only group managers and owner can use it; NoAuthGroupCommand can be used by all group members.  
+4. The code below is a sample of PrivilegeGroupCommmand:  
 ```java
 /**
  * @author: Nekotori
@@ -28,48 +25,48 @@
  */
 
 /**
- * @IsCommand注解，打上此注解后，spring容器会自动管理此指令的实现
- * name为指令名数组
+ * @IsCommand annotation, classes marked by this will be auto registerd when the application started.
+ * name[]: trigger words of this command
+ * discription: a short description of this command, which will be used in the command <help>. 
  */
-@IsCommand(name={"测试命令","ping"},discription = "指令描述")
+@IsCommand(name={"ping"},discription = "ping it")
 public class SampleCommand extends PrivilegeGroupCommand {
     
 
     /**
-     * 重写的execute方法，决定指令的输入输出
-     * @param sender 发起指令的人
-     * @param messageChain 带有指令的那条消息
-     * @param subject 发指令人所在的群
-     * @param commandAttr 指令相关的信息
-     * @return 返回的消息
+     * this method is override from Command Interface. determine the input and the output of a command.
+     * @param sender: who start this command
+     * @param messageChain: the whole message of command
+     * @param subject: the group of this commnad
+     * @param commandAttr: command details
+     * @return: response of command
      */
     @Override
     public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         /**
-         * 指令头：！ - #
+         * command header：！ - #
          */
         final String header = commandAttr.getHeader();
         /**
-         * 指令名字
+         * command name (defined in the @IsCommnad annotation)
          */
         final String command = commandAttr.getCommand();
         /**
-         * 指令参数，主要用这个进行处理
+         * the param follows the command
          */
         final List<String> param = commandAttr.getParam();
 
         /**
-         * 简单响应消息的demo代码
+         * simply response pong to the subject group
          */
-        //1.消息构建器
+        //1.message builder
         MessageChainBuilder singleMessages = new MessageChainBuilder();
-        //2.向消息构建器中加入消息（顺序）
+        //2.append messages to builder
         singleMessages.append(new PlainText("demo"));
         singleMessages.append(new At(sender.getId()));
-        //3.构建消息
         final MessageChain build = singleMessages.build();
         /**
-         * 发送消息至群
+         * send response
          */
         return build;
     }
@@ -77,15 +74,10 @@ public class SampleCommand extends PrivilegeGroupCommand {
     
 ```
 
-#### 历史
+#### history
+1. add sample command implement  
+2. add chain command support
 
-1. add sentence generator
-2. add sample command implement
-3. add chain command support
+#### deploy
 
-#### 部署
-
-1. 环境: jvm运行环境 推荐版本jdk11,低版本会造成代码不兼容
-2. 准备配置文件application-sample.yml,填写基本信息
-3. 使用maven将项目代码打包为jar,即可在服务器上运行
-4. 登录中所遇问题请参考mirai官方解决方案
+1. enviroment: jdk11
