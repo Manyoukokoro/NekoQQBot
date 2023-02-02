@@ -38,6 +38,7 @@ public class GroupMessageEvents extends SimpleListenerHost {
         asyncJob.dispatchMessage(groupMessageEvent);
         asyncJob.syncMessage(groupMessageEvent);
         asyncJob.messageSelect(groupMessageEvent);
+        asyncJob.handleAtMe(groupMessageEvent);
         return ListeningStatus.LISTENING;
     }
 

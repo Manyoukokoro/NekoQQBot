@@ -7,13 +7,10 @@ import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Friend;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
-import net.mamoe.mirai.internal.deps.io.ktor.http.ContentType;
 import net.mamoe.mirai.message.data.LightApp;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
-import net.mamoe.mirai.message.data.QuoteReply;
-import net.mamoe.mirai.message.data.SingleMessage;
 import org.nekotori.BotSimulator;
 import org.nekotori.chain.ChainMessageSelector;
 import org.nekotori.common.InnerConstants;
@@ -22,12 +19,10 @@ import org.nekotori.dao.GroupSyncMapper;
 import org.nekotori.entity.ChatGroupDo;
 import org.nekotori.entity.CustomResponse;
 import org.nekotori.entity.GroupSyncDo;
-import org.nekotori.handler.CustomCommandHandler;
 import org.nekotori.handler.GlobalAtMeHandler;
 import org.nekotori.handler.GlobalCommandHandler;
 import org.nekotori.service.GroupService;
 import org.nekotori.utils.ChromeUtils;
-import org.nekotori.utils.JsonUtils;
 import org.nekotori.utils.LittleUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Async;
@@ -44,9 +39,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -221,33 +216,22 @@ public class AsyncJob {
     @Async
     public void urlScreenshot(GroupMessageEvent groupMessageEvent){
         Optional<LightApp> any = groupMessageEvent.getMessage().stream().filter(mes -> mes instanceof LightApp).map(mes -> (LightApp) mes).findAny();
+        AtomicReference<String> s = new AtomicReference<>("");
         try {
             any.ifPresent(app -> {
                 String content = app.getContent();
                 JSONObject jsonObject = JSONUtil.parseObj(content);
                 JSONObject meta = jsonObject.getJSONObject("meta");
                 JSONObject detail_1 = meta.getJSONObject("detail_1");
-                String title = detail_1.getStr("title");
-                String url = detail_1.getStr("url");
-                String qqdocurl = detail_1.getStr("qqdocurl");
-                MessageChainBuilder builder = new MessageChainBuilder();
-                MessageChain build = builder.append(new QuoteReply(groupMessageEvent.getMessage()))
-                        .append("小程序信息如下\n")
-                        .append("标题： ")
-                        .append(title)
-                        .append("\n")
-                        .append("链接： ")
-                        .append(url)
-                        .append("\n")
-                        .append("原始链接： ")
-                        .append(qqdocurl).build();
-                groupMessageEvent.getSubject().sendMessage(build);
+                s.set(detail_1.getStr("qqdocurl"));
             });
-        }catch (Exception ignore){
+        }catch (Exception ignore){}
+        String s1 = s.get();
+        if(!StringUtils.hasLength(s1)) {
+            s.set(groupMessageEvent.getMessage().contentToString());
         }
-        String s = groupMessageEvent.getMessage().contentToString();
-        if(ChromeUtils.isUrl(s)){
-            InputStream screenShotStream = ChromeUtils.getScreenShotStream(s);
+        if(ChromeUtils.isUrl(s.get())){
+            InputStream screenShotStream = ChromeUtils.getScreenShotStream(s.get());
             Group subject = groupMessageEvent.getSubject();
             subject.sendMessage(new MessageChainBuilder().append(Contact.uploadImage(subject,screenShotStream)).build());
         }
