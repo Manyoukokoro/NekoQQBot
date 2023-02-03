@@ -35,9 +35,6 @@ public class BotRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-//        log.info("开始下载卡图资源......");
-//        ImageUtil.downloadAzureLaneSrc();
-//        log.info("下载完成!");
         if (ObjectUtils.isEmpty(id) || ObjectUtils.isEmpty(password)) {
             id = LoginUtils.getUserId();
             password = LoginUtils.getPassword();

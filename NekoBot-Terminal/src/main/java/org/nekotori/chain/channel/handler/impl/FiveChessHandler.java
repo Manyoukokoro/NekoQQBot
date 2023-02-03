@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
  */
 
 @HandlerId("442379512")
-public class /**/FiveChessHandler implements ChannelHandler {
+public class FiveChessHandler implements ChannelHandler {
 
     public static final int size = 15;
 

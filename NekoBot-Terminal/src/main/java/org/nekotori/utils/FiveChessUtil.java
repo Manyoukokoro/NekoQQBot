@@ -15,13 +15,7 @@ public class FiveChessUtil {
 
 
     public static int[][] generateField(int size) {
-        int[][] blocks = new int[size][size];
-        for (int[] row : blocks) {
-            for (int column : row) {
-                column = 0;
-            }
-        }
-        return blocks;
+        return new int[size][size];
     }
 
     public static void main(String[] args) throws IOException {

@@ -19,11 +19,6 @@ import java.io.InputStream;
 public class ChromeUtils {
 
 
-
-    public static void main(String[] args) throws Exception {
-        System.out.println(isUrl("wwwcom"));
-    }
-
     public static boolean isUrl(String content){
         return content.matches("^((http|https)://)?(([A-Za-z0-9]+-[A-Za-z0-9]+|[A-Za-z0-9]+)\\.)+([A-Za-z]+)[/?:]?.*$");
     }

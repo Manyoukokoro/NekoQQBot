@@ -34,29 +34,7 @@ import java.util.stream.Collectors;
  */
 
 public class BotSimulator {
-
     private static Bot nekoBot;
-
-//    public static void main(String[] args) {
-//        String body = HttpRequest.get("https://api-simulator-toolbox.ghzs.com/v1d0/web/simulator/princess_connect_re_dive/roles").execute().body();
-//        JSONArray objects = JSONUtil.parseArray(body);
-//        objects.stream().map(o -> {
-//            JSONObject card = JSONUtil.parseObj(o);
-//            String pic_url = card.get("pic_url").toString();
-//            String name = card.get("name").toString();
-//            String grade = card.get("grade").toString();
-//            JSONArray card_pool_belonged = card.getJSONArray("card_pool_belonged");
-//            List<String> belonged = card_pool_belonged.stream().map(Object::toString).collect(Collectors.toList());
-//            String id = card.get("_id").toString();
-//            File file = new File("jpg/" + id.toString() + ".jpg");
-//            HttpUtil.downloadFile(pic_url.toString(), file);
-//            return null;
-//        });
-//    }
-
-    public static final String update = "NekoBot升级完成！\n" + "1.略微修改了五子棋棋盘的显示效果\n" + "2.极大降低了签到获得个位数经验的概率\n";
-
-
     public static void run(Long qq, String password, String deviceFile) {
         BotConfiguration botConfiguration = new BotConfiguration();
         botConfiguration.fileBasedDeviceInfo(deviceFile);
@@ -73,25 +51,10 @@ public class BotSimulator {
             }
         });
         Executors.newSingleThreadExecutor().execute(nekoBot::join);
-        ContactList<Group> groups = nekoBot.getGroups();
-//        groups.forEach(group->{
-//            group.sendMessage(update);
-//        });
     }
 
     public static Bot getBot() {
         return nekoBot;
     }
-
-    public static void main(String[] args) {
-        System.getProperties().setProperty("webdriver.chrome.driver", "chromedriver");
-        ChromeOptions chromeOptions = new ChromeOptions();
-        ChromeDriver chromeDriver = new ChromeDriver(chromeOptions);
-        chromeDriver.get("https://www.baidu.com");
-        byte[] screenshotAs = chromeDriver.getScreenshotAs(OutputType.BYTES);
-    }
-
-
-
 }
     

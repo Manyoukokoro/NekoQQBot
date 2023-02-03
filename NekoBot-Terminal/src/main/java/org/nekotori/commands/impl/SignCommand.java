@@ -145,7 +145,7 @@ public class SignCommand extends PrivilegeGroupCommand {
                 .build();
     }
     private static ChatMemberDo calLevel(ChatMemberDo chatMemberDo, long incomeExp) {
-        if (chatMemberDo.getLevel() < 20 && incomeExp >= (Math.pow(2d, (int) ((double) chatMemberDo.getLevel() / 10)) * 10)) {
+        if (chatMemberDo.getLevel() < 100 && incomeExp >= (Math.pow(2d, (int) ((double) chatMemberDo.getLevel() / 10)) * 10)) {
             chatMemberDo.setLevel(chatMemberDo.getLevel() + 1);
             return calLevel(chatMemberDo, incomeExp - (long) (Math.pow(2d, (int) ((double) chatMemberDo.getLevel() / 10)) * 10));
         }
