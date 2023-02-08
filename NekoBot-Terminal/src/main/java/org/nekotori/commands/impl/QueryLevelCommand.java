@@ -57,7 +57,7 @@ public class QueryLevelCommand extends NoAuthGroupCommand {
                         + "级,累计签到:"
                         + chatMemberDo.getTotalSign()
                         + "天")
-                        +"\n持有金币："
+                        +"\n持有猫代币："
                         +(chatMemberDo.getGold()==null?0:chatMemberDo.getGold())
                         +"枚");
             }

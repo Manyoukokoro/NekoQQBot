@@ -76,7 +76,7 @@ public class ExcelUtils {
         private String nowStageName;
 
         @ExcelProperty({"出刀统计", "阶段索引"})
-        @ColumnWidth(5)
+        @ColumnWidth(15)
         private String nowStage;
     }
 }

@@ -68,7 +68,7 @@ import java.util.stream.Collectors;
 public class ReportDamageCommand extends NoAuthGroupCommand {
     @Override
     public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
-        String s = FileUtil.readUtf8String(new File("worldBoss" + subject.getId()));
+        String s = FileUtil.readUtf8String(new File("raid/worldBoss" + subject.getId()));
         JSONObject jsonObject = JSONUtil.parseObj(s);
         JSONArray currentUser = jsonObject.getJSONArray("currentUser");
         JSONArray history = jsonObject.getJSONArray("history");
@@ -296,7 +296,7 @@ public class ReportDamageCommand extends NoAuthGroupCommand {
     }
 
     private static void saveFile(Group subject, JSONObject jsonObject) {
-        FileUtil.writeString(jsonObject.toStringPretty(),new File("worldBoss"+ subject.getId()), StandardCharsets.UTF_8);
+        FileUtil.writeString(jsonObject.toStringPretty(),new File("raid/worldBoss"+ subject.getId()), StandardCharsets.UTF_8);
     }
 
     @NotNull

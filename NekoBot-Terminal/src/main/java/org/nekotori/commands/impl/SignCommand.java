@@ -133,10 +133,10 @@ public class SignCommand extends PrivilegeGroupCommand {
                 .append("经验")
                 .append("\n获得")
                 .append(String.valueOf(gold))
-                .append("金币")
+                .append("猫代币")
                 .append("\n您现在共有")
                 .append(String.valueOf(chatMemberDo.getGold()))
-                .append("金币")
+                .append("猫代币")
                 .build());
         Pair<InputStream, String> inputStreamStringPair = ImageUtil.drawSignPic(sender, chatMemberDo, incomeExp,msgCount.intValue(),imgCount.intValue());
         imgCache.put(subject.getId()+":"+sender.getId(),inputStreamStringPair.getValue());

@@ -14,6 +14,7 @@ import org.nekotori.chain.ChainMessageSelector;
 import org.nekotori.chain.channel.handler.impl.ChangeBossHandler;
 import org.nekotori.commands.ManagerGroupCommand;
 import org.nekotori.entity.CommandAttr;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -32,10 +33,13 @@ public class WorldBossCommand extends ManagerGroupCommand {
     @Resource
     private ChangeBossHandler changeBossHandler;
 
+    @Value("${bot.dir}")
+    private String botDir;
+
     @Override
     public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         if("加载Boss".equals(commandAttr.getCommand())){
-            File[] bosses = FileUtil.ls("/root/boss");
+            File[] bosses = FileUtil.ls(botDir+"/boss");
             List<String> bossesNames = Arrays.stream(bosses).sequential().map(File::getName).collect(Collectors.toList());
             String join = String.join("\n", bossesNames);
             if(CollectionUtils.isEmpty(commandAttr.getParam())){
@@ -49,7 +53,7 @@ public class WorldBossCommand extends ManagerGroupCommand {
             for (File boss : bosses) {
                 if(s.equals(boss.getName())){
                     String content = FileUtil.readUtf8String(boss);
-                    File file = new File("worldBoss" + subject.getId());
+                    File file = new File("raid/worldBoss" + subject.getId());
                     FileUtil.writeString(content,file, StandardCharsets.UTF_8);
                     return new MessageChainBuilder()
                             .append(new QuoteReply(messageChain))
@@ -60,7 +64,7 @@ public class WorldBossCommand extends ManagerGroupCommand {
             return null;
         }
         if("修改BossJson".equals(commandAttr.getCommand())){
-            File file = new File("worldBoss" + subject.getId());
+            File file = new File("raid/worldBoss" + subject.getId());
             String s = FileUtil.readUtf8String(file);
             if(CollectionUtils.isEmpty(commandAttr.getParam())){
                 return new MessageChainBuilder().append("未携带请求参数，原Json如下：\n").append(s).build();

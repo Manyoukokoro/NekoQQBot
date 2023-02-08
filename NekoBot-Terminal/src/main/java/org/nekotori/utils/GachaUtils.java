@@ -3,6 +3,7 @@ package org.nekotori.utils;
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.json.JSON;
 import cn.hutool.json.JSONUtil;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -21,20 +22,7 @@ public class GachaUtils {
         JSON json = JSONUtil.readJSON(file, StandardCharsets.UTF_8);
         List<ImageUtil.AzureLaneCard> azureLaneCards = json.toBean(new TypeReference<List<ImageUtil.AzureLaneCard>>() {
         });
-        List<String> types;
-        switch (type) {
-            case 0:
-                types = Arrays.asList("驱逐", "轻巡", "维修");
-                break;
-            case 1:
-                types = Arrays.asList("重炮", "重巡", "战巡", "战列");
-                break;
-            default:
-                types = Arrays.asList("航母", "轻母", "重巡", "维修", "潜艇");
-                break;
-        }
-
-        azureLaneCards = azureLaneCards.stream().filter(card -> types.contains(card.getType())).collect(Collectors.toList());
+        azureLaneCards = getAzureLaneCards(type, azureLaneCards);
         List<ImageUtil.AzureLaneCard> Ns = azureLaneCards.stream().filter((card) -> card.getLevel() == 1 && card.getBuildType().contains(0)).collect(Collectors.toList());
         List<ImageUtil.AzureLaneCard> Rs = azureLaneCards.stream().filter((card) -> card.getLevel() == 2 && card.getBuildType().contains(0)).collect(Collectors.toList());
         List<ImageUtil.AzureLaneCard> sRs = azureLaneCards.stream().filter((card) -> card.getLevel() == 3 && card.getBuildType().contains(0)).collect(Collectors.toList());
@@ -64,22 +52,9 @@ public class GachaUtils {
         List<ImageUtil.AzureLaneCard> resAzureLaneCards = new ArrayList<>();
         File file = new File("blhx/info.json");
         JSON json = JSONUtil.readJSON(file, StandardCharsets.UTF_8);
-        List<ImageUtil.AzureLaneCard> azureLaneCards = json.toBean(new TypeReference<List<ImageUtil.AzureLaneCard>>() {
+        List<ImageUtil.AzureLaneCard> azureLaneCards = json.toBean(new TypeReference<>() {
         });
-        List<String> types;
-        switch (type) {
-            case 0:
-                types = Arrays.asList("驱逐", "轻巡", "维修");
-                break;
-            case 1:
-                types = Arrays.asList("重炮", "重巡", "战巡", "战列");
-                break;
-            default:
-                types = Arrays.asList("航母", "轻母", "重巡", "维修", "潜艇");
-                break;
-        }
-
-        azureLaneCards = azureLaneCards.stream().filter(card -> types.contains(card.getType())).collect(Collectors.toList());
+        azureLaneCards = getAzureLaneCards(type, azureLaneCards);
         List<ImageUtil.AzureLaneCard> Ns = azureLaneCards.stream().filter((card) -> card.getLevel() == 1).collect(Collectors.toList());
         List<ImageUtil.AzureLaneCard> Rs = azureLaneCards.stream().filter((card) -> card.getLevel() == 2).collect(Collectors.toList());
         List<ImageUtil.AzureLaneCard> sRs = azureLaneCards.stream().filter((card) -> card.getLevel() == 3).collect(Collectors.toList());
@@ -102,6 +77,25 @@ public class GachaUtils {
         return resAzureLaneCards;
     }
 
+    @NotNull
+    private static List<ImageUtil.AzureLaneCard> getAzureLaneCards(int type, List<ImageUtil.AzureLaneCard> azureLaneCards) {
+        List<String> types;
+        switch (type) {
+            case 0:
+                types = Arrays.asList("驱逐", "轻巡", "维修");
+                break;
+            case 1:
+                types = Arrays.asList("重炮", "重巡", "战巡", "战列");
+                break;
+            default:
+                types = Arrays.asList("航母", "轻母", "重巡", "维修", "潜艇");
+                break;
+        }
+
+        azureLaneCards = azureLaneCards.stream().filter(card -> types.contains(card.getType())).collect(Collectors.toList());
+        return azureLaneCards;
+    }
+
     public static List<ImageUtil.AzureLaneCard> gachaAzureLaneSp() {
         List<String> gacha = gacha(10, 12, 70, 120, 260, 550);
         List<ImageUtil.AzureLaneCard> resAzureLaneCards = new ArrayList<>();
@@ -113,7 +107,6 @@ public class GachaUtils {
         List<String> collect = eventCards.stream().map(ImageUtil.AzureLaneCard::getName).collect(Collectors.toList());
         azureLaneCards = azureLaneCards.stream().filter(card -> !collect.contains(card.getName())).collect(Collectors.toList());
         List<ImageUtil.AzureLaneCard> urs = azureLaneCards.stream().filter(card -> collect.contains(card.getName()) && eventCards.stream().filter(c -> c.getP() != 0).map(ImageUtil.AzureLaneCard::getName).collect(Collectors.toList()).contains(card.getName())).collect(Collectors.toList());
-
         List<ImageUtil.AzureLaneCard> Ns = azureLaneCards.stream().filter((card) -> card.getLevel() == 1 && card.getBuildType().contains(0)).collect(Collectors.toList());
         List<ImageUtil.AzureLaneCard> Rs = azureLaneCards.stream().filter((card) -> card.getLevel() == 2 && card.getBuildType().contains(0)).collect(Collectors.toList());
         List<ImageUtil.AzureLaneCard> sRs = azureLaneCards.stream().filter((card) -> card.getLevel() == 3 && card.getBuildType().contains(0)).collect(Collectors.toList());

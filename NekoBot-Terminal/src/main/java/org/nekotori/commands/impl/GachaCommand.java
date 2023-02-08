@@ -92,7 +92,7 @@ public class GachaCommand extends PrivilegeGroupCommand {
             ChatMemberDo chatMemberDo = chatMemberMapper.selectOne(Wrappers.<ChatMemberDo>lambdaQuery().eq(ChatMemberDo::getMemberId, sender.getId()).eq(ChatMemberDo::getGroupId, subject.getId()));
             Integer gold = chatMemberDo.getGold();
             if(gold<10){
-                return new MessageChainBuilder().append(new QuoteReply(messageChain)).append("金币不足，请签到获取金币").build();
+                return new MessageChainBuilder().append(new QuoteReply(messageChain)).append("猫代币不足，请签到获取猫代币").build();
             }
             List<String> gacha = GachaUtils.gacha(10, 0, 4, 43, 53, 0);
             int getGold = gacha.stream().map(s -> {
@@ -116,7 +116,7 @@ public class GachaCommand extends PrivilegeGroupCommand {
             }
             InputStream nikkeGachaImageStream = ImageUtil.getNikkeGachaImageStream(cardAttrs);
             assert nikkeGachaImageStream != null;
-            return new MessageChainBuilder().append(new QuoteReply(messageChain)).append("消耗10枚金币进行招募\n返还"+getGold+"枚金币\n").append(Contact.uploadImage(subject,nikkeGachaImageStream)).build();
+            return new MessageChainBuilder().append(new QuoteReply(messageChain)).append("消耗10枚猫代币进行招募\n返还"+getGold+"枚猫代币\n").append(Contact.uploadImage(subject,nikkeGachaImageStream)).build();
         }
 
 

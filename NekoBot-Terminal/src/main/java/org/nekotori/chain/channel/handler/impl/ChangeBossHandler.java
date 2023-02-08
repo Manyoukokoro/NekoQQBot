@@ -77,6 +77,6 @@ public class ChangeBossHandler implements ChannelHandler {
         jsonObject.putOnce("chancePerUser",3);
         jsonObject.putOnce("currentUser",new ArrayList<>());
         jsonObject.putOnce("stageNames",new ArrayList<>());
-        FileUtil.writeString(jsonObject.toStringPretty(),new File("worldBoss"+groupMessageEvent.getSubject().getId()), StandardCharsets.UTF_8);
+        FileUtil.writeString(jsonObject.toStringPretty(),new File("raid/worldBoss"+groupMessageEvent.getSubject().getId()), StandardCharsets.UTF_8);
     }
 }

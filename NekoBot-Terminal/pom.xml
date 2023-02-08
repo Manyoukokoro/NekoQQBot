@@ -118,7 +118,15 @@
             <artifactId>selenium-java</artifactId>
             <version>3.141.59</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.github.binarywang/java-emoji-converter -->
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>java-emoji-converter</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+
     </dependencies>
+
 
     <build>
         <finalName>NekoBot-1.0.5a02</finalName>

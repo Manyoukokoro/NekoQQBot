@@ -441,7 +441,7 @@ public class ImageUtil {
         } catch (Exception e) {
             e.printStackTrace();
             try {
-                File[] files = FileUtil.ls( "/root/pics");
+                File[] files = FileUtil.ls( "/home/nekotori/bot/pics");
                 if (files != null && files.length > 0) {
                     int index = new Random().nextInt(files.length);
                     BufferedImage read = ImageIO.read(files[index]);
