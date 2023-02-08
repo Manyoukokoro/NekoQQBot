@@ -6,6 +6,7 @@ import com.github.binarywang.java.emoji.EmojiConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.PageLoadStrategy;
@@ -16,11 +17,13 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.util.StopWatch;
+import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -40,6 +43,28 @@ public class ChromeUtils {
     private static final String nikkeCharaChartsXpath = "//table[@class='mould-table selectItemTable col-group-table']";
 
     public static void main(String[] args) {
+        String name = "";
+        ChromeDriver chromeDriver = initChrome();
+        chromeDriver.get("https://nikke.gamekee.com");
+        List<WebElement> elementsByXPath = chromeDriver.findElementsByXPath(nikkeListXpath);
+        Optional<WebElement> anyMappedChara = elementsByXPath.stream()
+                .filter(ele -> StringUtils.hasLength(ele.getText()))
+                .filter(ele -> ele.getText().contains(name))
+                .findAny();
+        anyMappedChara.ifPresent(WebElement::click);
+        tWait(10000);
+        List<WebElement> nikkeCharts = chromeDriver.findElementsByXPath(nikkeCharaChartsXpath);
+        int i=0;
+        for (WebElement nikkeChart : nikkeCharts) {
+            if(nikkeChart.getSize().getWidth()==0||nikkeChart.getSize().getHeight()==0){
+                continue;
+            }
+            chromeDriver.manage().window().setSize(nikkeChart.getSize());
+            printElement(nikkeChart,"nikke/img/"+name+(i++)+".png");
+        }
+    }
+
+    private static void downloadNikkeCharaThumbnail() {
         ChromeDriver chromeDriver = initChrome();
         chromeDriver.get("https://nikke.gamekee.com");
         List<WebElement> elementsByXPath = chromeDriver.findElementsByXPath(nikkeListXpath);
@@ -50,15 +75,9 @@ public class ChromeUtils {
         });
     }
 
-    public static void printElement(WebElement element){
+    public static void printElement(WebElement element,String name){
         byte[] screenshotAs = element.getScreenshotAs(OutputType.BYTES);
-        saveTemp(new ByteArrayInputStream(screenshotAs));
-    }
-
-    public static void waitUntilVisible(WebDriver webDriver, By locator) {
-        WebDriverWait driverWait = new WebDriverWait(webDriver, 10);
-        WebElement el = webDriver.findElement(locator);
-        driverWait.until(driver-> ((JavascriptExecutor)driver).executeScript("return document.images[0].complete", el));
+        saveTemp(new ByteArrayInputStream(screenshotAs),name);
     }
 
     public static InputStream getNikkeCDK(){
@@ -66,6 +85,7 @@ public class ChromeUtils {
         chromeDriver.get("https://nikke.gamekee.com");
         WebElement eB = chromeDriver.findElementByXPath(nikkeCDKEntryButton);
         eB.click();
+        tWait(2000);
         WebElement elementByXPath = chromeDriver.findElementByXPath(nikkeCdkChartXpath);
         byte[] screenshotAs = elementByXPath.getScreenshotAs(OutputType.BYTES);
         return new ByteArrayInputStream(screenshotAs);
@@ -78,7 +98,8 @@ public class ChromeUtils {
         chromeOptions.addArguments("--headless");
         chromeOptions.addArguments("--no-sandbox");
         chromeOptions.addArguments("--disable-gpu");
-        chromeOptions.addArguments("--window-size=1920,1080");
+        chromeOptions.addArguments("--start-maximized");
+        chromeOptions.addArguments("--start-fullscreen");
         chromeOptions.addArguments("disable-infobars"); // disabling infobars
         chromeOptions.addArguments("--disable-extensions"); // disabling extensions
         chromeOptions.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
@@ -147,7 +168,7 @@ public class ChromeUtils {
         return new ByteArrayInputStream(screenshotAs);
     }
 
-    public static void  saveTemp(InputStream inputStream){
-        FileUtil.writeFromStream(inputStream,new File("temp.png"));
+    public static void  saveTemp(InputStream inputStream,String name){
+        FileUtil.writeFromStream(inputStream,new File(name));
     }
 }
