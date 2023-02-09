@@ -20,7 +20,7 @@ public abstract class PrivilegeGroupCommand implements Command {
     @Override
     public boolean checkAuthorization(GroupMessageEvent event) {
         final long id = event.getGroup().getId();
-        String s = event.getMessage().serializeToMiraiCode();
+        String s = CommandUtils.transMessageEventToText(event);
         CommandAttr commandAttr = CommandUtils.resolveTextCommand(s);
         return groupService.checkPrivilege(id, commandAttr.getCommand());
     }

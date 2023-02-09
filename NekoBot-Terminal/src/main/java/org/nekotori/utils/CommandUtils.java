@@ -1,12 +1,18 @@
 package org.nekotori.utils;
 
+import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.message.data.MessageChain;
+import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.SingleMessage;
+import org.jetbrains.annotations.NotNull;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.Command;
 import org.nekotori.common.InnerConstants;
 import org.nekotori.entity.CommandAttr;
+import org.nekotori.entity.CustomResponse;
+import org.nekotori.job.AsyncJob;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -37,31 +43,49 @@ public class CommandUtils {
         return commandAttr;
     }
 
-    public static CommandAttr resolveCommand(MessageChain message) {
+    public static CommandAttr resolveCommand(MessageChain message,Group subject) {
         int size = message.size();
         if (size < 3) {
-            return resolveTextCommand(message.contentToString());
+            return resolveTextCommand(CommandUtils.transMessageToText(message,subject));
         }
         List<SingleMessage> singleMessages = message.subList(2, size);
-
-        CommandAttr commandAttr = resolveTextCommand(message.get(1).contentToString());
+        MessageChain build = new MessageChainBuilder().append(message.get(1)).build();
+        CommandAttr commandAttr = resolveTextCommand(CommandUtils.transMessageToText(build,subject));
         commandAttr.setExtMessage(singleMessages);
         return commandAttr;
     }
 
     public static boolean checkCommand(Command command, GroupMessageEvent event) {
-        CommandAttr commandAttr = CommandUtils.resolveTextCommand(event.getMessage().serializeToMiraiCode());
+        CommandAttr commandAttr = CommandUtils.resolveTextCommand(CommandUtils.transMessageEventToText(event));
         String commandText = commandAttr.getCommand();
         return StringUtils.hasLength(commandText) && List.of(command.getClass().getAnnotation(IsCommand.class).name())
                 .contains(commandText);
     }
 
     public static boolean isCommand(GroupMessageEvent groupMessageEvent) {
-        String s = groupMessageEvent.getMessage().serializeToMiraiCode();
+        String s = transMessageEventToText(groupMessageEvent);
         for (String c : InnerConstants.commandHeader) {
             if (s.startsWith(c)) return true;
         }
         return false;
+    }
+
+    @NotNull
+    public static String transMessageEventToText(GroupMessageEvent groupMessageEvent) {
+        return transMessageToText(groupMessageEvent.getMessage(),groupMessageEvent.getSubject());
+    }
+
+    @NotNull
+    public static String transMessageToText(MessageChain messages, Group subject) {
+        List<CustomResponse> customResponses = AsyncJob.customRespLocalCache.get(subject.getId());
+        List<CustomResponse> alias = customResponses.stream().filter(s -> CustomResponse.WAY.ALIAS.equals(s.getWay())).collect(Collectors.toList());
+        String s = messages.serializeToMiraiCode();
+        if(!CollectionUtils.isEmpty(alias)){
+            for (CustomResponse customResponse : alias) {
+                s = s.replace(customResponse.getKeyWord(),customResponse.getResponse());
+            }
+        }
+        return s;
     }
 
     public static List<String> resolveRegisteredCommand(String command) {

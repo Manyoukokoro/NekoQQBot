@@ -5,7 +5,6 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
-import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
@@ -84,7 +83,7 @@ public class CustomResponseCommand extends NoAuthGroupCommand {
             } else {
                 customResponses.add(build);
             }
-            AsyncJob.localCache.put(subject.getId(), customResponses);
+            AsyncJob.customRespLocalCache.put(subject.getId(), customResponses);
             group.setCustomResponse(JSONUtil.toJsonStr(customResponses));
             chatGroupMapper.updateById(group);
             if (commandAttr.getCommand().equals("撤销回复")) {

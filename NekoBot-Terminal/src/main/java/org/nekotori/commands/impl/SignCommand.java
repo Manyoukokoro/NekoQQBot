@@ -54,7 +54,7 @@ public class SignCommand extends PrivilegeGroupCommand {
     private ChatHistoryMapper chatHistoryMapper;
     @Override
     public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
-        if("签到图片".equals(CommandUtils.resolveCommand(messageChain).getCommand())){
+        if("签到图片".equals(CommandUtils.resolveCommand(messageChain,subject).getCommand())){
             String signImg = getSignImg(sender.getId(), subject.getId());
             if(!StringUtils.hasLength(signImg)){
                 signImg = "找不到对象";

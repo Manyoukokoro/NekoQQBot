@@ -50,7 +50,7 @@ import java.util.stream.Stream;
 @Component
 public class AsyncJob {
 
-    public static Map<Long, List<CustomResponse>> localCache;
+    public static Map<Long, List<CustomResponse>> customRespLocalCache;
 
     public static List<Long> noRepeatGroup = new ArrayList<>();
 
@@ -77,7 +77,7 @@ public class AsyncJob {
 
     @Bean(name = "groupCusRes")
     public Map<Long, List<CustomResponse>> getGroupCustomResponse() {
-        localCache = groupService.getGroupCustomResponses();
+        customRespLocalCache = groupService.getGroupCustomResponses();
         List<ChatGroupDo> chatGroupDos = chatGroupMapper.selectList(Wrappers.<ChatGroupDo>lambdaQuery());
         if (!ObjectUtils.isEmpty(chatGroupDos)) {
             chatGroupDos.forEach(
@@ -88,12 +88,12 @@ public class AsyncJob {
                     }
             );
         }
-        return localCache;
+        return customRespLocalCache;
     }
 
     @Async
     public void handleCustomResponse(GroupMessageEvent groupMessageEvent) {
-        List<CustomResponse> customResponses = localCache.get(groupMessageEvent.getGroup().getId());
+        List<CustomResponse> customResponses = customRespLocalCache.get(groupMessageEvent.getGroup().getId());
         String message = groupMessageEvent.getMessage().contentToString();
         List<String> probResponses = new ArrayList<>();
         if (CollectionUtils.isEmpty(customResponses)) {

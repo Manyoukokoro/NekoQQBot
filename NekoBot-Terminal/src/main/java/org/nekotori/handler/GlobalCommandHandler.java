@@ -64,9 +64,9 @@ public class GlobalCommandHandler {
                                 final int id = chatMemberMapper.insert(chatMemberDo);
                                 chatMemberDo.setId(id);
                             }
-                            chatMemberDo.setLastCommand(groupMessageEvent.getMessage().serializeToMiraiCode());
+                            chatMemberDo.setLastCommand(CommandUtils.transMessageEventToText(groupMessageEvent));
                             chatMemberMapper.updateById(chatMemberDo);
-                            CommandAttr commandAttr = CommandUtils.resolveCommand(groupMessageEvent.getMessage());
+                            CommandAttr commandAttr = CommandUtils.resolveCommand(groupMessageEvent.getMessage(),groupMessageEvent.getSubject());
                             MessageChain execute = command.execute(
                                     groupMessageEvent.getSender(),
                                     groupMessageEvent.getGroup(),

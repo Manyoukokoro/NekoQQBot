@@ -44,7 +44,9 @@ public class CustomResponse {
         CONTAINS("包含"),
         REGEX("正则"),
         BEGIN("开头"),
-        END("结尾");
+        END("结尾"),
+
+        ALIAS("别名");
 
         private final String description;
 
