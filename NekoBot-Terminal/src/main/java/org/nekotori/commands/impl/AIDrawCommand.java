@@ -11,6 +11,7 @@ import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.NoAuthGroupCommand;
+import org.nekotori.commands.PrivilegeGroupCommand;
 import org.nekotori.entity.CommandAttr;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -19,7 +20,7 @@ import java.util.List;
 
 @IsCommand(name = {"AI"}, description = "进行AI画图，该功能只有在bot部署在有显卡和Diffusion服务的物理机上才能使用\n格式:\n    (!/-/#)AI ...<英文提词>")
 @Slf4j
-public class AIDrawCommand extends NoAuthGroupCommand {
+public class AIDrawCommand extends PrivilegeGroupCommand {
     @Override
     public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         if(CollectionUtils.isEmpty(commandAttr.getParam())|| !StringUtils.hasLength(commandAttr.getParam().get(0))){

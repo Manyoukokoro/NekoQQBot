@@ -14,6 +14,7 @@ import net.mamoe.mirai.message.data.QuoteReply;
 import net.mamoe.mirai.message.data.SingleMessage;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.NoAuthGroupCommand;
+import org.nekotori.commands.PrivilegeGroupCommand;
 import org.nekotori.dao.ChatMemberMapper;
 import org.nekotori.entity.ChatMemberDo;
 import org.nekotori.entity.CommandAttr;
@@ -24,7 +25,7 @@ import java.io.InputStream;
 import java.util.List;
 
 @IsCommand(name = {"背景"},description = "设置用户签到卡片背景\n格式:\n    (!/-/#)背景 <ImgUrl/图片>")
-public class BackgroundCommand extends NoAuthGroupCommand {
+public class BackgroundCommand extends PrivilegeGroupCommand {
 
     @Resource
     private ChatMemberMapper memberMapper;

@@ -14,6 +14,7 @@ import org.nekotori.commands.ManagerGroupCommand;
 import org.nekotori.dao.ChatHistoryMapper;
 import org.nekotori.entity.ChatHistoryDo;
 import org.nekotori.entity.CommandAttr;
+import org.nekotori.exception.ChromeDriverInUseException;
 import org.nekotori.handler.ThreadSingleton;
 import org.nekotori.utils.ChromeUtils;
 import org.springframework.util.StringUtils;
@@ -51,11 +52,18 @@ public class SummaryChatCommands extends ManagerGroupCommand {
         sum.remove(sum.size()-1);
         String join = String.join("", sum);
         ThreadSingleton.run(()->{
-            String summary = ChromeUtils.summaryChat(join);
-            subject.sendMessage(new MessageChainBuilder()
-                    .append(new QuoteReply(messageChain))
-                    .append("总结最近聊天信息如下：")
-                    .append(summary).build());
+            try {
+                String summary = ChromeUtils.summaryChat(join);
+                subject.sendMessage(new MessageChainBuilder()
+                        .append(new QuoteReply(messageChain))
+                        .append("总结最近聊天信息如下：")
+                        .append(summary).build());
+            }catch (ChromeDriverInUseException e){
+                subject.sendMessage(new MessageChainBuilder()
+                        .append(new QuoteReply(messageChain))
+                        .append("抱歉，NekoBot脑子不够用啦")
+                        .build());
+            }
         });
         return new MessageChainBuilder()
                 .append("NekoBot正在奋笔疾书中...").build();

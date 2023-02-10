@@ -9,6 +9,7 @@ import net.mamoe.mirai.message.data.QuoteReply;
 import org.jetbrains.annotations.NotNull;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.NoAuthGroupCommand;
+import org.nekotori.commands.PrivilegeGroupCommand;
 import org.nekotori.common.NikkeInfoType;
 import org.nekotori.entity.CommandAttr;
 import org.nekotori.exception.ElementNoFoundException;
@@ -19,7 +20,7 @@ import java.io.InputStream;
 import java.util.List;
 
 @IsCommand(name = {"nk","nikke","NK"})
-public class NikkeCommand extends NoAuthGroupCommand {
+public class NikkeCommand extends PrivilegeGroupCommand {
 
     private static final List<String> cdkCom = List.of("cdk","CDK","今日cdk","今日CDK");
     private static final List<String> queryGeneral = List.of("查询角色","查询","角色");

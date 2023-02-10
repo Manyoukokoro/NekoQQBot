@@ -80,7 +80,18 @@ public class ChromeUtils {
         inUse.set(true);
         ChromeDriver chromeDriver = initChrome();
         try{
-            return supplier.apply(chromeDriver);
+            AtomicBoolean taskFinish = new AtomicBoolean(false);
+            ThreadSingleton.run(()->{
+                tWait(30*1000);
+                if(!taskFinish.get()){
+                    System.out.println("chrome task run over 30s! force stop it!");
+                    destroyChrome();
+                    inUse.set(false);
+                }
+            });
+            R apply = supplier.apply(chromeDriver);
+            taskFinish.set(true);
+            return apply;
         } finally {
             destroyChrome();
             inUse.set(false);

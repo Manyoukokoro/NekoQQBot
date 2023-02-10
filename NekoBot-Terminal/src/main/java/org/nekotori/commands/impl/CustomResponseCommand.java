@@ -11,11 +11,13 @@ import net.mamoe.mirai.message.data.PlainText;
 import net.mamoe.mirai.message.data.QuoteReply;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.NoAuthGroupCommand;
+import org.nekotori.commands.PrivilegeGroupCommand;
 import org.nekotori.dao.ChatGroupMapper;
 import org.nekotori.entity.ChatGroupDo;
 import org.nekotori.entity.CommandAttr;
 import org.nekotori.entity.CustomResponse;
 import org.nekotori.job.AsyncJob;
+import org.nekotori.utils.CommandUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -26,7 +28,7 @@ import java.util.stream.Collectors;
 
 
 @IsCommand(name = {"回复", "撤销回复", "查询回复"}, description = "自定义回复\n格式:\n    (!/-/#)回复 <触发方式> <触发文> [回复文]\n详情:\n支持以下触发方式：\n    全文(当群消息完全匹配触发文的时候，回复回复文)\n    开头(当群消息以触发文开头的时候，回复回复文)\n    结尾(当群消息以触发文结尾的时候，回复回复文)\n    包含(当群消息包含触发文的时候，回复回复文)\n    正则(当群消息满足触发文正则的时候，回复回复文)\n    格式化(当群消息匹配触发文的格式的时候，回复回复文，并且可以在回复文中引用触发文中捕获的占位符)\n示例:\n 回复 格式化 可可是{adj} 我最喜欢{adj}了\n 当群消息有人发送“可可是猫娘”时，bot会回复“我最喜欢猫娘了”")
-public class CustomResponseCommand extends NoAuthGroupCommand {
+public class CustomResponseCommand extends PrivilegeGroupCommand {
 
     @Resource
     private ChatGroupMapper chatGroupMapper;
@@ -35,6 +37,7 @@ public class CustomResponseCommand extends NoAuthGroupCommand {
     public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
 
         String s = messageChain.contentToString().replace("\\n", "");
+        commandAttr = CommandUtils.resolveTextCommand(s);
         //查询回复
         if ("查询回复".equals(commandAttr.getCommand())) {
             ChatGroupDo group = chatGroupMapper.selectOne(Wrappers.<ChatGroupDo>lambdaQuery().eq(ChatGroupDo::getGroupId, subject.getId()));

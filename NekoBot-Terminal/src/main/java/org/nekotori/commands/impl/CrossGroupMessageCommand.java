@@ -10,6 +10,7 @@ import net.mamoe.mirai.message.data.PlainText;
 import net.mamoe.mirai.message.data.SingleMessage;
 import org.nekotori.annotations.IsCommand;
 import org.nekotori.commands.NoAuthGroupCommand;
+import org.nekotori.commands.PrivilegeGroupCommand;
 import org.nekotori.entity.CommandAttr;
 import org.springframework.util.CollectionUtils;
 
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 
 
 @IsCommand(name = { "k", "聊天列表"}, description = "跨群发送消息\n格式:\n    (!/-/#)k <目标群id> <消息内容>\n\n查询所有可以发送消息的聊天列表\n格式:\n    (!/-/#)聊天列表")
-public class CrossGroupMessageCommand extends NoAuthGroupCommand {
+public class CrossGroupMessageCommand extends PrivilegeGroupCommand {
     @Override
     public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         if ("聊天列表".equals(commandAttr.getCommand())) {
