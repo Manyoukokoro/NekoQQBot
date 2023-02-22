@@ -1,9 +1,11 @@
 package org.nekotori.utils;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.http.HttpUtil;
 import com.github.binarywang.java.emoji.EmojiConverter;
 import lombok.extern.slf4j.Slf4j;
+import net.dreamlu.mica.core.result.R;
 import org.jetbrains.annotations.NotNull;
 import org.nekotori.common.NikkeInfoType;
 import org.nekotori.exception.ChromeDriverInUseException;
@@ -12,9 +14,11 @@ import org.nekotori.handler.ThreadSingleton;
 import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.PageLoadStrategy;
+import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.RemoteWebElement;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StopWatch;
@@ -25,6 +29,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
@@ -44,6 +49,10 @@ public class ChromeUtils {
             System.getProperties().setProperty("webdriver.chrome.driver", "chromedriver");
             ChromeOptions chromeOptions = new ChromeOptions();
             chromeOptions.addArguments("--headless");
+            Proxy proxy = new Proxy();
+            proxy.setAutodetect(false);
+            proxy.setHttpProxy("127.0.0.1:19192");
+            proxy.setSslProxy("127.0.0.1:19192");
             chromeOptions.addArguments("--no-sandbox");
             chromeOptions.addArguments("--disable-gpu");
             chromeOptions.addArguments("--window-size=1920,2560");
@@ -51,8 +60,10 @@ public class ChromeUtils {
             chromeOptions.addArguments("disable-infobars"); // disabling infobars
             chromeOptions.addArguments("--disable-extensions"); // disabling extensions
             chromeOptions.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
+//            chromeOptions.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
             chromeOptions.setPageLoadStrategy(PageLoadStrategy.EAGER);
             ChromeDriver chromeDriver = new ChromeDriver(chromeOptions);
+            chromeOptions.setCapability(CapabilityType.PROXY,proxy);
             chromeDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
             driver = chromeDriver;
         }
@@ -82,9 +93,9 @@ public class ChromeUtils {
         try{
             AtomicBoolean taskFinish = new AtomicBoolean(false);
             ThreadSingleton.run(()->{
-                tWait(30*1000);
+                tWait(120*1000);
                 if(!taskFinish.get()){
-                    System.out.println("chrome task run over 30s! force stop it!");
+                    System.out.println("chrome task run over 2min! force stop it!");
                     destroyChrome();
                     inUse.set(false);
                 }
@@ -99,7 +110,7 @@ public class ChromeUtils {
     }
     private static final String simplifyChatInput = "//textarea";
     private static final String simplifyChatButton = "//div[@class='max-w-xl w-full']/button";
-    private static final String simplifyChatOutput = "//div[starts-with(@class,'bg-white')]/p";
+    private static final String simplifyChatOutput = "//div[starts-with(@class,'bg-white')]";
     private static final String nikkeCDKEntryButton = "//a[@title='cdk收集']";
     private static final String nikkeCdkChartXpath = "//div[@class='wiki-detail-body']//table[@class='mould-table selectItemTable col-group-table']";
     private static final String nikkeListXpath = "//div[@class='item-wrapper icon-size-7 pc-item-group']/*";
@@ -109,11 +120,7 @@ public class ChromeUtils {
 
 
     public static void main(String[] args) {
-//        InputStream nikkeCDK = getNikkeCDK();
-//        saveTemp(nikkeCDK,"cdk.png");
-        InputStream suo = queryNikkeInfo("舒", NikkeInfoType.SKILL);
-        saveTemp(suo,"temp.png");
-        System.exit(0);
+        System.out.println(summaryChat(RandomUtil.randomString(300)));
     }
 
     public static InputStream queryNikkeInfo(String name, NikkeInfoType type) {

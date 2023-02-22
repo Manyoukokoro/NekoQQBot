@@ -32,9 +32,14 @@ public class BotRunner implements ApplicationRunner {
     @Value("${bot.device-file}")
     private String deviceInfoLocation;
 
+    @Value("${bot.proxy.host}")
+    private String host;
+
+    @Value("${bot.proxy.port}")
+    private Integer port;
 
     @Override
-    public void run(ApplicationArguments args) {
+    public void run(ApplicationArguments args) throws InterruptedException {
         if (ObjectUtils.isEmpty(id) || ObjectUtils.isEmpty(password)) {
             id = LoginUtils.getUserId();
             password = LoginUtils.getPassword();
@@ -42,7 +47,12 @@ public class BotRunner implements ApplicationRunner {
         GlobalCommandHandler.init();
         GlobalAtMeHandler.init();
         ChainMessageSelector.init();
+        BotSimulator.runDc(token,host,port);
         BotSimulator.run(id, password, deviceInfoLocation);
+    }
+
+    public static void main(String[] args) {
+        BotSimulator.runDc(token,"127.0.0.1",7890);
     }
 }
     

@@ -21,6 +21,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,6 +43,9 @@ public class SummaryChatCommands extends ManagerGroupCommand {
             if (StringUtils.hasLength(replaceAll)) {
                 Long senderId = ch.getSenderId();
                 String s = subject.getMembers().stream().filter(m -> m.getId() == senderId).findAny().map(m -> StringUtils.hasLength(m.getNameCard()) ? m.getNameCard() : m.getNick()).orElseGet(() -> String.valueOf(senderId));
+                if(s.length()>5){
+                    s = s.substring(0,5);
+                }
                 String time = new SimpleDateFormat("HH:mm").format(ch.getTime());
                 return s + "在" + time + "说:" + ch.getContent() + "\n";
             } else {
@@ -49,8 +53,17 @@ public class SummaryChatCommands extends ManagerGroupCommand {
             }
         }).collect(Collectors.toList());
         ListUtil.reverse(sum);
+        int len = 0;
         sum.remove(sum.size()-1);
-        String join = String.join("", sum);
+        List<String> strings = new ArrayList<>();
+        for(String ss:sum){
+            len+=ss.length();
+            if(len>1400){
+                break;
+            }
+            strings.add(ss);
+        }
+        String join = String.join("", strings);
         ThreadSingleton.run(()->{
             try {
                 String summary = ChromeUtils.summaryChat(join);

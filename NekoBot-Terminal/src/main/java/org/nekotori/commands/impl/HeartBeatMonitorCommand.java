@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@IsCommand(name = {"监控","删除监控","监控列表"},description = "[程]监控业务运行状态\n格式:\n    (!/-/#)监控 <url>\n详情:\n    本功能用于协助开发者监控自己的云端业务系统，会定期对指定url发送get请求，如果系统正常响应，则不会做任何处理，如果系统无响应，则会在群中发送报警信息。\n开发者也可以定制报警信息，只要响应满足如下json结构：\n{\n   \"code\":200,\n   \"message\":\"content\",\n   \"display\":true\n}\n  其中，code和message会被组装为报警信息，display决定是否发送该条信息。")
+//@IsCommand(name = {"监控","删除监控","监控列表"},description = "[程]监控业务运行状态\n格式:\n    (!/-/#)监控 <url>\n详情:\n    本功能用于协助开发者监控自己的云端业务系统，会定期对指定url发送get请求，如果系统正常响应，则不会做任何处理，如果系统无响应，则会在群中发送报警信息。\n开发者也可以定制报警信息，只要响应满足如下json结构：\n{\n   \"code\":200,\n   \"message\":\"content\",\n   \"display\":true\n}\n  其中，code和message会被组装为报警信息，display决定是否发送该条信息。")
 public class HeartBeatMonitorCommand extends PrivilegeGroupCommand {
 
 

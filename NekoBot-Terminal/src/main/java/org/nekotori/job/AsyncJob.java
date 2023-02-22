@@ -3,14 +3,24 @@ package org.nekotori.job;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import discord4j.common.util.Snowflake;
+import discord4j.core.GatewayDiscordClient;
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.channel.TextChannel;
+import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.discordjson.Id;
+import discord4j.rest.util.Color;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Friend;
 import net.mamoe.mirai.contact.Group;
+import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
+import net.mamoe.mirai.message.data.Image;
 import net.mamoe.mirai.message.data.LightApp;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.PlainText;
+import net.mamoe.mirai.message.data.SingleMessage;
 import org.nekotori.BotSimulator;
 import org.nekotori.chain.ChainMessageSelector;
 import org.nekotori.common.InnerConstants;
@@ -37,6 +47,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -257,6 +268,9 @@ public class AsyncJob {
     }
 
     public void dispatchMessage(GroupMessageEvent groupMessageEvent){
+        if(541483336L == groupMessageEvent.getSubject().getId()){
+            dispatchToDc(groupMessageEvent);
+        }
         if(nowDispatchGroup == groupMessageEvent.getSubject().getId()){
             Friend friend = BotSimulator.getBot().getFriendOrFail(InnerConstants.admin);
             String name = "\n----[" + groupMessageEvent.getSender().getNick() + "](" + groupMessageEvent.getSender().getId() + ")";
@@ -266,6 +280,31 @@ public class AsyncJob {
             singleMessages.append(new PlainText(name));
             friend.sendMessage(singleMessages.build());
         }
+    }
+
+    private void dispatchToDc(GroupMessageEvent groupMessageEvent){
+        long id = 1077858995387240490L;
+        Member sender = groupMessageEvent.getSender();
+        String senderName = StringUtils.hasLength(sender.getNameCard()) ? sender.getNameCard() : sender.getNick();
+        GatewayDiscordClient dcBot = BotSimulator.getDcBot();
+        Guild kagura = dcBot.getGuildById(Snowflake.of(Id.of(1057152339997372456L))).block();
+        TextChannel textChannel = kagura.getSystemChannel().block();
+        MessageChain message = groupMessageEvent.getMessage();
+
+        EmbedCreateSpec.Builder title = EmbedCreateSpec.builder()
+                .color(Color.BLUE)
+                .title("来自QQ:" + senderName + "的消息");
+
+        for (SingleMessage next : message) {
+            if(next instanceof Image){
+                Image im = (Image) next;
+                String s = Image.queryUrl(im);
+                title.image(s);
+            }
+            title.addField("",next.contentToString(),false);
+        }
+        textChannel.createMessage(title.build()
+        ).block();
     }
 
 }
