@@ -45,7 +45,6 @@ public class CustomResponse {
         REGEX("正则"),
         BEGIN("开头"),
         END("结尾"),
-
         ALIAS("别名");
 
         private final String description;

@@ -42,6 +42,12 @@ public class YandereGroupCommand extends PrivilegeGroupCommand {
     @Value("${img.yandere-tag}")
     private String yandereTag;
 
+    @Value("${bot.proxy.host}")
+    private String host;
+
+    @Value("${bot.proxy.port}")
+    private int port;
+
     @Override
     public MessageChain execute(Member sender, Group subject, CommandAttr commandAttr, MessageChain messageChain) {
         List<String> param = commandAttr.getParam();
@@ -51,10 +57,10 @@ public class YandereGroupCommand extends PrivilegeGroupCommand {
                         .addQuery("tags", CollectionUtils.isEmpty(param) ? "" : String.join(" ", param))
                         .build();
         MessageChainBuilder singleMessages = new MessageChainBuilder();
-        Proxy proxy = new Proxy(Proxy.Type.HTTP,new InetSocketAddress("127.0.0.1", 7890));
+        Proxy proxy = new Proxy(Proxy.Type.HTTP,new InetSocketAddress(host, port));
         singleMessages.append(new QuoteReply(messageChain));
         try {
-            String body = HttpUtil.createGet(build).setProxy(proxy).setReadTimeout(5 * 1000).setConnectionTimeout(5 * 1000).executeAsync().body();
+            String body = HttpUtil.createGet(build).setProxy(proxy).setReadTimeout(5 * 1000).setConnectionTimeout(5 * 1000).execute().body();
             List<YandereData> yandereData =
                     JsonUtils.json2Object(body, new TypeReference<>() {
                     });

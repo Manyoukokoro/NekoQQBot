@@ -46,7 +46,8 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public void saveHistory(GroupMessageEvent groupMessageEvent) {
-        List<ChatGroupDo> chatGroupDos = chatGroupMapper.selectList(Wrappers.<ChatGroupDo>lambdaQuery().eq(ChatGroupDo::getGroupId, groupMessageEvent.getGroup().getId()));
+        List<ChatGroupDo> chatGroupDos = chatGroupMapper
+                .selectList(Wrappers.<ChatGroupDo>lambdaQuery().eq(ChatGroupDo::getGroupId, groupMessageEvent.getGroup().getId()));
         if (CollectionUtils.isEmpty(chatGroupDos)) {
             registerGroup(groupMessageEvent.getGroup());
         }

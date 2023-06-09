@@ -26,11 +26,13 @@ import net.mamoe.mirai.BotFactory;
 import net.mamoe.mirai.contact.ContactList;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.event.ListenerHost;
+import net.mamoe.mirai.internal.utils.MiraiProtocolInternal;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.utils.BotConfiguration;
 import org.nekotori.annotations.Event;
 import org.nekotori.common.SpringStyleBotLogger;
 import org.nekotori.handler.ThreadSingleton;
+import org.nekotori.utils.FixProtocolVersion;
 import org.nekotori.utils.SpringContextUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -42,6 +44,7 @@ import reactor.netty.transport.ProxyProvider;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
@@ -63,6 +66,7 @@ public class BotSimulator {
         BotConfiguration botConfiguration = new BotConfiguration();
         botConfiguration.fileBasedDeviceInfo(deviceFile);
         //https://github.com/mamoe/mirai/issues/1209 : 当协议选择ANDROID_PAD/WATCH时，概率出现被腾讯风控而发不出消息的异常
+        FixProtocolVersion.update();
         botConfiguration.setProtocol(BotConfiguration.MiraiProtocol.ANDROID_PAD);
         botConfiguration.setBotLoggerSupplier(b -> new SpringStyleBotLogger());
         botConfiguration.setNetworkLoggerSupplier(b -> new SpringStyleBotLogger());
@@ -76,6 +80,7 @@ public class BotSimulator {
         });
         Executors.newSingleThreadExecutor().execute(nekoBot::join);
     }
+
 
     public static Bot getBot() {
         return nekoBot;
@@ -98,7 +103,7 @@ public class BotSimulator {
                     .login().block();
             dcBot = gateway;
             gateway.on(MessageCreateEvent.class).subscribe(event->{
-                long id = event.getGuild().map(Guild::getId).block().asLong();
+                long id = Objects.requireNonNull(event.getGuild().map(Guild::getId).block()).asLong();
                 Member member = event.getMember().get();
                 String s = member.getUserData().username();
                 if("NekoBot".equals(s)){
@@ -117,7 +122,6 @@ public class BotSimulator {
                                     .map(Member::getUserData)
                                     .map(UserData::username)
                                     .orElse("未知"))
-                            .append("的消息")
                             .build());
                 }
             });

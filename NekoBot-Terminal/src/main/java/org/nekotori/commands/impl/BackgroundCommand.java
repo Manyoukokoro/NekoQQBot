@@ -48,8 +48,7 @@ public class BackgroundCommand extends PrivilegeGroupCommand {
                     .append(new PlainText("请输入图片url或直接发送图片"))
                     .build();
         }
-        try (InputStream inputStream =
-                     HttpUtil.createGet(imgUrl)
+        try (InputStream inputStream = HttpUtil.createGet(imgUrl)
                              .setConnectionTimeout(5000)
                              .setReadTimeout(5000)
                              .execute()

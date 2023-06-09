@@ -15,7 +15,7 @@ import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import org.nekotori.BotSimulator;
-import org.nekotori.atme.impl.ChatGPTResponse;
+import org.nekotori.atme.impl.ChatBotResponse;
 import org.nekotori.chain.ChainMessageSelector;
 import org.nekotori.chain.channel.GroupCommandChannel;
 import org.nekotori.dao.ChatGroupMapper;
@@ -73,7 +73,7 @@ public class ScheduledJob {
         });
     }
 
-    //@Scheduled(cron = "0 0 8 * * ?")
+    @Scheduled(cron = "0 0 8 * * ?")
     public void moyuCalendar(){
         Bot bot = BotSimulator.getBot();
         HttpRequest get = HttpUtil.createGet("https://api.j4u.ink/v1/store/other/proxy/remote/moyu.json");
@@ -96,10 +96,10 @@ public class ScheduledJob {
         });
     }
 
-    //@Scheduled(cron = "0 0 4 * * ?")
-    public void deleteChatGPTCache(){
-        ChatGPTResponse.deleteCache();
-    }
+//    @Scheduled(cron = "0 0 4 * * ?")
+//    public void deleteChatGPTCache(){
+//        ChatBotResponse.deleteCache();
+//    }
 
     public static void main(String[] args) {
     }

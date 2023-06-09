@@ -38,6 +38,8 @@ public class BotRunner implements ApplicationRunner {
     @Value("${bot.proxy.port}")
     private Integer port;
 
+    @Value("${bot.dc.token}")
+    private String token;
     @Override
     public void run(ApplicationArguments args) throws InterruptedException {
         if (ObjectUtils.isEmpty(id) || ObjectUtils.isEmpty(password)) {
@@ -49,10 +51,6 @@ public class BotRunner implements ApplicationRunner {
         ChainMessageSelector.init();
         BotSimulator.runDc(token,host,port);
         BotSimulator.run(id, password, deviceInfoLocation);
-    }
-
-    public static void main(String[] args) {
-        BotSimulator.runDc(token,"127.0.0.1",7890);
     }
 }
     

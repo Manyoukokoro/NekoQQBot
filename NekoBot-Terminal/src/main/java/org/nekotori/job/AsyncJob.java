@@ -15,6 +15,7 @@ import net.mamoe.mirai.contact.Friend;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
+import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.Image;
 import net.mamoe.mirai.message.data.LightApp;
 import net.mamoe.mirai.message.data.MessageChain;
@@ -293,15 +294,20 @@ public class AsyncJob {
 
         EmbedCreateSpec.Builder title = EmbedCreateSpec.builder()
                 .color(Color.BLUE)
-                .title("来自QQ:" + senderName + "的消息");
+                .author(senderName,sender.getAvatarUrl(),sender.getAvatarUrl());
 
         for (SingleMessage next : message) {
             if(next instanceof Image){
                 Image im = (Image) next;
                 String s = Image.queryUrl(im);
                 title.image(s);
+            } else if (next instanceof At) {
+                At ta = (At) next;
+                String display = ta.getDisplay(groupMessageEvent.getSubject());
+                title.addField("@",display,false);
+            } else {
+                title.addField("", next.contentToString(), false);
             }
-            title.addField("",next.contentToString(),false);
         }
         textChannel.createMessage(title.build()
         ).block();
